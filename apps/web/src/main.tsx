@@ -4,7 +4,8 @@ import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './redux/store';
 import { RootLayout } from './components/layout/root-layout';
-import { BuildingDetailsPage } from './pages/building-details';
+import { BuildingDetailsPage } from './pages/buildings/building-details';
+import { BuildingsListPage } from './pages/buildings/buildings-list';
 import './styles/globals.css';
 
 const router = createBrowserRouter([
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/buildings',
-        element: <BuildingDetailsPage />,
+        element: <BuildingsListPage />,
       },
       {
         path: '/buildings/:id',

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Breadcrumbs } from '@/components/ui/breadcrumb';
 import {
   Home,
   Users,
@@ -6,11 +7,10 @@ import {
   Calendar,
   BarChart2,
   MessageSquare,
-  ChevronLeft,
   Info,
   Pencil,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 interface Apartment {
   id: number;
@@ -26,6 +26,36 @@ interface Apartment {
   oldTax: number;
   total: number;
 }
+
+const mockBuildings = {
+  1: {
+    id: 1,
+    name: 'Сграда А',
+    address: 'ул. Първа 1',
+    apartmentCount: 24,
+    balance: 1500.5,
+    debt: 300.0,
+    description: 'Жилищна сграда с 24 апартамента',
+  },
+  2: {
+    id: 2,
+    name: 'Сграда Б',
+    address: 'ул. Втора 2',
+    apartmentCount: 16,
+    balance: -500.25,
+    debt: 1200.0,
+    description: 'Жилищна сграда с 16 апартамента',
+  },
+  3: {
+    id: 3,
+    name: 'Сграда В',
+    address: 'бул. Трети 3',
+    apartmentCount: 32,
+    balance: 2300.75,
+    debt: 0.0,
+    description: 'Жилищна сграда с 32 апартамента',
+  },
+};
 
 const mockApartments: Apartment[] = [
   {
@@ -56,33 +86,47 @@ const mockApartments: Apartment[] = [
     oldTax: 3.0,
     total: 6.0,
   },
-  // Add more mock apartments here...
 ];
 
-const stats = {
-  balance: '585.00 лв.',
-  balanceChange: '-23.00лв спрямо с предходния месец',
-  obligations: '1478.50 лв.',
-  obligationsChange: '+230.00лв спрямо с предходния месец',
-  apartments: '13',
-  apartmentsWithDebt: '3 апартамента със задължения',
-  debts: '9',
-  debtsDetails: 'задължения от 3 апартамента',
-};
-
 export function BuildingDetailsPage() {
+  const { id } = useParams();
+  const buildingId = id ? parseInt(id) : null;
+  const building = buildingId
+    ? mockBuildings[buildingId as keyof typeof mockBuildings]
+    : null;
+
+  if (!building) {
+    return <div>Building not found</div>;
+  }
+
+  const stats = {
+    balance: `${building.balance.toFixed(2)} лв.`,
+    balanceChange:
+      building.balance > 0
+        ? '+23.00лв спрямо с предходния месец'
+        : '-23.00лв спрямо с предходния месец',
+    obligations: `${building.debt.toFixed(2)} лв.`,
+    obligationsChange: '+230.00лв спрямо с предходния месец',
+    apartments: building.apartmentCount.toString(),
+    apartmentsWithDebt: '3 апартамента със задължения',
+    debts: '9',
+    debtsDetails: 'задължения от 3 апартамента',
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Link to="/buildings" className="text-gray-500 hover:text-gray-700">
-              <ChevronLeft className="h-5 w-5" />
-            </Link>
-            <h1 className="text-xl font-semibold">ул.Иван Вазов 13</h1>
+            <Breadcrumbs
+              segments={[
+                { label: 'Сгради', href: '/buildings' },
+                { label: building.name },
+              ]}
+            />
             <Info className="h-4 w-4 text-gray-400" />
           </div>
-          <p className="text-sm text-gray-500">никакво описание ако има</p>
+          <p className="text-sm text-gray-500">{building.description}</p>
         </div>
         <Button variant="outline" size="sm" className="gap-2">
           <Pencil className="h-4 w-4" />
