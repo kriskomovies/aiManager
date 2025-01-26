@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './redux/store';
 import { RootLayout } from './components/layout/root-layout';
+import { BuildingDetailsPage } from './pages/building-details';
 import './styles/globals.css';
 
 const router = createBrowserRouter([
@@ -13,19 +14,25 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <div className="p-4">Dashboard</div>,
-      },
-      {
-        path: '/companies',
-        element: <div className="p-4">Companies</div>,
+        element: <div className="text-gray-500">Welcome to Tax Manager</div>,
       },
       {
         path: '/buildings',
-        element: <div className="p-4">Buildings</div>,
+        element: <BuildingDetailsPage />,
       },
       {
-        path: '/contractors',
-        element: <div className="p-4">Contractors</div>,
+        path: '/buildings/:id',
+        element: <BuildingDetailsPage />,
+      },
+      {
+        path: '/users',
+        element: <div className="text-gray-500">Users page coming soon...</div>,
+      },
+      {
+        path: '/calendar',
+        element: (
+          <div className="text-gray-500">Calendar page coming soon...</div>
+        ),
       },
     ],
   },
