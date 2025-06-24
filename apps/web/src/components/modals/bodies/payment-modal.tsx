@@ -102,7 +102,7 @@ export function PaymentModal() {
           <span className="text-gray-600">
             Задължения Апартамент {apartmentNumber}
           </span>
-          <span className="text-gray-600">
+          <span className="bg-gray-100 rounded-full px-4 py-1 text-gray-600">
             Абониментен Номер: 123456
           </span>
         </div>
