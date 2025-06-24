@@ -4,7 +4,9 @@ export interface Building {
   address: string;
   description?: string;
   apartmentCount: number;
+  irregularities: number;
   balance: number;
+  monthlyFee: number;
   debt: number;
   createdAt: string;
   updatedAt: string;

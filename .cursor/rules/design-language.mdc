@@ -7,7 +7,7 @@ alwaysApply: false
 
 ## 🧩 Project Theme
 
-Home Manager's interface reflects a balance between administrative clarity and modern UI aesthetics. It’s designed to empower building managers with a clean, intuitive system that communicates trust, structure, and ease of use. The layout is inspired by financial dashboards and enterprise SaaS principles — practical, responsive, and scalable for multi-entity property management.
+Home Manager's interface reflects a balance between administrative clarity and modern UI aesthetics. It's designed to empower building managers with a clean, intuitive system that communicates trust, structure, and ease of use. The layout is inspired by financial dashboards and enterprise SaaS principles — practical, responsive, and scalable for multi-entity property management.
 
 ---
 
@@ -115,6 +115,51 @@ Supports **Light** and **Dark** themes.
 
 ---
 
+## 🤖 AI Chat Interface
+
+### Design Principles
+- **Minimalistic approach** inspired by ChatGPT
+- **Database-integrated** for property management context
+- **Conversational UI** with natural language understanding
+- **Contextual suggestions** for property management tasks
+
+### Chat Layout
+- **Chat container**: Fixed position, expandable from bottom-right corner
+- **Message bubbles**: 
+  - User messages: right-aligned, accent blue background (#2F80ED)
+  - AI responses: left-aligned, white background with subtle border
+  - System messages: center-aligned, muted styling
+- **Input area**: Clean, single-line with send button
+- **Suggestions**: Pill-style chips below input for quick actions
+
+### Chat Components
+- **Chat Toggle Button**: Floating action button with AI icon
+- **Message List**: Scrollable area with proper spacing (12px between messages)
+- **Message Bubble**: Rounded corners (12px), proper padding (12px horizontal, 8px vertical)
+- **Typing Indicator**: Three animated dots for AI thinking state
+- **Suggestion Chips**: Rounded pills (20px radius) with hover states
+
+### AI Interaction Examples
+- **Building queries**: "Show me buildings with overdue payments"
+- **Financial insights**: "What's the total revenue this month?"
+- **Maintenance requests**: "List all pending maintenance issues"
+- **Tenant management**: "How many vacant apartments do we have?"
+- **Report generation**: "Generate a payment report for Building A"
+
+### Chat States
+- **Collapsed**: Small floating button (56px diameter)
+- **Expanded**: Full chat interface (400px width, 600px height)
+- **Loading**: Typing indicator with animated dots
+- **Error**: Subtle error message with retry option
+
+### Suggestion Categories
+1. **Quick Actions**: "Add new building", "View payments", "Check maintenance"
+2. **Data Queries**: "Show revenue trends", "List overdue tenants", "Building occupancy"
+3. **Reports**: "Monthly summary", "Payment analysis", "Maintenance overview"
+4. **Help**: "How to add tenant?", "Payment setup guide", "System features"
+
+---
+
 ## 🎬 Motion & Animation
 
 - **Framework:** Framer Motion or Tailwind transitions
@@ -122,11 +167,13 @@ Supports **Light** and **Dark** themes.
 - Button hover: `scale(1.03)`
 - Sidebar highlight: slide-in effect
 - Dropdowns: opacity + downward motion
+- **Chat animations**: Slide-up for expand/collapse, fade-in for messages
 
 ### Timing
 
 - Easing: `cubic-bezier(0.4, 0, 0.2, 1)`
 - Duration: 200ms–300ms
+- **Chat transitions**: 300ms for expand/collapse, 150ms for message appearance
 
 ---
 
@@ -135,6 +182,7 @@ Supports **Light** and **Dark** themes.
 - Icon Set: **Lucide React** (outline, 1.5px stroke)
 - Use consistent icon size (20–24px)
 - Status: use icons sparingly next to badges or table rows
+- **AI Chat icons**: Robot/Bot, Send, Minimize, Maximize
 
 ---
 
@@ -160,12 +208,16 @@ Supports **Light** and **Dark** themes.
   - `ModalWrapper`
   - `StatusTableRow`
   - `RoundedButton`
+  - `AIChatWidget`
+  - `MessageBubble`
+  - `SuggestionChip`
 
 ---
 
 ## 🔐 Design Values
 
-- **Clarity First** — the UI should instantly show what’s owed, what’s active, what’s new
+- **Clarity First** — the UI should instantly show what's owed, what's active, what's new
 - **Consistency = Trust** — each screen aligns visually and structurally
 - **Scalable Structure** — designed for expansion: more buildings, users, apartments
 - **Modern But Familiar** — feels professional, not experimental
+- **AI-Powered Intelligence** — seamless integration of AI assistance for property management tasks

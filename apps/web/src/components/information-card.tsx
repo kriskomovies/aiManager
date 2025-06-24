@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { motion, Variants } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
 interface InformationCardProps {
@@ -11,6 +12,9 @@ interface InformationCardProps {
   subtitle?: string;
   percentageChange?: string;
   children?: ReactNode;
+  // Motion props
+  variants?: Variants;
+  className?: string;
 }
 
 export function InformationCard({
@@ -22,28 +26,33 @@ export function InformationCard({
   valueColor = 'text-gray-900',
   subtitle,
   percentageChange,
-  children
+  children,
+  variants,
+  className = '',
 }: InformationCardProps) {
-  const hasSubtitle = subtitle || percentageChange;
-
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className={`p-2 rounded-lg ${iconBgColor}`}>
+    <motion.div 
+      className={`rounded-lg bg-white p-4 shadow-sm border border-gray-200 ${className}`}
+      variants={variants}
+      whileHover={{ 
+        scale: 1.02,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium text-gray-500">{title}</h3>
+        <div className={`h-8 w-8 rounded-full ${iconBgColor} flex items-center justify-center`}>
           <Icon className={`h-4 w-4 ${iconColor}`} />
         </div>
       </div>
-      <div className={hasSubtitle ? "space-y-1" : "space-y-0"}>
-        <p className="text-sm font-medium text-gray-600">{title}</p>
-        <p className={`text-2xl font-bold ${valueColor}`}>{value}</p>
-        {subtitle && (
-          <p className="text-xs text-gray-500">{subtitle}</p>
-        )}
-        {percentageChange && (
-          <p className="text-xs text-gray-500">{percentageChange}</p>
-        )}
-        {children}
-      </div>
-    </div>
+      <p className={`text-2xl font-semibold mt-2 ${valueColor}`}>{value}</p>
+      {subtitle && (
+        <p className="text-sm text-gray-500">{subtitle}</p>
+      )}
+      {percentageChange && (
+        <p className="text-sm text-gray-500">{percentageChange}</p>
+      )}
+      {children}
+    </motion.div>
   );
 }

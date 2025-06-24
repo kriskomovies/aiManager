@@ -13,7 +13,6 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ArrowUpDown,
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -78,14 +77,16 @@ export function DataTable<T>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border">
-        <Table>
+      <div className="rounded-xl border bg-white">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <Table className="min-w-[1200px] w-full">
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-gray-50">
               {columns.map(column => (
                 <TableHead
                   key={String(column.accessorKey)}
                   className={cn(
+                    'font-medium text-gray-700',
                     column.sortable && 'cursor-pointer select-none'
                   )}
                   onClick={() =>
@@ -94,19 +95,6 @@ export function DataTable<T>({
                 >
                   <div className="flex items-center gap-2">
                     {column.header}
-                    {column.sortable && (
-                      <ArrowUpDown
-                        className={cn(
-                          'h-4 w-4',
-                          sorting?.field === column.accessorKey &&
-                            sorting.direction === 'asc' &&
-                            'text-red-500 rotate-180',
-                          sorting?.field === column.accessorKey &&
-                            sorting.direction === 'desc' &&
-                            'text-red-500'
-                        )}
-                      />
-                    )}
                   </div>
                 </TableHead>
               ))}
@@ -153,6 +141,7 @@ export function DataTable<T>({
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       {pageCount > 1 && (

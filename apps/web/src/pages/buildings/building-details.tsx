@@ -1,5 +1,9 @@
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Breadcrumbs } from '@/components/ui/breadcrumb';
+import { InformationCard } from '@/components/information-card';
+import { ApartmentsTable } from '@/components/apartments/apartments-table';
+import { ArrowLeft } from 'lucide-react';
 import {
   Home,
   Users,
@@ -7,25 +11,13 @@ import {
   Calendar,
   BarChart2,
   MessageSquare,
-  Info,
   Pencil,
 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/redux/hooks';
+import { setPageInfo } from '@/redux/slices/app-state';
 
-interface Apartment {
-  id: number;
-  floor: number;
-  name: string;
-  residents: number;
-  elevatorTax: number;
-  cleaningTax: number;
-  repairTax: number;
-  maintenanceTax: number;
-  generalExpenses: number;
-  newTax: number;
-  oldTax: number;
-  total: number;
-}
+
 
 const mockBuildings = {
   1: {
@@ -57,43 +49,29 @@ const mockBuildings = {
   },
 };
 
-const mockApartments: Apartment[] = [
-  {
-    id: 1,
-    floor: 1,
-    name: 'Иван Иванов',
-    residents: 1,
-    elevatorTax: 0.0,
-    cleaningTax: 0.0,
-    repairTax: 3.0,
-    maintenanceTax: 3.0,
-    generalExpenses: 3.0,
-    newTax: 3.0,
-    oldTax: 3.0,
-    total: 6.0,
-  },
-  {
-    id: 2,
-    floor: 1,
-    name: 'Петър Петров',
-    residents: 2,
-    elevatorTax: 0.0,
-    cleaningTax: 0.0,
-    repairTax: 3.0,
-    maintenanceTax: 3.0,
-    generalExpenses: 3.0,
-    newTax: 3.0,
-    oldTax: 3.0,
-    total: 6.0,
-  },
-];
+
 
 export function BuildingDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const buildingId = id ? parseInt(id) : null;
   const building = buildingId
     ? mockBuildings[buildingId as keyof typeof mockBuildings]
     : null;
+
+  useEffect(() => {
+    if (building) {
+      dispatch(setPageInfo({
+        title: 'Детайли на сграда',
+        subtitle: 'Управление на апартаменти и информация'
+      }));
+    }
+  }, [building, dispatch]);
+
+  const handleBack = () => {
+    navigate('/buildings');
+  };
 
   if (!building) {
     return <div>Building not found</div>;
@@ -113,28 +91,108 @@ export function BuildingDetailsPage() {
     debtsDetails: 'задължения от 3 апартамента',
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Breadcrumbs
-              segments={[
-                { label: 'Сгради', href: '/buildings' },
-                { label: building.name },
-              ]}
-            />
-            <Info className="h-4 w-4 text-gray-400" />
-          </div>
-          <p className="text-sm text-gray-500">{building.description}</p>
-        </div>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Pencil className="h-4 w-4" />
-          Редактирай
-        </Button>
-      </div>
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-      <div className="flex border-b">
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20 
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const statsVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const tabsVariants = {
+    hidden: { 
+      opacity: 0, 
+      x: -20 
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  return (
+    <motion.div 
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div 
+        className="flex items-center justify-between"
+        variants={itemVariants}
+      >
+        <div className="flex items-center gap-4">
+          <motion.button
+            onClick={handleBack}
+            className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-full text-gray-600 hover:text-gray-900 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </motion.button>
+          
+          <div className="flex flex-col">
+            <h1 className="text-xl font-semibold text-gray-900">{building.name}</h1>
+            <p className="text-sm text-gray-500">{building.address}</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button variant="outline" size="sm" className="gap-2">
+              <Pencil className="h-4 w-4" />
+              Редактирай
+            </Button>
+          </motion.div>
+          
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button size="sm" className="gap-2 bg-red-500 hover:bg-red-600">
+              Добави бележка
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      <motion.div 
+        className="flex border-b"
+        variants={tabsVariants}
+      >
         <Button
           variant="ghost"
           className="flex items-center gap-2 text-red-500 border-b-2 border-red-500 rounded-none"
@@ -184,119 +242,89 @@ export function BuildingDetailsPage() {
           <Calendar className="h-4 w-4" />
           Календар
         </Button>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-4 gap-4">
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-500">Баланс</h3>
-            <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center">
-              <BarChart2 className="h-4 w-4 text-blue-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-semibold mt-2">{stats.balance}</p>
-          <p className="text-sm text-gray-500">{stats.balanceChange}</p>
-        </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-500">Задължения</h3>
-            <div className="h-8 w-8 rounded-full bg-red-50 flex items-center justify-center">
-              <Bell className="h-4 w-4 text-red-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-semibold text-red-500 mt-2">
-            {stats.obligations}
-          </p>
-          <p className="text-sm text-gray-500">{stats.obligationsChange}</p>
-        </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-500">Апартаменти</h3>
-            <div className="h-8 w-8 rounded-full bg-purple-50 flex items-center justify-center">
-              <Home className="h-4 w-4 text-purple-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-semibold mt-2">{stats.apartments}</p>
+      <motion.div 
+        className="grid grid-cols-4 gap-4"
+        variants={statsVariants}
+      >
+        <InformationCard
+          title="Баланс"
+          value={stats.balance}
+          icon={BarChart2}
+          iconColor="text-blue-500"
+          iconBgColor="bg-blue-50"
+          subtitle={stats.balanceChange}
+          variants={itemVariants}
+        />
+        
+        <InformationCard
+          title="Задължения"
+          value={stats.obligations}
+          icon={Bell}
+          iconColor="text-red-500"
+          iconBgColor="bg-red-50"
+          valueColor="text-red-500"
+          subtitle={stats.obligationsChange}
+          variants={itemVariants}
+        />
+        
+        <InformationCard
+          title="Апартаменти"
+          value={stats.apartments}
+          icon={Home}
+          iconColor="text-purple-500"
+          iconBgColor="bg-purple-50"
+          variants={itemVariants}
+        >
           <p className="text-sm text-red-500">{stats.apartmentsWithDebt}</p>
-        </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium text-gray-500">Нередности</h3>
-            <div className="h-8 w-8 rounded-full bg-orange-50 flex items-center justify-center">
-              <Bell className="h-4 w-4 text-orange-500" />
-            </div>
-          </div>
-          <p className="text-2xl font-semibold mt-2">{stats.debts}</p>
-          <p className="text-sm text-gray-500">{stats.debtsDetails}</p>
-        </div>
-      </div>
+        </InformationCard>
+        
+        <InformationCard
+          title="Нередности"
+          value={stats.debts}
+          icon={Bell}
+          iconColor="text-orange-500"
+          iconBgColor="bg-orange-50"
+          subtitle={stats.debtsDetails}
+          variants={itemVariants}
+        />
+      </motion.div>
 
-      <div className="rounded-lg bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b p-4">
+      <motion.div 
+        className="rounded-lg bg-white shadow-sm border border-gray-200"
+        variants={itemVariants}
+        whileHover={{
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+        }}
+      >
+        <div className="flex items-center justify-between border-b p-4 px-6">
           <h2 className="text-lg font-semibold">Апартаменти</h2>
           <div className="space-x-2">
-            <Button variant="outline" size="sm">
-              Домова Книга
-            </Button>
-            <Button size="sm" className="bg-red-500 hover:bg-red-600">
-              Добави Апартамент
-            </Button>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-block"
+            >
+              <Button variant="outline" size="sm">
+                Домова Книга
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-block"
+            >
+              <Button size="sm" className="bg-red-500 hover:bg-red-600">
+                Добави Апартамент
+              </Button>
+            </motion.div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-gray-50 text-left text-sm text-gray-500">
-                <th className="p-4 font-medium">Апартамент</th>
-                <th className="p-4 font-medium">Етаж</th>
-                <th className="p-4 font-medium">Име</th>
-                <th className="p-4 font-medium">Брой Живущи</th>
-                <th className="p-4 font-medium">Такса Асансьор</th>
-                <th className="p-4 font-medium">Ток Асансьор</th>
-                <th className="p-4 font-medium">Ток Стълбище</th>
-                <th className="p-4 font-medium">Почистване</th>
-                <th className="p-4 font-medium">УЕС</th>
-                <th className="p-4 font-medium">Ново?!</th>
-                <th className="p-4 font-medium">Старо?!</th>
-                <th className="p-4 font-medium">Общо</th>
-                <th className="p-4 font-medium">Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockApartments.map(apartment => (
-                <tr key={apartment.id} className="border-b">
-                  <td className="p-4">
-                    <Link
-                      to={`/apartments/${apartment.id}`}
-                      className="text-red-500 hover:underline"
-                    >
-                      {apartment.id}
-                    </Link>
-                  </td>
-                  <td className="p-4">{apartment.floor}</td>
-                  <td className="p-4">{apartment.name}</td>
-                  <td className="p-4">{apartment.residents}</td>
-                  <td className="p-4">{apartment.elevatorTax} лв.</td>
-                  <td className="p-4">{apartment.cleaningTax} лв.</td>
-                  <td className="p-4">{apartment.repairTax} лв.</td>
-                  <td className="p-4">{apartment.maintenanceTax} лв.</td>
-                  <td className="p-4">{apartment.generalExpenses} лв.</td>
-                  <td className="p-4">{apartment.newTax} лв.</td>
-                  <td className="p-4">{apartment.oldTax} лв.</td>
-                  <td className="p-4 font-medium text-red-500">
-                    {apartment.total} лв.
-                  </td>
-                  <td className="p-4">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      •••
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="p-6">
+          <ApartmentsTable />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

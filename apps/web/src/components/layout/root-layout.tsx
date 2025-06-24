@@ -3,6 +3,8 @@ import { Sidebar } from './sidebar';
 import { Search } from 'lucide-react';
 import { useAppSelector } from '@/redux/hooks';
 import { selectCurrentPageTitle, selectCurrentPageSubtitle } from '@/redux/slices/app-state';
+import { AlertContainer } from '@/components/ui/alert';
+import { ModalContainer } from '@/components/modals/modal';
 
 export function RootLayout() {
   const pageTitle = useAppSelector(selectCurrentPageTitle);
@@ -39,6 +41,12 @@ export function RootLayout() {
           <Outlet />
         </main>
       </div>
+      
+      {/* Alert Container */}
+      <AlertContainer />
+      
+      {/* Modal Container */}
+      <ModalContainer />
     </div>
   );
 }

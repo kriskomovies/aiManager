@@ -61,62 +61,58 @@ export function BuildingsListPage() {
         variants={itemVariants}
       >
         {/* Balance Card */}
-        <motion.div variants={itemVariants}>
-          <InformationCard
-            title="Баланс"
-            value="585.00 лв."
-            icon={Lock}
-            iconColor="text-blue-600"
-            iconBgColor="bg-blue-50"
-            valueColor="text-green-600"
-            percentageChange="+120.00% спрямо в предходния месец"
-          />
-        </motion.div>
+        <InformationCard
+          title="Баланс"
+          value="585.00 лв."
+          icon={Lock}
+          iconColor="text-blue-600"
+          iconBgColor="bg-blue-50"
+          valueColor="text-green-600"
+          percentageChange="+120.00% спрямо в предходния месец"
+          variants={itemVariants}
+        />
 
         {/* Debt Card */}
-        <motion.div variants={itemVariants}>
-          <InformationCard
-            title="Задлъжения"
-            value="1478.50 лв."
-            icon={AlertTriangle}
-            iconColor="text-red-600"
-            iconBgColor="bg-red-50"
-            valueColor="text-red-600"
-            percentageChange="+33.00% спрямо в предходния месец"
-          />
-        </motion.div>
+        <InformationCard
+          title="Задлъжения"
+          value="1478.50 лв."
+          icon={AlertTriangle}
+          iconColor="text-red-600"
+          iconBgColor="bg-red-50"
+          valueColor="text-red-600"
+          percentageChange="+33.00% спрямо в предходния месец"
+          variants={itemVariants}
+        />
 
         {/* Buildings/Apartments Card */}
-        <motion.div variants={itemVariants}>
-          <InformationCard
-            title="Сгради / Апартаменти"
-            value=""
-            icon={Home}
-            iconColor="text-gray-600"
-            iconBgColor="bg-gray-50"
-            valueColor="text-gray-900"
-            subtitle="Управление на 5 апартамента"
-          >
-            <div className="flex items-baseline space-x-2 -mt-1">
-              <span className="text-2xl font-bold text-gray-900">23</span>
-              <span className="text-sm text-gray-500">/</span>
-              <span className="text-2xl font-bold text-gray-900">161</span>
-            </div>
-          </InformationCard>
-        </motion.div>
+        <InformationCard
+          title="Сгради / Апартаменти"
+          value=""
+          icon={Home}
+          iconColor="text-gray-600"
+          iconBgColor="bg-gray-50"
+          valueColor="text-gray-900"
+          subtitle="Управление на 5 апартамента"
+          variants={itemVariants}
+        >
+          <div className="flex items-baseline space-x-2 -mt-1">
+            <span className="text-2xl font-bold text-gray-900">23</span>
+            <span className="text-sm text-gray-500">/</span>
+            <span className="text-2xl font-bold text-gray-900">161</span>
+          </div>
+        </InformationCard>
 
         {/* Irregularities Card */}
-        <motion.div variants={itemVariants}>
-          <InformationCard
-            title="Нередности"
-            value="9"
-            icon={AlertTriangle}
-            iconColor="text-orange-600"
-            iconBgColor="bg-orange-50"
-            valueColor="text-orange-600"
-            subtitle="Ден създаден от 3 апартамента"
-          />
-        </motion.div>
+        <InformationCard
+          title="Нередности"
+          value="9"
+          icon={AlertTriangle}
+          iconColor="text-orange-600"
+          iconBgColor="bg-orange-50"
+          valueColor="text-orange-600"
+          subtitle="Ден създаден от 3 апартамента"
+          variants={itemVariants}
+        />
       </motion.div>
 
       {/* Buildings Table Section */}
