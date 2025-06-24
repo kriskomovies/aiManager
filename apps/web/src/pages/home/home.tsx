@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { SuggestionChip } from '@/components/ui/suggestion-chip';
 
 import { Input } from '@/components/ui/input';
 import { MessageBubble, type Message } from '@/components/ui/message-bubble';
-import { Building2, DollarSign, Wrench, FileText, Users, MessageCircle, Send } from 'lucide-react';
+import { Building2, DollarSign, Wrench, FileText, Users, MessageCircle, Send, X } from 'lucide-react';
 
 export function HomePage() {
   const dispatch = useAppDispatch();
@@ -177,6 +177,10 @@ export function HomePage() {
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
   };
 
+  const handleCloseCategory = () => {
+    setSelectedCategory(null);
+  };
+
   const hasConversation = messages.length > 0;
 
   return (
@@ -254,34 +258,83 @@ export function HomePage() {
           </motion.div>
 
           {/* Suggestions */}
-          {selectedCategory && (
-            <motion.div
-              className="w-full mb-8"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <div className="flex items-center mb-4">
-                  <MessageCircle className="w-5 h-5 text-gray-600 mr-2" />
-                  <h4 className="font-semibold text-gray-900">Примерни въпроси:</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {suggestionCategories
-                    .find(cat => cat.id === selectedCategory)
-                    ?.suggestions.map((suggestion, index) => (
-                      <SuggestionChip
-                        key={index}
-                        text={suggestion}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        className="justify-start text-left p-4 bg-white hover:bg-blue-50 border-gray-200 hover:border-blue-300"
-                      />
-                    ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
+          <AnimatePresence mode="wait">
+            {selectedCategory && (
+              <motion.div
+                key="suggestions"
+                className="w-full mb-8"
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ 
+                  duration: 0.3,
+                  ease: "easeInOut"
+                }}
+              >
+                <motion.div 
+                  className="bg-gray-50 rounded-xl p-6 border border-gray-200 relative overflow-hidden"
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Close button */}
+                  <motion.button
+                    onClick={handleCloseCategory}
+                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center transition-colors duration-200 text-gray-500 hover:text-gray-700 z-10"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 90 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <X className="w-4 h-4" />
+                  </motion.button>
+
+                  <motion.div 
+                    className="flex items-center mb-4 pr-10"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <MessageCircle className="w-5 h-5 text-gray-600 mr-2" />
+                    <h4 className="font-semibold text-gray-900">Примерни въпроси:</h4>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 gap-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {suggestionCategories
+                      .find(cat => cat.id === selectedCategory)
+                      ?.suggestions.map((suggestion, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{ 
+                            delay: 0.3 + (index * 0.05),
+                            duration: 0.2 
+                          }}
+                        >
+                          <SuggestionChip
+                            text={suggestion}
+                            onClick={() => handleSuggestionClick(suggestion)}
+                            className="justify-start text-left p-4 bg-white hover:bg-blue-50 border-gray-200 hover:border-blue-300"
+                          />
+                        </motion.div>
+                      ))}
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
 
@@ -291,7 +344,7 @@ export function HomePage() {
         variants={itemVariants}
       >
         <div className="relative group">
-          <div className="flex items-center bg-gray-50 border border-gray-200 rounded-3xl px-6 py-4">
+          <div className="flex items-center bg-white border border-gray-200 rounded-3xl px-6 py-4">
             {/* Input field */}
             <Input
               value={inputValue}
@@ -315,31 +368,6 @@ export function HomePage() {
             </button>
           </div>
         </div>
-
-        {/* Quick Stats - Only show when no conversation */}
-        {!hasConversation && (
-          <motion.div 
-            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center opacity-60"
-            variants={itemVariants}
-          >
-            <div>
-              <div className="text-2xl font-bold text-gray-900">24</div>
-              <div className="text-sm text-gray-600">Сгради</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">156</div>
-              <div className="text-sm text-gray-600">Апартаменти</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">12,450</div>
-              <div className="text-sm text-gray-600">лв. приходи</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-gray-900">8</div>
-              <div className="text-sm text-gray-600">Неплатени</div>
-            </div>
-          </motion.div>
-        )}
       </motion.div>
     </motion.div>
   );

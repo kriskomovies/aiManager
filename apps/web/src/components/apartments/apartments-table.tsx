@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge, IrregularitiesBadge } from '@/components/ui/badge';
 import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 import { 
   Home, 
   MoreVertical, 
@@ -31,6 +33,7 @@ interface Apartment {
 }
 
 export function ApartmentsTable() {
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof Apartment;
@@ -308,7 +311,10 @@ export function ApartmentsTable() {
         const menuItems: (DropdownMenuItem | 'separator')[] = [
           {
             label: 'Плащане',
-            onClick: () => console.log('Плащане за апартамент', row.id),
+            onClick: () => dispatch(openModal({ 
+              type: 'payment', 
+              data: { apartmentId: row.id, apartmentNumber: row.id } 
+            })),
             icon: CreditCard,
           },
           {
@@ -324,12 +330,18 @@ export function ApartmentsTable() {
           'separator',
           {
             label: 'Справка Такси',
-            onClick: () => console.log('Справка такси за', row.id),
+            onClick: () => dispatch(openModal({ 
+              type: 'reference-fees', 
+              data: { apartmentId: row.id, apartmentNumber: row.id } 
+            })),
             icon: Receipt,
           },
           {
             label: 'Справка Плащания',
-            onClick: () => console.log('Справка плащания за', row.id),
+            onClick: () => dispatch(openModal({ 
+              type: 'reference-payments', 
+              data: { apartmentId: row.id, apartmentNumber: row.id } 
+            })),
             icon: BarChart3,
           },
           {

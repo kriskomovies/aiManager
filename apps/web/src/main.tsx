@@ -7,6 +7,7 @@ import { RootLayout } from './components/layout/root-layout';
 import { BuildingDetailsPage } from './pages/buildings/building-details';
 import { BuildingsListPage } from './pages/buildings/buildings-list';
 import { AddBuildingPage } from './pages/buildings/add-building';
+import { AddApartmentPage } from './pages/apartments/add-apartment';
 import { HomePage } from './pages/home/home';
 import { ErrorBoundary } from './components/error-boundary';
 import { NotFoundPage } from './components/error-pages/not-found';
@@ -38,6 +39,11 @@ const router = createBrowserRouter([
       {
         path: '/buildings/:id',
         element: <BuildingDetailsPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/apartments/add/:buildingId',
+        element: <AddApartmentPage />,
         errorElement: <GeneralErrorPage />,
       },
       {

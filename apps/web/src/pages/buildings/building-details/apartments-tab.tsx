@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { InformationCard } from '@/components/information-card';
 import { ApartmentsTable } from '@/components/apartments/apartments-table';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,8 @@ interface ApartmentsTabProps {
 }
 
 export function ApartmentsTab({ building }: ApartmentsTabProps) {
+  const navigate = useNavigate();
+  
   if (!building) {
     return (
       <div className="rounded-lg bg-white shadow-sm border border-gray-200 p-8">
@@ -147,7 +150,11 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
               whileTap={{ scale: 0.98 }}
               className="inline-block"
             >
-              <Button size="sm" className="bg-red-500 hover:bg-red-600">
+              <Button 
+                size="sm" 
+                className="bg-red-500 hover:bg-red-600"
+                onClick={() => navigate(`/apartments/add/${building.id}`)}
+              >
                 Добави Апартамент
               </Button>
             </motion.div>

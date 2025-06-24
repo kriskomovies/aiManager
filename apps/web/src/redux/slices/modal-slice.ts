@@ -6,7 +6,10 @@ export type ModalType =
   | 'add-building'
   | 'edit-building'
   | 'delete-user'
-  | 'confirm-action';
+  | 'confirm-action'
+  | 'reference-fees'
+  | 'reference-payments'
+  | 'payment';
 
 export interface ModalData {
   buildingId?: string;

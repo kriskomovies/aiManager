@@ -4,6 +4,9 @@ import { X } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { selectModal, closeModal } from '@/redux/slices/modal-slice';
 import { DeleteBuildingModal } from './bodies/delete-building-modal';
+import { ReferenceFeesModal } from './bodies/reference-fees-modal';
+import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
+import { PaymentModal } from './bodies/payment-modal';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -44,6 +47,15 @@ export function ModalContainer() {
       case 'delete-building':
         return <DeleteBuildingModal onClose={handleClose} />;
       
+      case 'reference-fees':
+        return <ReferenceFeesModal />;
+      
+      case 'reference-payments':
+        return <ReferencePaymentsModal />;
+      
+      case 'payment':
+        return <PaymentModal />;
+      
       // Add more modal types here as needed
       // case 'add-building':
       //   return <AddBuildingModal onClose={handleClose} />;
@@ -63,7 +75,7 @@ export function ModalContainer() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={handleBackdropClick}
         >
           {/* Backdrop */}
@@ -75,20 +87,33 @@ export function ModalContainer() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="relative z-10 bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden"
+            className={`relative z-10 ${
+              modal.type === 'reference-fees' || modal.type === 'reference-payments'
+                ? 'w-full max-w-6xl' 
+                : modal.type === 'payment'
+                ? 'w-full max-w-2xl'
+                : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+            }`}
           >
-            {/* Close button */}
-            <button
-              onClick={handleClose}
-              className="absolute top-4 right-4 z-20 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </button>
+            {/* Conditional rendering based on modal type */}
+            {modal.type === 'reference-fees' || modal.type === 'reference-payments' || modal.type === 'payment' ? (
+              renderModalBody()
+            ) : (
+              <>
+                {/* Close button */}
+                <button
+                  onClick={handleClose}
+                  className="absolute top-4 right-4 z-20 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
 
-            {/* Modal Body */}
-            <div className="p-6">
-              {renderModalBody()}
-            </div>
+                {/* Modal Body */}
+                <div className="p-6">
+                  {renderModalBody()}
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
