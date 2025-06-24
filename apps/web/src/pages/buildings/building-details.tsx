@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { InformationCard } from '@/components/information-card';
-import { ApartmentsTable } from '@/components/apartments/apartments-table';
 import { ArrowLeft } from 'lucide-react';
 import {
   Home,
@@ -16,8 +14,13 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
-
-
+import { ApartmentsTab } from './building-details/apartments-tab';
+import { CashTab } from './building-details/cash-tab';
+import { CashierTab } from './building-details/cashier-tab';
+import { IrregularitiesTab } from './building-details/irregularities-tab';
+import { UsersTab } from './building-details/users-tab';
+import { MessagesTab } from './building-details/messages-tab';
+import { CalendarTab } from './building-details/calendar-tab';
 
 const mockBuildings = {
   1: {
@@ -49,12 +52,58 @@ const mockBuildings = {
   },
 };
 
+type TabType = 'apartments' | 'cash' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
 
+interface TabConfig {
+  id: TabType;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const tabs: TabConfig[] = [
+  {
+    id: 'apartments',
+    label: 'Апартаменти',
+    icon: Home,
+  },
+  {
+    id: 'cash',
+    label: 'Каса',
+    icon: Users,
+  },
+  {
+    id: 'cashier',
+    label: 'Касиер',
+    icon: BarChart2,
+  },
+  {
+    id: 'irregularities',
+    label: 'Нередности',
+    icon: Bell,
+  },
+  {
+    id: 'users',
+    label: 'Потребители',
+    icon: Users,
+  },
+  {
+    id: 'messages',
+    label: 'Съобщения',
+    icon: MessageSquare,
+  },
+  {
+    id: 'calendar',
+    label: 'Календар',
+    icon: Calendar,
+  },
+];
 
 export function BuildingDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [activeTab, setActiveTab] = useState<TabType>('apartments');
+  
   const buildingId = id ? parseInt(id) : null;
   const building = buildingId
     ? mockBuildings[buildingId as keyof typeof mockBuildings]
@@ -77,19 +126,7 @@ export function BuildingDetailsPage() {
     return <div>Building not found</div>;
   }
 
-  const stats = {
-    balance: `${building.balance.toFixed(2)} лв.`,
-    balanceChange:
-      building.balance > 0
-        ? '+23.00лв спрямо с предходния месец'
-        : '-23.00лв спрямо с предходния месец',
-    obligations: `${building.debt.toFixed(2)} лв.`,
-    obligationsChange: '+230.00лв спрямо с предходния месец',
-    apartments: building.apartmentCount.toString(),
-    apartmentsWithDebt: '3 апартамента със задължения',
-    debts: '9',
-    debtsDetails: 'задължения от 3 апартамента',
-  };
+
 
   // Animation variants
   const containerVariants = {
@@ -116,15 +153,7 @@ export function BuildingDetailsPage() {
     }
   };
 
-  const statsVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
+
 
   const tabsVariants = {
     hidden: { 
@@ -193,137 +222,40 @@ export function BuildingDetailsPage() {
         className="flex border-b"
         variants={tabsVariants}
       >
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-red-500 border-b-2 border-red-500 rounded-none"
-        >
-          <Home className="h-4 w-4" />
-          Апартаменти
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <Users className="h-4 w-4" />
-          Каса
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <BarChart2 className="h-4 w-4" />
-          Касиер
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <Bell className="h-4 w-4" />
-          Нередности
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <Users className="h-4 w-4" />
-          Потребители
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <MessageSquare className="h-4 w-4" />
-          Съобщения
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 text-gray-500"
-        >
-          <Calendar className="h-4 w-4" />
-          Календар
-        </Button>
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          return (
+            <Button
+              key={tab.id}
+              variant="ghost"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 rounded-none ${
+                activeTab === tab.id 
+                  ? 'text-red-500 border-b-2 border-red-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <IconComponent className="h-4 w-4" />
+              {tab.label}
+            </Button>
+          );
+        })}
       </motion.div>
 
-      <motion.div 
-        className="grid grid-cols-4 gap-4"
-        variants={statsVariants}
+      {/* Tab Content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        <InformationCard
-          title="Баланс"
-          value={stats.balance}
-          icon={BarChart2}
-          iconColor="text-blue-500"
-          iconBgColor="bg-blue-50"
-          subtitle={stats.balanceChange}
-          variants={itemVariants}
-        />
-        
-        <InformationCard
-          title="Задължения"
-          value={stats.obligations}
-          icon={Bell}
-          iconColor="text-red-500"
-          iconBgColor="bg-red-50"
-          valueColor="text-red-500"
-          subtitle={stats.obligationsChange}
-          variants={itemVariants}
-        />
-        
-        <InformationCard
-          title="Апартаменти"
-          value={stats.apartments}
-          icon={Home}
-          iconColor="text-purple-500"
-          iconBgColor="bg-purple-50"
-          variants={itemVariants}
-        >
-          <p className="text-sm text-red-500">{stats.apartmentsWithDebt}</p>
-        </InformationCard>
-        
-        <InformationCard
-          title="Нередности"
-          value={stats.debts}
-          icon={Bell}
-          iconColor="text-orange-500"
-          iconBgColor="bg-orange-50"
-          subtitle={stats.debtsDetails}
-          variants={itemVariants}
-        />
-      </motion.div>
-
-      <motion.div 
-        className="rounded-lg bg-white shadow-sm border border-gray-200"
-        variants={itemVariants}
-        whileHover={{
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
-        }}
-      >
-        <div className="flex items-center justify-between border-b p-4 px-6">
-          <h2 className="text-lg font-semibold">Апартаменти</h2>
-          <div className="space-x-2">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-block"
-            >
-              <Button variant="outline" size="sm">
-                Домова Книга
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-block"
-            >
-              <Button size="sm" className="bg-red-500 hover:bg-red-600">
-                Добави Апартамент
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-        <div className="p-6">
-          <ApartmentsTable />
-        </div>
+        {activeTab === 'apartments' && <ApartmentsTab building={building} />}
+        {activeTab === 'cash' && <CashTab />}
+        {activeTab === 'cashier' && <CashierTab />}
+        {activeTab === 'irregularities' && <IrregularitiesTab />}
+        {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'messages' && <MessagesTab />}
+        {activeTab === 'calendar' && <CalendarTab />}
       </motion.div>
     </motion.div>
   );
