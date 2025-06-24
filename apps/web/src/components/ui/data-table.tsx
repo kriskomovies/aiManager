@@ -33,9 +33,9 @@ interface DataTableProps<T> {
   data?: T[];
   isLoading?: boolean;
   isFetching?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any;
   pageCount?: number;
-  pageSize?: number;
   page?: number;
   sorting?: { field: keyof T; direction: 'asc' | 'desc' } | null;
   onPageChange?: (page: number) => void;
@@ -53,7 +53,6 @@ export function DataTable<T>({
   isFetching,
   error,
   pageCount = 1,
-  pageSize = 10,
   page = 1,
   sorting,
   onPageChange,
@@ -76,14 +75,11 @@ export function DataTable<T>({
   };
 
   const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<{ value: string }>) => {
       const value = event.target.value;
       setSearchTerm(value);
       if (onSearch) {
-        const timeoutId = setTimeout(() => {
-          onSearch(value);
-        }, 500);
-        return () => clearTimeout(timeoutId);
+        onSearch(value);
       }
     },
     [onSearch]

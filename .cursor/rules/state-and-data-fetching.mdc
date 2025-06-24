@@ -1,0 +1,202 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# State Management and Data Fetching
+
+- Use Redux Toolkit for global state management
+- Use RTK Query for data fetching and API calls
+- Follow kebab-case for all files and folders
+- Organize Redux code in feature-based slices
+
+## Redux Folder Structure
+
+```
+/redux
+  /slices
+    /user-slice.ts
+    /auth-slice.ts
+  /services
+    /api-service.ts
+    /auth-service.ts
+  /store.ts
+```
+
+## Slice Example
+
+```tsx
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '@/redux/store';
+
+interface UserState {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const initialState: UserState = {
+  user: null,
+  isLoading: false,
+  error: null,
+};
+
+export const userSlice = createSlice({
+  name: 'user',
+  initialState,
+  reducers: {
+    setUser: (state, action: PayloadAction<UserState['user']>) => {
+      state.user = action.payload;
+    },
+    clearUser: (state) => {
+      state.user = null;
+    },
+  }
+});
+
+export const { setUser, clearUser } = userSlice.actions;
+export const selectUser = (state: RootState) => state.user.user;
+export default userSlice.reducer;
+```
+
+## RTK Query Service Example
+
+```tsx
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const apiService = createApi({
+  reducerPath: 'apiService',
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: '/api',
+    prepareHeaders: (headers) => {
+      // Add authorization headers if needed
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => 'users',
+      providesTags: ['Users'],
+    }),
+    getUserById: builder.query({
+      query: (id) => `users/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Users', id }],
+    }),
+    createUser: builder.mutation({
+      query: (user) => ({
+        url: 'users',
+        method: 'POST',
+        body: user,
+      }),
+      invalidatesTags: ['Users'],
+    }),
+    updateUser: builder.mutation({
+      query: ({ id, ...updates }) => ({
+        url: `users/${id}`,
+        method: 'PATCH',
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Users', id }],
+    }),
+    deleteUser: builder.mutation({
+      query: (id) => ({
+        url: `users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Users'],
+    }),
+  }),
+});
+
+export const {
+  useGetUsersQuery,
+  useGetUserByIdQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} = apiService;
+```
+
+## Store Configuration
+
+```tsx
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from './slices/user-slice';
+import authReducer from './slices/auth-slice';
+import { apiService } from './services/api-service';
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer,
+    auth: authReducer,
+    [apiService.reducerPath]: apiService.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiService.middleware),
+  devTools: process.env.NODE_ENV !== 'production',
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+## Custom Hooks
+
+```tsx
+// redux/hooks.ts
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from './store';
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+```
+
+## Component Data Fetching Example
+
+```tsx
+import { useGetUserByIdQuery, useUpdateUserMutation } from '@/redux/services/api-service';
+import { useAppSelector } from '@/redux/hooks';
+import { selectUser } from '@/redux/slices/user-slice';
+
+export const UserProfile = ({ userId }: { userId: string }) => {
+  const { data: user, isLoading, error } = useGetUserByIdQuery(userId);
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const currentUser = useAppSelector(selectUser);
+  
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading user</p>;
+  if (!user) return <p>User not found</p>;
+  
+  const handleUpdateUser = async (updates) => {
+    await updateUser({ id: userId, ...updates });
+  };
+  
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+      {/* Additional user profile content */}
+    </div>
+  );
+};
+```
+
+## State Management Guidelines
+
+- Store only serializable data in Redux
+- Use normalized state structure for collections
+- Keep UI state local, use global state only when needed
+- Use the `createSelector` function for memoized selectors
+- Organize Redux code by feature, not by type
+- Use Redux DevTools for debugging
+- Prefer RTK Query for data fetching where possible
+- Handle loading and error states consistently
+

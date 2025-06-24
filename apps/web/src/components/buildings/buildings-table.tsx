@@ -7,10 +7,9 @@ export function BuildingsTable() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
-    field: keyof Building;
+    field: 'id' | 'name' | 'address' | 'apartmentCount' | 'balance' | 'debt' | 'createdAt' | 'updatedAt';
     direction: 'asc' | 'desc';
   } | null>(null);
-  const [search, setSearch] = useState('');
 
   //   const { data, isLoading, isFetching, error } = useBuildingsQuery({
   //     page,
@@ -58,28 +57,34 @@ export function BuildingsTable() {
   const mockData = {
     items: [
       {
-        id: 1,
+        id: '1',
         name: 'Сграда А',
         address: 'ул. Първа 1',
         apartmentCount: 24,
         balance: 1500.5,
         debt: 300.0,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
       },
       {
-        id: 2,
+        id: '2',
         name: 'Сграда Б',
         address: 'ул. Втора 2',
         apartmentCount: 16,
         balance: -500.25,
         debt: 1200.0,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
       },
       {
-        id: 3,
+        id: '3',
         name: 'Сграда В',
         address: 'бул. Трети 3',
         apartmentCount: 32,
         balance: 2300.75,
         debt: 0.0,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
       },
     ],
     meta: {
@@ -141,7 +146,7 @@ export function BuildingsTable() {
       sorting={sorting}
       onPageChange={setPage}
       onSortingChange={setSorting}
-      onSearch={setSearch}
+      onSearch={() => {}}
       onRowClick={row => navigate(`/buildings/${row.id}`)}
     />
   );

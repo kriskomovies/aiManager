@@ -1,0 +1,171 @@
+---
+description: 
+globs: *.tsx,*.css
+alwaysApply: false
+---
+# 🏢 Home Manager – Design Language System (DLS)
+
+## 🧩 Project Theme
+
+Home Manager's interface reflects a balance between administrative clarity and modern UI aesthetics. It’s designed to empower building managers with a clean, intuitive system that communicates trust, structure, and ease of use. The layout is inspired by financial dashboards and enterprise SaaS principles — practical, responsive, and scalable for multi-entity property management.
+
+---
+
+## 🎨 Core Visual Language
+
+### 1. Color Palette
+
+Supports **Light** and **Dark** themes.
+
+| Role             | Light Theme           | Dark Theme            | Notes                                 |
+|------------------|-----------------------|------------------------|----------------------------------------|
+| Primary BG       | #F9FAFB               | #0F1216                | Main background color                  |
+| Sidebar BG       | #FFFFFF               | #12181E                | Sidebar and cards                      |
+| Accent (Red)     | #EB5757               | #FF6B6B                | Alerts, debts, negative indicators     |
+| Accent (Green)   | #27AE60               | #27EF8B                | Balance, cash positive, tags           |
+| Accent (Blue)    | #2F80ED               | #2D9CDB                | CTAs, selected states                  |
+| Card Border      | #E0E0E0               | #2A2F36                | Panel, card, and input borders         |
+| Primary Text     | #1C1C1C               | #F2F2F2                | Titles, headings                       |
+| Secondary Text   | #666666               | #A3A3A3                | Descriptive or muted text              |
+| Error BG         | #FFF5F5               | #2B1E1E                | Error row backgrounds                  |
+
+- All statuses (e.g., debts, reports) are color-coded for fast scanning.
+- Use **red badges** for alerts or unresolved items.
+
+---
+
+## ✍️ Typography
+
+- **Font Family:** `Montserrat`, sans-serif
+- **Hierarchy:**
+  - Titles: 700–900 (Bold to ExtraBold)
+  - Labels/Headings: 600
+  - Body: 400–500
+  - Captions: 300–400
+
+### Font Sizes (Modular Scale)
+
+| Role       | Size     |
+|------------|----------|
+| Title      | 28px–36px |
+| Section    | 20px     |
+| Body       | 16px     |
+| Small Text | 14px     |
+| Caption    | 12px     |
+
+---
+
+## 📐 Spacing & Layout
+
+- Base unit: **8px grid**
+- Max content width: **1440px**
+- Card padding: **24px**
+- Section spacing: **48px – 80px**
+- Sidebar: **fixed**, 260–300px wide
+- Main content: fluid, padded at **24px**
+
+---
+
+## 🧱 UI Components
+
+> 🧩 **All UI components must be implemented in `apps/web/src/components/ui/` and reused across the entire frontend.**  
+> If a component does not exist, implement it in that folder before using it elsewhere. Avoid redefining duplicate logic or styles.
+
+### Buttons
+
+- Style: rounded corners (`rounded-md` or `rounded-2xl`)
+- Primary: solid color (e.g., red or blue)
+- Secondary: outline / ghost
+- Hover: subtle shadow, opacity shift
+- Icons: Lucide or minimal outlined SVG
+
+### Cards
+
+- Layout: clean boxes with subtle borders
+- Hover: light shadow (no elevation pop)
+- Used for dashboards, entities (buildings, apartments)
+
+### Tables
+
+- Stripe rows (alt background)
+- Sortable headers
+- Badges for status (green/red)
+- Overflow icon actions (edit/delete)
+
+### Badges
+
+- Red: debt, warning
+- Green: paid, active
+- Gray: empty or inactive
+- Rounded pill-style, font size `12px`
+
+### Modals
+
+- Centered with backdrop blur
+- Rounded corners
+- Animations: fade-in, scale-up
+- Top-right close (Lucide X)
+
+### Forms
+
+- Inline labels (top-aligned on mobile)
+- Input outline on focus (accent blue)
+- Error state with red border + caption
+- Button groups: primary (e.g., save), ghost (e.g., cancel)
+
+---
+
+## 🎬 Motion & Animation
+
+- **Framework:** Framer Motion or Tailwind transitions
+- Modal: fade + slight zoom
+- Button hover: `scale(1.03)`
+- Sidebar highlight: slide-in effect
+- Dropdowns: opacity + downward motion
+
+### Timing
+
+- Easing: `cubic-bezier(0.4, 0, 0.2, 1)`
+- Duration: 200ms–300ms
+
+---
+
+## 🧩 Iconography
+
+- Icon Set: **Lucide React** (outline, 1.5px stroke)
+- Use consistent icon size (20–24px)
+- Status: use icons sparingly next to badges or table rows
+
+---
+
+## 🖼️ Visual Identity
+
+- Logo: clean, geometric icon (e.g., building or home)
+- Backgrounds: light neutral or very dark matte
+- Minimal gradients
+- Prioritize **readability over decoration**
+
+---
+
+## ♻️ Reusability & Scalability
+
+- Built with **Tailwind CSS**
+- Maintain a centralized theme config:
+  - `colors.ts` or `theme.css`
+  - `radii`, `spacing`, `shadows`, `typography`
+- Core reusable components (in `apps/web/src/components/ui/`):
+  - `BuildingCard`
+  - `DebtBadge`
+  - `CashBox`
+  - `ModalWrapper`
+  - `StatusTableRow`
+  - `RoundedButton`
+
+---
+
+## 🔐 Design Values
+
+- **Clarity First** — the UI should instantly show what’s owed, what’s active, what’s new
+- **Consistency = Trust** — each screen aligns visually and structurally
+- **Scalable Structure** — designed for expansion: more buildings, users, apartments
+- **Modern But Familiar** — feels professional, not experimental

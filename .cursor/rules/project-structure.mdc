@@ -1,0 +1,65 @@
+---
+description: 
+globs: apps/**,packages/**,.cursor/**
+alwaysApply: false
+---
+# Project Structure Guidelines
+
+This monorepo is organized using Turborepo and includes:
+
+- `apps/api` – The **Next.js 15** API backend for handling requests, data, and routing.
+- `apps/web` – The **Vite.js frontend** client application for user interaction.
+- `apps/docs` – Internal project documentation powered by a static site generator or markdown tooling.
+- `packages/ui` – Shared UI components (e.g., buttons, modals) using shadcn/ui.
+- `packages/typescript-config` – Centralized TS config for consistency across apps.
+- `packages/eslint-config` – Shared linting rules.
+- `packages/interfaces` – Shared **TypeScript interfaces** for request/response DTOs used across `api` and `web`.
+
+## Folder Structure
+aimanager/
+├── apps/
+│ ├── api/ # Next.js 15 API backend
+│ ├── web/ # Vite.js frontend
+│ └── docs/ # Project documentation
+├── packages/
+│ ├── ui/ # Reusable UI components (e.g., Button, Modal)
+│ ├── interfaces/ # Shared TypeScript types (DTOs, Enums)
+│ ├── eslint-config/ # Shared linting configuration
+│ └── typescript-config/ # Shared tsconfig base
+├── .cursor/ # Cursor workspace guidelines and design language
+│ └── rules/
+│ ├── project-structure.mdc
+│ ├── design-language.mdc
+│ ├── state-and-data-fetching.mdc
+│ └── form-handling.mdc
+├── package.json
+├── turbo.json
+└── README.md
+
+## 📦 Placement of Shared Interfaces
+
+> 🔁 **`packages/interfaces/` is the canonical place** for all shared types between the `api` and `web` apps.
+
+### Example Structure
+
+packages/interfaces/
+├── index.ts
+├── building/
+│ ├── building.dto.ts # ICreateBuilding, IBuildingResponse, etc.
+├── apartment/
+│ ├── apartment.dto.ts
+├── user/
+│ ├── user.dto.ts
+└── common/
+├── enums.ts # UserRole, ApartmentType, etc.
+├── pagination.ts # IPaginatedResponse<T>, IQueryParams
+
+✅ In Web:
+// apps/web/services/buildingService.ts
+import { ICreateBuilding } from '@interfaces/building/building.dto';
+
+✅ Best Practices
+- All shared DTOs, enums, and types live under packages/interfaces/.
+- Use absolute imports (e.g., @interfaces/...) via tsconfig.json paths.
+- Keep client-only types (form states, UI props) inside apps/web/ if not reused.
+- Avoid importing backend logic in frontend — share only contracts (types/interfaces).
