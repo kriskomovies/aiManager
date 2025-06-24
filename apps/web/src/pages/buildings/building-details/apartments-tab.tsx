@@ -21,6 +21,16 @@ interface ApartmentsTabProps {
 }
 
 export function ApartmentsTab({ building }: ApartmentsTabProps) {
+  if (!building) {
+    return (
+      <div className="rounded-lg bg-white shadow-sm border border-gray-200 p-8">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Грешка</h2>
+          <p className="text-gray-500">Информацията за сградата не може да бъде заредена.</p>
+        </div>
+      </div>
+    );
+  }
   const stats = {
     balance: `${building.balance.toFixed(2)} лв.`,
     balanceChange:

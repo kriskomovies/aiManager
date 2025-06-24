@@ -128,7 +128,7 @@ export function BuildingsListPage() {
               whileTap={{ scale: 0.97 }}
             >
               <Button 
-                className="gap-2 bg-red-500 hover:bg-red-600 text-white"
+                className="gap-2"
                 onClick={handleAddBuilding}
               >
                 <Plus className="h-4 w-4" />

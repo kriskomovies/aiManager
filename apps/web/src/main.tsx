@@ -8,47 +8,64 @@ import { BuildingDetailsPage } from './pages/buildings/building-details';
 import { BuildingsListPage } from './pages/buildings/buildings-list';
 import { AddBuildingPage } from './pages/buildings/add-building';
 import { HomePage } from './pages/home/home';
+import { ErrorBoundary } from './components/error-boundary';
+import { NotFoundPage } from './components/error-pages/not-found';
+import { GeneralErrorPage } from './components/error-pages/general-error';
+import './lib/error-logger'; // Initialize global error handlers
 import './styles/globals.css';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
+    errorElement: <GeneralErrorPage />,
     children: [
       {
         path: '/',
         element: <HomePage />,
+        errorElement: <GeneralErrorPage />,
       },
       {
         path: '/buildings',
         element: <BuildingsListPage />,
+        errorElement: <GeneralErrorPage />,
       },
       {
         path: '/buildings/add',
         element: <AddBuildingPage />,
+        errorElement: <GeneralErrorPage />,
       },
       {
         path: '/buildings/:id',
         element: <BuildingDetailsPage />,
+        errorElement: <GeneralErrorPage />,
       },
       {
         path: '/users',
         element: <div className="text-gray-500">Users page coming soon...</div>,
+        errorElement: <GeneralErrorPage />,
       },
       {
         path: '/calendar',
         element: (
           <div className="text-gray-500">Calendar page coming soon...</div>
         ),
+        errorElement: <GeneralErrorPage />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </ErrorBoundary>
   </React.StrictMode>
 );

@@ -123,7 +123,25 @@ export function BuildingDetailsPage() {
   };
 
   if (!building) {
-    return <div>Building not found</div>;
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Сградата не е намерена
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Сградата с ID {id} не съществува или е била изтрита.
+          </p>
+          <Button
+            onClick={() => navigate('/buildings')}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Назад към сгради
+          </Button>
+        </div>
+      </div>
+    );
   }
 
 
