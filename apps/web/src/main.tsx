@@ -6,6 +6,8 @@ import { store } from './redux/store';
 import { RootLayout } from './components/layout/root-layout';
 import { BuildingDetailsPage } from './pages/buildings/building-details';
 import { BuildingsListPage } from './pages/buildings/buildings-list';
+import { AddBuildingPage } from './pages/buildings/add-building';
+import { HomePage } from './pages/home/home';
 import './styles/globals.css';
 
 const router = createBrowserRouter([
@@ -15,11 +17,15 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <div className="text-gray-500">Welcome to Tax Manager</div>,
+        element: <HomePage />,
       },
       {
         path: '/buildings',
         element: <BuildingsListPage />,
+      },
+      {
+        path: '/buildings/add',
+        element: <AddBuildingPage />,
       },
       {
         path: '/buildings/:id',

@@ -146,7 +146,6 @@ export function BuildingsTable() {
       sorting={sorting}
       onPageChange={setPage}
       onSortingChange={setSorting}
-      onSearch={() => {}}
       onRowClick={row => navigate(`/buildings/${row.id}`)}
     />
   );

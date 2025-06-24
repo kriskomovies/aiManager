@@ -8,14 +8,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   ArrowUpDown,
-  Search,
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -42,7 +40,6 @@ interface DataTableProps<T> {
   onSortingChange?: (
     sorting: { field: keyof T; direction: 'asc' | 'desc' } | null
   ) => void;
-  onSearch?: (searchTerm: string) => void;
   onRowClick?: (row: T) => void;
 }
 
@@ -57,11 +54,8 @@ export function DataTable<T>({
   sorting,
   onPageChange,
   onSortingChange,
-  onSearch,
   onRowClick,
 }: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = React.useState('');
-
   const handleSort = (field: keyof T) => {
     if (!onSortingChange) return;
 
@@ -74,17 +68,6 @@ export function DataTable<T>({
     }
   };
 
-  const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<{ value: string }>) => {
-      const value = event.target.value;
-      setSearchTerm(value);
-      if (onSearch) {
-        onSearch(value);
-      }
-    },
-    [onSearch]
-  );
-
   if (error) {
     return (
       <div className="flex h-[400px] items-center justify-center text-gray-500">
@@ -95,18 +78,7 @@ export function DataTable<T>({
 
   return (
     <div className="space-y-4">
-      {onSearch && (
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-          <Input
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="pl-9"
-          />
-        </div>
-      )}
-      <div className="rounded-md border">
+      <div className="rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -227,7 +199,7 @@ export function DataTable<T>({
 
       {isFetching && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/50">
-          <div className="flex items-center gap-2 rounded-md bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 rounded-xl bg-white p-4 shadow-sm">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span>Updating...</span>
           </div>
