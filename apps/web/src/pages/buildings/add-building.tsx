@@ -16,7 +16,7 @@ import {
   ICreateBuildingRequest, 
   BuildingType, 
   TaxGenerationPeriod 
-} from '@repo/interfaces/building';
+} from '@repo/interfaces';
 
 export function AddBuildingPage() {
   const navigate = useNavigate();
@@ -129,7 +129,7 @@ export function AddBuildingPage() {
   ];
 
   const handleInputChange = (field: keyof ICreateBuildingRequest, value: string | boolean | string[] | number | BuildingType | TaxGenerationPeriod) => {
-    setFormData(prev => ({
+    setFormData((prev: ICreateBuildingRequest) => ({
       ...prev,
       [field]: value
     }));

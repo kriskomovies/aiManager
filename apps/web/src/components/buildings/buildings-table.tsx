@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { IBuildingListItem, BuildingType, BuildingStatus } from '@repo/interfaces/building';
+import { IBuildingListItem, BuildingType, BuildingStatus } from '@repo/interfaces';
 import { useState } from 'react';
 import { CashBadge, DebtBadge, IrregularitiesBadge } from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
