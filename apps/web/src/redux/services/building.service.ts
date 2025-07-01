@@ -1,24 +1,31 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithOnQueryStarted } from '@/lib/api.utils';
-import type { Building, BuildingResponse, BuildingQueryParams } from '@/types/building';
+import { 
+  IBuildingResponse, 
+  IBuildingListItem,
+  ICreateBuildingRequest,
+  IUpdateBuildingRequest,
+  IBuildingQueryParams,
+  IPaginatedResponse 
+} from '@repo/interfaces';
 
 export const buildingApi = createApi({
   reducerPath: 'buildingApi',
   baseQuery: baseQueryWithOnQueryStarted,
   tagTypes: ['Building'],
   endpoints: (builder) => ({
-    getBuildings: builder.query<BuildingResponse, BuildingQueryParams>({
+    getBuildings: builder.query<IPaginatedResponse<IBuildingListItem>, IBuildingQueryParams>({
       query: (params) => ({
         url: 'buildings',
         params,
       }),
       providesTags: ['Building'],
     }),
-    getBuilding: builder.query<Building, string>({
+    getBuilding: builder.query<IBuildingResponse, string>({
       query: (id) => `buildings/${id}`,
       providesTags: ['Building'],
     }),
-    createBuilding: builder.mutation<Building, Partial<Building>>({
+    createBuilding: builder.mutation<IBuildingResponse, ICreateBuildingRequest>({
       query: (building) => ({
         url: 'buildings',
         method: 'POST',
@@ -26,11 +33,11 @@ export const buildingApi = createApi({
       }),
       invalidatesTags: ['Building'],
     }),
-    updateBuilding: builder.mutation<Building, Partial<Building> & Pick<Building, 'id'>>({
-      query: ({ id, ...patch }) => ({
+    updateBuilding: builder.mutation<IBuildingResponse, { id: string; data: IUpdateBuildingRequest }>({
+      query: ({ id, data }) => ({
         url: `buildings/${id}`,
         method: 'PATCH',
-        body: patch,
+        body: data,
       }),
       invalidatesTags: ['Building'],
     }),

@@ -7,7 +7,7 @@ alwaysApply: false
 
 This monorepo is organized using Turborepo and includes:
 
-- `apps/api` – The **Next.js 15** API backend for handling requests, data, and routing.
+- `apps/api` – The **Nest.js** API backend for handling requests, data, and routing.
 - `apps/web` – The **Vite.js frontend** client application for user interaction.
 - `apps/docs` – Internal project documentation powered by a static site generator or markdown tooling.
 - `packages/ui` – Shared UI components (e.g., buttons, modals) using shadcn/ui.
@@ -18,7 +18,7 @@ This monorepo is organized using Turborepo and includes:
 ## Folder Structure
 aimanager/
 ├── apps/
-│ ├── api/ # Next.js 15 API backend
+│ ├── api/ # Nest.js API backend
 │ ├── web/ # Vite.js frontend
 │ └── docs/ # Project documentation
 ├── packages/

@@ -11,31 +11,38 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
+import { useCreateBuildingMutation } from '@/redux/services/building.service';
+import { 
+  ICreateBuildingRequest, 
+  BuildingType, 
+  TaxGenerationPeriod 
+} from '@repo/interfaces/building';
 
 export function AddBuildingPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [formData, setFormData] = useState({
+  const [createBuilding, { isLoading: isCreating }] = useCreateBuildingMutation();
+  const [formData, setFormData] = useState<ICreateBuildingRequest>({
     // General Information
     name: '',
-    type: '',
+    type: BuildingType.RESIDENTIAL,
     city: '',
     district: '',
     street: '',
     number: '',
     entrance: '',
     postalCode: '',
-    commonPartsArea: '',
-    quadrature: '',
-    parkingSlots: '',
-    basements: '',
-    taxGenerationPeriod: '',
-    taxGenerationDay: '',
+    commonPartsArea: undefined,
+    quadrature: undefined,
+    parkingSlots: undefined,
+    basements: undefined,
+    taxGenerationPeriod: TaxGenerationPeriod.MONTHLY,
+    taxGenerationDay: 1,
     homebookStartDate: '',
     // Invoice section
     invoiceEnabled: false,
     // People with access
-    peopleWithAccess: [] as string[],
+    peopleWithAccess: [],
   });
 
   useEffect(() => {
@@ -87,10 +94,10 @@ export function AddBuildingPage() {
 
   // Mock data for dropdowns
   const typeOptions = [
-    { value: 'residential', label: 'Жилищна' },
-    { value: 'commercial', label: 'Търговска' },
-    { value: 'office', label: 'Офис сграда' },
-    { value: 'mixed', label: 'Смесена' },
+    { value: BuildingType.RESIDENTIAL, label: 'Жилищна' },
+    { value: BuildingType.COMMERCIAL, label: 'Търговска' },
+    { value: BuildingType.OFFICE, label: 'Офис сграда' },
+    { value: BuildingType.MIXED, label: 'Смесена' },
   ];
 
   const cityOptions = [
@@ -108,9 +115,9 @@ export function AddBuildingPage() {
   ];
 
   const taxPeriodOptions = [
-    { value: 'monthly', label: 'Месечно' },
-    { value: 'quarterly', label: 'Тримесечно' },
-    { value: 'yearly', label: 'Годишно' },
+    { value: TaxGenerationPeriod.MONTHLY, label: 'Месечно' },
+    { value: TaxGenerationPeriod.QUARTERLY, label: 'Тримесечно' },
+    { value: TaxGenerationPeriod.YEARLY, label: 'Годишно' },
   ];
 
   const peopleOptions: MultiSelectOption[] = [
@@ -121,17 +128,22 @@ export function AddBuildingPage() {
     { value: 'resident2', label: 'Георги Николов - Жилец' },
   ];
 
-  const handleInputChange = (field: string, value: string | boolean | string[]) => {
+  const handleInputChange = (field: keyof ICreateBuildingRequest, value: string | boolean | string[] | number | BuildingType | TaxGenerationPeriod) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleSubmit = () => {
-    console.log('Submitting form data:', formData);
-    // TODO: Add API call to save building
-    navigate('/buildings');
+  const handleSubmit = async () => {
+    try {
+      console.log('Submitting form data:', formData);
+      await createBuilding(formData).unwrap();
+      navigate('/buildings');
+    } catch (error) {
+      console.error('Failed to create building:', error);
+      // TODO: Add proper error handling with toast notifications
+    }
   };
 
   const handleBack = () => {
@@ -447,9 +459,10 @@ export function AddBuildingPage() {
               >
                 <Button
                   onClick={handleSubmit}
+                  disabled={isCreating}
                   className="bg-red-500 hover:bg-red-600 text-white"
                 >
-                  Създай
+                  {isCreating ? 'Създаване...' : 'Създай'}
                 </Button>
               </motion.div>
             </motion.div>

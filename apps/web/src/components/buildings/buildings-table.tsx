@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { Building } from '@/types/building';
+import { IBuildingListItem, BuildingType, BuildingStatus } from '@repo/interfaces/building';
 import { useState } from 'react';
 import { CashBadge, DebtBadge, IrregularitiesBadge } from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
@@ -12,7 +12,7 @@ export function BuildingsTable() {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
-    field: 'id' | 'name' | 'address' | 'apartmentCount' | 'balance' | 'debt' | 'irregularities' | 'monthlyFee' | 'createdAt' | 'updatedAt';
+    field: keyof IBuildingListItem;
     direction: 'asc' | 'desc';
   } | null>(null);
 
@@ -65,49 +65,53 @@ export function BuildingsTable() {
         id: '1',
         name: 'Андрей Сахаров 15',
         address: 'ул. Андрей Сахаров 15',
+        type: BuildingType.RESIDENTIAL,
         apartmentCount: 17,
         irregularities: 3,
         balance: 38.97,
         monthlyFee: 3.00,
         debt: 0.00,
+        status: BuildingStatus.ACTIVE,
         createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
       },
       {
         id: '2',
         name: 'бул. Владислав Варненчик 615',
         address: 'бул. Владислав Варненчик 615',
+        type: BuildingType.COMMERCIAL,
         apartmentCount: 8,
         irregularities: 0,
         balance: 38.97,
         monthlyFee: 3.00,
         debt: 6.00,
+        status: BuildingStatus.ACTIVE,
         createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
       },
       {
         id: '3',
         name: 'Андрей Сахаров 15',
         address: 'ул. Андрей Сахаров 15',
+        type: BuildingType.MIXED,
         apartmentCount: 25,
         irregularities: 2,
         balance: -100.70,
         monthlyFee: 3.00,
         debt: 100.70,
+        status: BuildingStatus.MAINTENANCE,
         createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
       },
       {
         id: '4',
         name: 'бул. Владислав Варненчик 615',
         address: 'бул. Владислав Варненчик 615',
+        type: BuildingType.OFFICE,
         apartmentCount: 32,
         irregularities: 0,
         balance: 38.97,
         monthlyFee: 3.00,
         debt: 6.00,
+        status: BuildingStatus.ACTIVE,
         createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
       },
     ],
     meta: {
@@ -119,7 +123,7 @@ export function BuildingsTable() {
   const error = null;
   const data = mockData;
 
-  const handleDeleteBuilding = (building: Building) => {
+  const handleDeleteBuilding = (building: IBuildingListItem) => {
     dispatch(openModal({
       type: 'delete-building',
       data: {
@@ -129,7 +133,7 @@ export function BuildingsTable() {
     }));
   };
 
-  const columns: Column<Building>[] = [
+  const columns: Column<IBuildingListItem>[] = [
     {
       header: 'Име',
       accessorKey: 'name',

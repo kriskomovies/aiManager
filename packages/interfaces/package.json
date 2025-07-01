@@ -1,0 +1,29 @@
+{
+  "name": "@repo/interfaces",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./building": {
+      "types": "./src/building/index.ts", 
+      "default": "./dist/building/index.js"
+    },
+    "./common": {
+      "types": "./src/common/index.ts",
+      "default": "./dist/common/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "typescript": "latest"
+  }
+} 
