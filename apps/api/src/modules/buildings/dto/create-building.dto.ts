@@ -4,8 +4,8 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsEmail,
-  IsPhoneNumber,
+  IsBoolean,
+  IsArray,
   Min,
   Max,
   IsDateString,
@@ -19,20 +19,13 @@ import {
 export class CreateBuildingDto {
   @ApiProperty({
     description: 'Building name',
-    example: 'Sunset Apartments',
+    example: 'Сграда Витоша',
   })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Building address',
-    example: '123 Main Street, City, State 12345',
-  })
-  @IsString()
-  address: string;
-
-  @ApiProperty({
-    description: 'Type of building',
+    description: 'Building type',
     enum: BuildingType,
     example: BuildingType.RESIDENTIAL,
   })
@@ -40,44 +33,92 @@ export class CreateBuildingDto {
   type: BuildingType;
 
   @ApiProperty({
-    description: 'Current status of the building',
+    description: 'Building status',
     enum: BuildingStatus,
     example: BuildingStatus.ACTIVE,
     required: false,
   })
   @IsEnum(BuildingStatus)
   @IsOptional()
-  status?: BuildingStatus = BuildingStatus.ACTIVE;
+  status?: BuildingStatus;
+
+  // Address fields
+  @ApiProperty({
+    description: 'City',
+    example: 'София',
+  })
+  @IsString()
+  city: string;
 
   @ApiProperty({
-    description: 'Total number of units/apartments',
+    description: 'District',
+    example: 'Център',
+  })
+  @IsString()
+  district: string;
+
+  @ApiProperty({
+    description: 'Street',
+    example: 'ул. Витоша',
+  })
+  @IsString()
+  street: string;
+
+  @ApiProperty({
+    description: 'Building number',
+    example: '15',
+  })
+  @IsString()
+  number: string;
+
+  @ApiProperty({
+    description: 'Entrance',
+    example: 'А',
+  })
+  @IsString()
+  entrance: string;
+
+  @ApiProperty({
+    description: 'Postal code',
+    example: '1000',
+  })
+  @IsString()
+  postalCode: string;
+
+  // Physical properties
+  @ApiProperty({
+    description: 'Common parts area in square meters',
+    example: 150.5,
+  })
+  @IsNumber()
+  @Min(0)
+  commonPartsArea: number;
+
+  @ApiProperty({
+    description: 'Total building area in square meters',
+    example: 2500,
+  })
+  @IsNumber()
+  @Min(0)
+  quadrature: number;
+
+  @ApiProperty({
+    description: 'Number of parking slots',
     example: 24,
-    minimum: 1,
-    maximum: 10000,
-  })
-  @IsNumber()
-  @Min(1)
-  @Max(10000)
-  totalUnits: number;
-
-  @ApiProperty({
-    description: 'Number of occupied units',
-    example: 20,
-    minimum: 0,
   })
   @IsNumber()
   @Min(0)
-  occupiedUnits: number;
+  parkingSlots: number;
 
   @ApiProperty({
-    description: 'Monthly rental income in cents',
-    example: 48000,
-    minimum: 0,
+    description: 'Number of basements',
+    example: 1,
   })
   @IsNumber()
   @Min(0)
-  monthlyRental: number;
+  basements: number;
 
+  // Tax settings
   @ApiProperty({
     description: 'Tax generation period',
     enum: TaxGenerationPeriod,
@@ -87,45 +128,42 @@ export class CreateBuildingDto {
   taxGenerationPeriod: TaxGenerationPeriod;
 
   @ApiProperty({
-    description: 'Date when next tax is due',
-    example: '2024-02-01T00:00:00Z',
+    description: 'Day of month for tax generation (1-31)',
+    example: 15,
+  })
+  @IsNumber()
+  @Min(1)
+  @Max(31)
+  taxGenerationDay: number;
+
+  @ApiProperty({
+    description: 'Homebook start date',
+    example: '2024-01-01',
   })
   @IsDateString()
-  nextTaxDate: string;
+  homebookStartDate: string;
+
+  // Features
+  @ApiProperty({
+    description: 'Whether invoice generation is enabled',
+    example: false,
+  })
+  @IsBoolean()
+  invoiceEnabled: boolean;
 
   @ApiProperty({
-    description: 'Building manager name',
-    example: 'John Smith',
-    required: false,
+    description: 'Description of the building',
+    example: 'Modern residential building with elevator',
   })
   @IsString()
-  @IsOptional()
-  managerName?: string;
+  description: string;
 
+  // People with access - for now just store as array of IDs
   @ApiProperty({
-    description: 'Manager contact phone',
-    example: '+1234567890',
-    required: false,
+    description: 'Array of user IDs who have access to this building',
+    example: ['user1', 'user2'],
   })
-  @IsPhoneNumber()
-  @IsOptional()
-  managerPhone?: string;
-
-  @ApiProperty({
-    description: 'Manager email address',
-    example: 'manager@example.com',
-    required: false,
-  })
-  @IsEmail()
-  @IsOptional()
-  managerEmail?: string;
-
-  @ApiProperty({
-    description: 'Additional notes about the building',
-    example: 'Recently renovated lobby',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  notes?: string;
+  @IsArray()
+  @IsString({ each: true })
+  peopleWithAccess: string[];
 }

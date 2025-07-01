@@ -1,107 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BaseRepository,
-  IPaginationOptions,
-  IPaginatedResult,
-} from '../../common/abstracts/base-repository.abstract';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BuildingEntity } from '../entities/building.entity';
 import { BuildingQueryDto } from '../../modules/buildings/dto/building-query.dto';
+import { IPaginatedResult } from '../../common/abstracts/base-repository.abstract';
 
 @Injectable()
-export class BuildingRepository extends BaseRepository<BuildingEntity> {
-  private buildings: BuildingEntity[] = [];
-  private currentId = 1;
+export class BuildingRepository {
+  constructor(
+    @InjectRepository(BuildingEntity)
+    private readonly repository: Repository<BuildingEntity>,
+  ) {}
 
   async create(createData: Partial<BuildingEntity>): Promise<BuildingEntity> {
-    const building = new BuildingEntity();
-
-    // Set base entity fields
-    building.id = this.generateId();
-    building.createdAt = new Date();
-    building.updatedAt = new Date();
-
-    // Set building-specific fields
-    Object.assign(building, createData);
-
-    // Convert string date to Date object
-    if (typeof createData.nextTaxDate === 'string') {
-      building.nextTaxDate = new Date(createData.nextTaxDate);
-    }
-
-    this.buildings.push(building);
-    return building;
+    const building = this.repository.create(createData);
+    return await this.repository.save(building);
   }
 
   async findById(id: string): Promise<BuildingEntity | null> {
-    const building = this.buildings.find((b) => b.id === id);
-    return building || null;
+    return await this.repository.findOne({ where: { id } });
   }
 
-  async findAll(
-    options?: IPaginationOptions,
-  ): Promise<IPaginatedResult<BuildingEntity>> {
-    const filteredBuildings = [...this.buildings];
-
-    // Apply sorting
-    if (options?.sortBy) {
-      const sortOrder = options.sortOrder || 'DESC';
-      filteredBuildings.sort((a, b) => {
-        const aValue = (a as unknown as Record<string, unknown>)[
-          options.sortBy!
-        ];
-        const bValue = (b as unknown as Record<string, unknown>)[
-          options.sortBy!
-        ];
-
-        if ((aValue as number) < (bValue as number))
-          return sortOrder === 'ASC' ? -1 : 1;
-        if ((aValue as number) > (bValue as number))
-          return sortOrder === 'ASC' ? 1 : -1;
-        return 0;
-      });
-    }
-
-    // Apply pagination
-    const page = options?.page || 1;
-    const limit = options?.limit || 10;
-    const skip = (page - 1) * limit;
-    const paginatedBuildings = filteredBuildings.slice(skip, skip + limit);
-
-    return this.createPaginatedResult(
-      paginatedBuildings,
-      filteredBuildings.length,
-      page,
-      limit,
-    );
+  async findAll(): Promise<BuildingEntity[]> {
+    return await this.repository.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async findAllWithFilters(
     queryDto: BuildingQueryDto,
   ): Promise<IPaginatedResult<BuildingEntity>> {
-    let filteredBuildings = [...this.buildings];
+    const queryBuilder = this.repository.createQueryBuilder('building');
 
     // Apply search filter
     if (queryDto.search) {
-      const searchTerm = queryDto.search.toLowerCase();
-      filteredBuildings = filteredBuildings.filter(
-        (building) =>
-          building.name.toLowerCase().includes(searchTerm) ||
-          building.address.toLowerCase().includes(searchTerm),
+      queryBuilder.andWhere(
+        '(building.name ILIKE :search OR building.address ILIKE :search)',
+        { search: `%${queryDto.search}%` },
       );
     }
 
     // Apply type filter
     if (queryDto.type) {
-      filteredBuildings = filteredBuildings.filter(
-        (building) => building.type === queryDto.type,
-      );
+      queryBuilder.andWhere('building.type = :type', { type: queryDto.type });
     }
 
     // Apply status filter
     if (queryDto.status) {
-      filteredBuildings = filteredBuildings.filter(
-        (building) => building.status === queryDto.status,
-      );
+      queryBuilder.andWhere('building.status = :status', {
+        status: queryDto.status,
+      });
     }
 
     // Apply occupancy rate filters
@@ -109,94 +57,72 @@ export class BuildingRepository extends BaseRepository<BuildingEntity> {
       queryDto.minOccupancyRate !== undefined ||
       queryDto.maxOccupancyRate !== undefined
     ) {
-      filteredBuildings = filteredBuildings.filter((building) => {
-        const occupancyRate = building.calculateOccupancyRate();
-        const minRate = queryDto.minOccupancyRate ?? 0;
-        const maxRate = queryDto.maxOccupancyRate ?? 100;
-        return occupancyRate >= minRate && occupancyRate <= maxRate;
-      });
+      const minRate = queryDto.minOccupancyRate ?? 0;
+      const maxRate = queryDto.maxOccupancyRate ?? 100;
+
+      queryBuilder.andWhere(
+        '(building.occupiedUnits::float / NULLIF(building.totalUnits, 0) * 100) BETWEEN :minRate AND :maxRate',
+        { minRate, maxRate },
+      );
     }
 
     // Apply sorting
-    if (queryDto.sortBy) {
-      const sortOrder = queryDto.sortOrder || 'DESC';
-      filteredBuildings.sort((a, b) => {
-        const aValue = (a as unknown as Record<string, unknown>)[
-          queryDto.sortBy!
-        ];
-        const bValue = (b as unknown as Record<string, unknown>)[
-          queryDto.sortBy!
-        ];
-
-        if ((aValue as number) < (bValue as number))
-          return sortOrder === 'ASC' ? -1 : 1;
-        if ((aValue as number) > (bValue as number))
-          return sortOrder === 'ASC' ? 1 : -1;
-        return 0;
-      });
-    }
+    const sortBy = queryDto.sortBy || 'createdAt';
+    const sortOrder = queryDto.sortOrder || 'DESC';
+    queryBuilder.orderBy(`building.${sortBy}`, sortOrder);
 
     // Apply pagination
     const page = queryDto.page || 1;
     const limit = queryDto.limit || 10;
     const skip = (page - 1) * limit;
-    const paginatedBuildings = filteredBuildings.slice(skip, skip + limit);
 
-    return this.createPaginatedResult(
-      paginatedBuildings,
-      filteredBuildings.length,
-      page,
-      limit,
-    );
+    queryBuilder.skip(skip).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return this.createPaginatedResult(data, total, page, limit);
   }
 
   async update(
     id: string,
-    updates: Partial<BuildingEntity>,
+    updateData: Partial<BuildingEntity>,
   ): Promise<BuildingEntity | null> {
-    const buildingIndex = this.buildings.findIndex((b) => b.id === id);
-    if (buildingIndex === -1) {
-      return null;
-    }
-
-    const building = this.buildings[buildingIndex];
-
-    // Update fields
-    Object.assign(building, updates);
-
-    // Convert string date to Date object if needed
-    if (updates.nextTaxDate && typeof updates.nextTaxDate === 'string') {
-      building.nextTaxDate = new Date(updates.nextTaxDate);
-    }
-
-    // Update timestamp
-    building.updateTimestamp();
-
-    this.buildings[buildingIndex] = building;
-    return building;
+    await this.repository.update(id, updateData);
+    return await this.findById(id);
   }
 
   async delete(id: string): Promise<boolean> {
-    const initialLength = this.buildings.length;
-    this.buildings = this.buildings.filter((b) => b.id !== id);
-    return this.buildings.length < initialLength;
+    const result = await this.repository.delete(id);
+    return result.affected ? result.affected > 0 : false;
   }
 
   async exists(id: string): Promise<boolean> {
-    return this.buildings.some((b) => b.id === id);
-  }
-
-  private generateId(): string {
-    return `building_${this.currentId++}_${Date.now()}`;
-  }
-
-  // Additional methods for testing/development
-  async clear(): Promise<void> {
-    this.buildings = [];
-    this.currentId = 1;
+    const count = await this.repository.count({ where: { id } });
+    return count > 0;
   }
 
   async count(): Promise<number> {
-    return this.buildings.length;
+    return await this.repository.count();
+  }
+
+  private createPaginatedResult<T>(
+    data: T[],
+    total: number,
+    page: number,
+    limit: number,
+  ): IPaginatedResult<T> {
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNext,
+      hasPrev,
+    };
   }
 }

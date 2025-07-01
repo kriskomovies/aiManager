@@ -106,6 +106,6 @@ export class BuildingsController {
   @ApiResponse({ status: 204, description: 'Building deleted successfully' })
   @ApiResponse({ status: 404, description: 'Building not found' })
   async remove(@Param('id') id: string): Promise<void> {
-    return this.buildingsService.delete(id);
+    return this.buildingsService.deleteBuilding(id);
   }
 }

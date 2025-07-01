@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { IBuildingListItem, BuildingType, BuildingStatus } from '@repo/interfaces';
+import { IBuildingListItem } from '@repo/interfaces';
 import { useState } from 'react';
 import { CashBadge, DebtBadge, IrregularitiesBadge } from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
+import { useGetBuildingsQuery } from '@/redux/services/building.service';
 
 export function BuildingsTable() {
   const navigate = useNavigate();
@@ -16,112 +17,12 @@ export function BuildingsTable() {
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  //   const { data, isLoading, isFetching, error } = useBuildingsQuery({
-  //     page,
-  //     sort: sorting ? `${String(sorting.field)}:${sorting.direction}` : undefined,
-  //     search,
-  //   });
-
-  //   const columns: Column<Building>[] = [
-  //     {
-  //       header: 'Име',
-  //       accessorKey: 'name',
-  //       sortable: true,
-  //       searchable: true,
-  //     },
-  //     {
-  //       header: 'Адрес',
-  //       accessorKey: 'address',
-  //       sortable: true,
-  //       searchable: true,
-  //     },
-  //     {
-  //       header: 'Брой апартаменти',
-  //       accessorKey: 'apartmentCount',
-  //       sortable: true,
-  //     },
-  //     {
-  //       header: 'Баланс',
-  //       accessorKey: 'balance',
-  //       cell: row => (
-  //         <span className={row.balance < 0 ? 'text-red-500' : 'text-green-500'}>
-  //           {row.balance.toFixed(2)} лв.
-  //         </span>
-  //       ),
-  //       sortable: true,
-  //     },
-  //     {
-  //       header: 'Задължения',
-  //       accessorKey: 'debt',
-  //       cell: row => (
-  //         <span className="text-red-500">{row.debt.toFixed(2)} лв.</span>
-  //       ),
-  //       sortable: true,
-  //     },
-  //   ];
-  const mockData = {
-    items: [
-      {
-        id: '1',
-        name: 'Андрей Сахаров 15',
-        address: 'ул. Андрей Сахаров 15',
-        type: BuildingType.RESIDENTIAL,
-        apartmentCount: 17,
-        irregularities: 3,
-        balance: 38.97,
-        monthlyFee: 3.00,
-        debt: 0.00,
-        status: BuildingStatus.ACTIVE,
-        createdAt: '2024-01-01T00:00:00Z',
-      },
-      {
-        id: '2',
-        name: 'бул. Владислав Варненчик 615',
-        address: 'бул. Владислав Варненчик 615',
-        type: BuildingType.COMMERCIAL,
-        apartmentCount: 8,
-        irregularities: 0,
-        balance: 38.97,
-        monthlyFee: 3.00,
-        debt: 6.00,
-        status: BuildingStatus.ACTIVE,
-        createdAt: '2024-01-01T00:00:00Z',
-      },
-      {
-        id: '3',
-        name: 'Андрей Сахаров 15',
-        address: 'ул. Андрей Сахаров 15',
-        type: BuildingType.MIXED,
-        apartmentCount: 25,
-        irregularities: 2,
-        balance: -100.70,
-        monthlyFee: 3.00,
-        debt: 100.70,
-        status: BuildingStatus.MAINTENANCE,
-        createdAt: '2024-01-01T00:00:00Z',
-      },
-      {
-        id: '4',
-        name: 'бул. Владислав Варненчик 615',
-        address: 'бул. Владислав Варненчик 615',
-        type: BuildingType.OFFICE,
-        apartmentCount: 32,
-        irregularities: 0,
-        balance: 38.97,
-        monthlyFee: 3.00,
-        debt: 6.00,
-        status: BuildingStatus.ACTIVE,
-        createdAt: '2024-01-01T00:00:00Z',
-      },
-    ],
-    meta: {
-      pageCount: 1,
-    },
-  };
-  const isLoading = false;
-  const isFetching = false;
-  const error = null;
-  const data = mockData;
+  // Real API call instead of mock data
+  const { data, isLoading, isFetching, error } = useGetBuildingsQuery({
+    page,
+    pageSize: 10,
+    sort: sorting ? `${String(sorting.field)}:${sorting.direction}` : undefined,
+  });
 
   const handleDeleteBuilding = (building: IBuildingListItem) => {
     dispatch(openModal({

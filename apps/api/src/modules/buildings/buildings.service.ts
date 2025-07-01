@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { BaseService } from '../../common/abstracts/base-service.abstract';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BuildingEntity } from '../../database/entities/building.entity';
 import { BuildingRepository } from '../../database/repositories/building.repository';
 import { CreateBuildingDto } from './dto/create-building.dto';
@@ -10,10 +9,8 @@ import { IPaginatedResult } from '../../common/abstracts/base-repository.abstrac
 import { BuildingStatus } from '@repo/interfaces';
 
 @Injectable()
-export class BuildingsService extends BaseService<BuildingEntity> {
-  constructor(private readonly buildingRepository: BuildingRepository) {
-    super(buildingRepository);
-  }
+export class BuildingsService {
+  constructor(private readonly buildingRepository: BuildingRepository) {}
 
   async createBuilding(
     createBuildingDto: CreateBuildingDto,
@@ -21,18 +18,42 @@ export class BuildingsService extends BaseService<BuildingEntity> {
     // Convert DTO to entity data
     const buildingData: Partial<BuildingEntity> = {
       ...createBuildingDto,
-      nextTaxDate: new Date(createBuildingDto.nextTaxDate),
+      homebookStartDate: new Date(createBuildingDto.homebookStartDate),
+      // Set default values for fields not in DTO but required by database
+      status: createBuildingDto.status || BuildingStatus.ACTIVE,
+      balance: 0,
+      monthlyFee: 0,
+      debt: 0,
+      totalUnits: 0,
+      occupiedUnits: 0,
+      irregularities: 0,
+      occupancyRate: 0,
+      monthlyRevenue: 0,
+      annualRevenue: 0,
     };
 
-    return await this.repository.create(buildingData);
+    return await this.buildingRepository.create(buildingData);
+  }
+
+  async findById(id: string): Promise<BuildingEntity> {
+    const building = await this.buildingRepository.findById(id);
+    if (!building) {
+      throw new NotFoundException(`Building with ID ${id} not found`);
+    }
+    return building;
   }
 
   async updateBuilding(
     id: string,
     updateBuildingDto: UpdateBuildingDto,
   ): Promise<BuildingEntity> {
-    // Extract nextTaxDate to handle separately
-    const { nextTaxDate, ...restDto } = updateBuildingDto;
+    // Check if building exists
+    await this.findById(id);
+
+    // Extract fields that need special handling or should be excluded
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { homebookStartDate, peopleWithAccess, ...restDto } =
+      updateBuildingDto;
 
     // Convert date string to Date if provided
     const updateData: Partial<BuildingEntity> = {
@@ -40,11 +61,27 @@ export class BuildingsService extends BaseService<BuildingEntity> {
     };
 
     // Handle date conversion separately
-    if (nextTaxDate) {
-      updateData.nextTaxDate = new Date(String(nextTaxDate));
+    if (homebookStartDate) {
+      updateData.homebookStartDate = new Date(String(homebookStartDate));
     }
 
-    return await this.update(id, updateData);
+    const updated = await this.buildingRepository.update(id, updateData);
+    if (!updated) {
+      throw new NotFoundException(`Building with ID ${id} not found`);
+    }
+    return updated;
+  }
+
+  async deleteBuilding(id: string): Promise<void> {
+    const exists = await this.buildingRepository.exists(id);
+    if (!exists) {
+      throw new NotFoundException(`Building with ID ${id} not found`);
+    }
+
+    const deleted = await this.buildingRepository.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`Failed to delete building with ID ${id}`);
+    }
   }
 
   async findAllBuildings(
@@ -56,18 +93,31 @@ export class BuildingsService extends BaseService<BuildingEntity> {
   async getBuildingStats(id: string): Promise<BuildingStatsDto> {
     const building = await this.findById(id);
 
+    // Calculate vacancy with null checks
+    const totalUnits = building.totalUnits || 0;
+    const occupiedUnits = building.occupiedUnits || 0;
+    const vacantUnits = totalUnits - occupiedUnits;
+
+    // Calculate occupancy rate
+    const occupancyRate =
+      totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0;
+
+    // Calculate revenues
+    const monthlyRevenue = building.monthlyRevenue || 0;
+    const annualRevenue = monthlyRevenue * 12;
+
     const stats: BuildingStatsDto = {
       buildingId: building.id,
       buildingName: building.name,
-      totalUnits: building.totalUnits,
-      occupiedUnits: building.occupiedUnits,
-      vacantUnits: building.getVacantUnits(),
-      occupancyRate: building.calculateOccupancyRate(),
-      monthlyRevenue: building.calculateMonthlyRevenue(),
-      annualRevenue: building.calculateAnnualRevenue(),
-      isFullyOccupied: building.isFullyOccupied(),
-      canGenerateTax: building.canGenerateTax(),
-      nextTaxDate: building.nextTaxDate,
+      totalUnits,
+      occupiedUnits,
+      vacantUnits,
+      occupancyRate,
+      monthlyRevenue,
+      annualRevenue,
+      isFullyOccupied: occupiedUnits === totalUnits && totalUnits > 0,
+      canGenerateTax: building.status === BuildingStatus.ACTIVE,
+      nextTaxDate: building.nextTaxDate || new Date(),
     };
 
     return stats;
@@ -77,15 +127,12 @@ export class BuildingsService extends BaseService<BuildingEntity> {
     id: string,
     occupiedUnits: number,
   ): Promise<BuildingEntity> {
-    const building = await this.findById(id);
-    building.updateOccupancy(occupiedUnits);
-    return await this.update(id, { occupiedUnits });
-  }
-
-  async generateNextTaxDate(id: string): Promise<BuildingEntity> {
-    const building = await this.findById(id);
-    building.updateNextTaxDate();
-    return await this.update(id, { nextTaxDate: building.nextTaxDate });
+    await this.findById(id); // Check if exists
+    const updated = await this.buildingRepository.update(id, { occupiedUnits });
+    if (!updated) {
+      throw new NotFoundException(`Building with ID ${id} not found`);
+    }
+    return updated;
   }
 
   async getActiveBuildings(): Promise<BuildingEntity[]> {
@@ -124,14 +171,10 @@ export class BuildingsService extends BaseService<BuildingEntity> {
     totalBuildings: number;
     activeBuildings: number;
   }> {
-    const allBuildings = await this.buildingRepository.findAll({
-      page: 1,
-      limit: 10000,
-    });
-    const buildings = allBuildings.data;
+    const buildings = await this.buildingRepository.findAll();
 
     const totalMonthlyRevenue = buildings.reduce(
-      (sum, building) => sum + building.calculateMonthlyRevenue(),
+      (sum, building) => sum + Number(building.monthlyRevenue || 0),
       0,
     );
 
@@ -139,14 +182,17 @@ export class BuildingsService extends BaseService<BuildingEntity> {
 
     const averageOccupancyRate =
       buildings.length > 0
-        ? buildings.reduce(
-            (sum, building) => sum + building.calculateOccupancyRate(),
-            0,
-          ) / buildings.length
+        ? buildings.reduce((sum, building) => {
+            const totalUnits = building.totalUnits || 0;
+            const occupiedUnits = building.occupiedUnits || 0;
+            const occupancyRate =
+              totalUnits > 0 ? (occupiedUnits / totalUnits) * 100 : 0;
+            return sum + occupancyRate;
+          }, 0) / buildings.length
         : 0;
 
-    const activeBuildings = buildings.filter((building) =>
-      building.isActive(),
+    const activeBuildings = buildings.filter(
+      (building) => building.status === BuildingStatus.ACTIVE,
     ).length;
 
     return {

@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useDeleteBuildingMutation } from '@/redux/services/building.service';
 
 interface DeleteBuildingModalProps {
   onClose: () => void;
@@ -12,20 +12,24 @@ interface DeleteBuildingModalProps {
 export function DeleteBuildingModal({ onClose }: DeleteBuildingModalProps) {
   const modalData = useAppSelector(selectModalData);
   const dispatch = useAppDispatch();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteBuildingMutation, { isLoading: isDeleting }] = useDeleteBuildingMutation();
 
   const buildingName = modalData?.buildingName || 'Неизвестна сграда';
   const buildingId = modalData?.buildingId;
 
   const handleDelete = async () => {
-    setIsDeleting(true);
+    if (!buildingId) {
+      dispatch(addAlert({
+        type: 'error',
+        title: 'Грешка',
+        message: 'Няма избрана сграда за изтриване.',
+        duration: 5000
+      }));
+      return;
+    }
+
     try {
-      // TODO: Replace with actual API call
-      // await deleteBuildingMutation({ id: buildingId }).unwrap();
-      console.log('Deleting building with ID:', buildingId);
-      
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await deleteBuildingMutation(buildingId).unwrap();
       
       dispatch(addAlert({
         type: 'success',
@@ -35,15 +39,24 @@ export function DeleteBuildingModal({ onClose }: DeleteBuildingModalProps) {
       }));
       
       onClose();
-    } catch {
+    } catch (error) {
+      console.error('Error deleting building:', error);
+      
+      // Handle different types of errors
+      let errorMessage = 'Възникна грешка при изтриването на сградата. Моля опитайте отново.';
+      
+      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+        errorMessage = String(error.data.message);
+      } else if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
       dispatch(addAlert({
         type: 'error',
         title: 'Грешка при изтриване',
-        message: 'Възникна грешка при изтриването на сградата. Моля опитайте отново.',
+        message: errorMessage,
         duration: 5000
       }));
-    } finally {
-      setIsDeleting(false);
     }
   };
 

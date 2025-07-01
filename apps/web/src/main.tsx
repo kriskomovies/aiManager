@@ -37,6 +37,11 @@ const router = createBrowserRouter([
         errorElement: <GeneralErrorPage />,
       },
       {
+        path: '/buildings/:id/edit',
+        element: <AddBuildingPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
         path: '/buildings/:id',
         element: <BuildingDetailsPage />,
         errorElement: <GeneralErrorPage />,
