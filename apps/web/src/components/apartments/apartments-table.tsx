@@ -306,7 +306,7 @@ export function ApartmentsTable() {
     },
     {
       header: 'Действия',
-      accessorKey: 'id',
+      accessorKey: 'total',
       cell: row => {
         const menuItems: (DropdownMenuItem | 'separator')[] = [
           {

@@ -14,6 +14,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
+import { useGetBuildingQuery } from '@/redux/services/building.service';
 import { ApartmentsTab } from './building-details/apartments-tab';
 import { CashTab } from './building-details/cash-tab';
 import { CashierTab } from './building-details/cashier-tab';
@@ -21,36 +22,6 @@ import { IrregularitiesTab } from './building-details/irregularities-tab';
 import { UsersTab } from './building-details/users-tab';
 import { MessagesTab } from './building-details/messages-tab';
 import { CalendarTab } from './building-details/calendar-tab';
-
-const mockBuildings = {
-  1: {
-    id: 1,
-    name: 'Сграда А',
-    address: 'ул. Първа 1',
-    apartmentCount: 24,
-    balance: 1500.5,
-    debt: 300.0,
-    description: 'Жилищна сграда с 24 апартамента',
-  },
-  2: {
-    id: 2,
-    name: 'Сграда Б',
-    address: 'ул. Втора 2',
-    apartmentCount: 16,
-    balance: -500.25,
-    debt: 1200.0,
-    description: 'Жилищна сграда с 16 апартамента',
-  },
-  3: {
-    id: 3,
-    name: 'Сграда В',
-    address: 'бул. Трети 3',
-    apartmentCount: 32,
-    balance: 2300.75,
-    debt: 0.0,
-    description: 'Жилищна сграда с 32 апартамента',
-  },
-};
 
 type TabType = 'apartments' | 'cash' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
 
@@ -99,15 +70,19 @@ const tabs: TabConfig[] = [
 ];
 
 export function BuildingDetailsPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<TabType>('apartments');
   
-  const buildingId = id ? parseInt(id) : null;
-  const building = buildingId
-    ? mockBuildings[buildingId as keyof typeof mockBuildings]
-    : null;
+  // API call to get building data
+  const { 
+    data: building, 
+    isLoading, 
+    error 
+  } = useGetBuildingQuery(id!, { 
+    skip: !id 
+  });
 
   useEffect(() => {
     if (building) {
@@ -122,6 +97,48 @@ export function BuildingDetailsPage() {
     navigate('/buildings');
   };
 
+  const handleEdit = () => {
+    if (id) {
+      navigate(`/buildings/${id}/edit`);
+    }
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Зареждане на данни за сградата...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Грешка при зареждане
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Възникна грешка при зареждането на данните за сградата.
+          </p>
+          <Button
+            onClick={handleBack}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Назад към сгради
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Building not found
   if (!building) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
@@ -133,7 +150,7 @@ export function BuildingDetailsPage() {
             Сградата с ID {id} не съществува или е била изтрита.
           </p>
           <Button
-            onClick={() => navigate('/buildings')}
+            onClick={handleBack}
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -143,8 +160,6 @@ export function BuildingDetailsPage() {
       </div>
     );
   }
-
-
 
   // Animation variants
   const containerVariants = {
@@ -170,8 +185,6 @@ export function BuildingDetailsPage() {
       }
     }
   };
-
-
 
   const tabsVariants = {
     hidden: { 
@@ -219,7 +232,12 @@ export function BuildingDetailsPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={handleEdit}
+            >
               <Pencil className="h-4 w-4" />
               Редактирай
             </Button>

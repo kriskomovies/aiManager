@@ -82,9 +82,9 @@ export function DataTable<T>({
           <Table className="min-w-[1200px] w-full">
           <TableHeader>
             <TableRow className="bg-gray-50">
-              {columns.map(column => (
+              {columns.map((column, columnIndex) => (
                 <TableHead
-                  key={String(column.accessorKey)}
+                  key={`header-${columnIndex}-${String(column.accessorKey)}`}
                   className={cn(
                     'font-medium text-gray-700',
                     column.sortable && 'cursor-pointer select-none'
@@ -123,14 +123,14 @@ export function DataTable<T>({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((row, index) => (
+              data.map((row, rowIndex) => (
                 <TableRow
-                  key={index}
+                  key={`row-${rowIndex}`}
                   onClick={() => onRowClick?.(row)}
                   className={cn(onRowClick && 'cursor-pointer')}
                 >
-                  {columns.map(column => (
-                    <TableCell key={String(column.accessorKey)}>
+                  {columns.map((column, columnIndex) => (
+                    <TableCell key={`cell-${rowIndex}-${columnIndex}-${String(column.accessorKey)}`}>
                       {column.cell
                         ? column.cell(row)
                         : (row[column.accessorKey] as React.ReactNode)}

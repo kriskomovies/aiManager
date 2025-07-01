@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { InformationCard } from '@/components/information-card';
 import { ApartmentsTable } from '@/components/apartments/apartments-table';
 import { Button } from '@/components/ui/button';
+import { IBuildingResponse } from '@repo/interfaces';
 import {
   Home,
   Bell,
@@ -10,15 +11,7 @@ import {
 } from 'lucide-react';
 
 interface ApartmentsTabProps {
-  building: {
-    id: number;
-    name: string;
-    address: string;
-    apartmentCount: number;
-    balance: number;
-    debt: number;
-    description: string;
-  };
+  building: IBuildingResponse;
 }
 
 export function ApartmentsTab({ building }: ApartmentsTabProps) {
@@ -34,17 +27,18 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
       </div>
     );
   }
+
   const stats = {
-    balance: `${building.balance.toFixed(2)} лв.`,
+    balance: `${(building.balance || 0).toFixed(2)} лв.`,
     balanceChange:
-      building.balance > 0
+      (building.balance || 0) > 0
         ? '+23.00лв спрямо с предходния месец'
         : '-23.00лв спрямо с предходния месец',
-    obligations: `${building.debt.toFixed(2)} лв.`,
+    obligations: `${(building.debt || 0).toFixed(2)} лв.`,
     obligationsChange: '+230.00лв спрямо с предходния месец',
-    apartments: building.apartmentCount.toString(),
+    apartments: (building.apartmentCount || 0).toString(),
     apartmentsWithDebt: '3 апартамента със задължения',
-    debts: '9',
+    debts: (building.irregularities || 0).toString(),
     debtsDetails: 'задължения от 3 апартамента',
   };
 
