@@ -3,6 +3,7 @@ import type { RootState } from '@/redux/store';
 
 export type ModalType = 
   | 'delete-building'
+  | 'delete-apartment'
   | 'add-building'
   | 'edit-building'
   | 'delete-user'
@@ -14,6 +15,8 @@ export type ModalType =
 export interface ModalData {
   buildingId?: string;
   buildingName?: string;
+  apartmentId?: string;
+  apartmentNumber?: string;
   userId?: string;
   userName?: string;
   title?: string;

@@ -8,7 +8,7 @@ import { ReferencePaymentsTable } from '@/components/payments/reference-payments
 export function ReferencePaymentsModal() {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const apartmentNumber = (modalData?.apartmentNumber as number) || 7;
+  const apartmentNumber = modalData?.apartmentNumber || '7';
 
   const handleClose = () => {
     dispatch(closeModal());

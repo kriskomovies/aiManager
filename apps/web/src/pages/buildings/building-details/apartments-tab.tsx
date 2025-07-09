@@ -155,7 +155,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           </div>
         </div>
         <div className="p-6">
-          <ApartmentsTable />
+          <ApartmentsTable buildingId={building.id} />
         </div>
       </motion.div>
     </div>

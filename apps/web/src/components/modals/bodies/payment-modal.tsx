@@ -40,7 +40,7 @@ const mockFeeData: FeeItem[] = [
 export function PaymentModal() {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const apartmentNumber = (modalData?.apartmentNumber as number) || 7;
+  const apartmentNumber = modalData?.apartmentNumber || '7';
   
   const [paymentMode, setPaymentMode] = useState<'all' | 'manual'>('all');
   const [paymentMethod, setPaymentMethod] = useState('');

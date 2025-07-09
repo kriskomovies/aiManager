@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { selectModal, closeModal } from '@/redux/slices/modal-slice';
 import { DeleteBuildingModal } from './bodies/delete-building-modal';
+import { DeleteApartmentModal } from './bodies/delete-apartment-modal';
 import { ReferenceFeesModal } from './bodies/reference-fees-modal';
 import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
 import { PaymentModal } from './bodies/payment-modal';
@@ -46,6 +47,9 @@ export function ModalContainer() {
     switch (modal.type) {
       case 'delete-building':
         return <DeleteBuildingModal onClose={handleClose} />;
+      
+      case 'delete-apartment':
+        return <DeleteApartmentModal onClose={handleClose} />;
       
       case 'reference-fees':
         return <ReferenceFeesModal />;

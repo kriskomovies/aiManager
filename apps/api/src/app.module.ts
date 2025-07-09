@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BuildingsModule } from './modules/buildings/buildings.module';
+import { ApartmentsModule } from './modules/apartments/apartments.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -24,6 +25,7 @@ import databaseConfig from './config/database.config';
 
     // Feature modules
     BuildingsModule,
+    ApartmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

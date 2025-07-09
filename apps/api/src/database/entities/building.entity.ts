@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -11,6 +12,7 @@ import {
   BuildingStatus,
   TaxGenerationPeriod,
 } from '@repo/interfaces';
+import { ApartmentEntity } from './apartment.entity';
 
 @Entity('buildings')
 export class BuildingEntity {
@@ -266,6 +268,12 @@ export class BuildingEntity {
   })
   @Column({ type: 'uuid', name: 'updated_by', nullable: true })
   updatedBy?: string;
+
+  // Relationships
+  @OneToMany(() => ApartmentEntity, (apartment) => apartment.building, {
+    cascade: true,
+  })
+  apartments: ApartmentEntity[];
 
   // Computed property for address
   get address(): string {

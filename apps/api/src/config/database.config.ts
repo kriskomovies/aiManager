@@ -1,13 +1,15 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BuildingEntity } from '../database/entities/building.entity';
+import { ApartmentEntity } from '../database/entities/apartment.entity';
+import { ResidentEntity } from '../database/entities/resident.entity';
 
 export default registerAs(
   'database',
   (): TypeOrmModuleOptions => ({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [BuildingEntity],
+    entities: [BuildingEntity, ApartmentEntity, ResidentEntity],
     migrations: ['dist/database/migrations/*.js'], // Use compiled JS for runtime
     migrationsTableName: 'migrations',
     synchronize: false, // NEVER use true in production

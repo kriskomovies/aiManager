@@ -10,7 +10,7 @@ import { ReferenceFeesTable } from '@/components/fees/reference-fees-table';
 export function ReferenceFeesModal() {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const apartmentNumber = (modalData?.apartmentNumber as number) || 7;
+  const apartmentNumber = modalData?.apartmentNumber || '7';
 
   const handleClose = () => {
     dispatch(closeModal());
