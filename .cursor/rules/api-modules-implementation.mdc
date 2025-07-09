@@ -1,0 +1,491 @@
+---
+alwaysApply: false
+---
+
+# API Module Repository Pattern Implementation
+
+## Overview
+All API modules MUST follow the Repository pattern as implemented in the `buildings` module. This pattern provides a clear separation of concerns with Controller → Service → Repository → Entity layers.
+
+## Required Module Structure
+
+### 1. Module Organization
+src/modules/{module-name}/
+├── {module-name}.module.ts # Module configuration
+├── {module-name}.controller.ts # HTTP endpoints
+├── {module-name}.service.ts # Business logic
+├── {module-name}.controller.spec.ts # Controller tests
+└── dto/
+├── create-{entity}.dto.ts # Input validation for creation
+├── update-{entity}.dto.ts # Input validation for updates
+├── {entity}-query.dto.ts # Query parameters, pagination, filtering
+└── {entity}-stats.dto.ts # Response DTOs for computed data
+src/database/
+├── entities/
+│ └── {entity}.entity.ts # TypeORM entity
+└── repositories/
+└── {entity}.repository.ts # Data access layer
+
+### 2. Entity Implementation
+```typescript
+// src/database/entities/{entity}.entity.ts
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+
+@Entity('{table_name}')
+export class {Entity}Entity {
+  @ApiProperty({
+    description: 'Unique identifier',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  // Entity-specific fields with proper TypeORM decorators
+  @ApiProperty({ description: 'Field description', example: 'Example value' })
+  @Column({ type: 'varchar', name: 'field_name' })
+  fieldName: string;
+
+  @ApiProperty({ description: 'Creation timestamp' })
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Last update timestamp' })
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @ApiProperty({ description: 'User who created the record', required: false })
+  @Column({ type: 'uuid', name: 'created_by', nullable: true })
+  createdBy?: string;
+
+  @ApiProperty({ description: 'User who last updated the record', required: false })
+  @Column({ type: 'uuid', name: 'updated_by', nullable: true })
+  updatedBy?: string;
+}
+```
+
+### 3. Repository Implementation
+```typescript
+// src/database/repositories/{entity}.repository.ts
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { {Entity}Entity } from '../entities/{entity}.entity';
+import { {Entity}QueryDto } from '../../modules/{module}/dto/{entity}-query.dto';
+import { IPaginatedResult } from '../../common/abstracts/base-repository.abstract';
+
+@Injectable()
+export class {Entity}Repository {
+  constructor(
+    @InjectRepository({Entity}Entity)
+    private readonly repository: Repository<{Entity}Entity>,
+  ) {}
+
+  async create(createData: Partial<{Entity}Entity>): Promise<{Entity}Entity> {
+    const entity = this.repository.create(createData);
+    return await this.repository.save(entity);
+  }
+
+  async findById(id: string): Promise<{Entity}Entity | null> {
+    return await this.repository.findOne({ where: { id } });
+  }
+
+  async findAll(): Promise<{Entity}Entity[]> {
+    return await this.repository.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findAllWithFilters(
+    queryDto: {Entity}QueryDto,
+  ): Promise<IPaginatedResult<{Entity}Entity>> {
+    const queryBuilder = this.repository.createQueryBuilder('{entity}');
+
+    // Apply search filters
+    if (queryDto.search) {
+      queryBuilder.andWhere(
+        '({entity}.name ILIKE :search OR {entity}.description ILIKE :search)',
+        { search: `%${queryDto.search}%` },
+      );
+    }
+
+    // Apply additional filters based on DTO
+    if (queryDto.status) {
+      queryBuilder.andWhere('{entity}.status = :status', { status: queryDto.status });
+    }
+
+    // Apply sorting
+    const sortBy = queryDto.sortBy || 'createdAt';
+    const sortOrder = queryDto.sortOrder || 'DESC';
+    queryBuilder.orderBy(`{entity}.${sortBy}`, sortOrder);
+
+    // Apply pagination
+    const page = queryDto.page || 1;
+    const limit = queryDto.limit || 10;
+    const skip = (page - 1) * limit;
+
+    queryBuilder.skip(skip).take(limit);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return this.createPaginatedResult(data, total, page, limit);
+  }
+
+  async update(
+    id: string,
+    updateData: Partial<{Entity}Entity>,
+  ): Promise<{Entity}Entity | null> {
+    await this.repository.update(id, updateData);
+    return await this.findById(id);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.repository.delete(id);
+    return result.affected ? result.affected > 0 : false;
+  }
+
+  async exists(id: string): Promise<boolean> {
+    const count = await this.repository.count({ where: { id } });
+    return count > 0;
+  }
+
+  async count(): Promise<number> {
+    return await this.repository.count();
+  }
+
+  private createPaginatedResult<T>(
+    data: T[],
+    total: number,
+    page: number,
+    limit: number,
+  ): IPaginatedResult<T> {
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasNext,
+      hasPrev,
+    };
+  }
+}
+```
+
+### 4. Service Implementation
+```typescript
+// src/modules/{module}/{module}.service.ts
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { {Entity}Entity } from '../../database/entities/{entity}.entity';
+import { {Entity}Repository } from '../../database/repositories/{entity}.repository';
+import { Create{Entity}Dto } from './dto/create-{entity}.dto';
+import { Update{Entity}Dto } from './dto/update-{entity}.dto';
+import { {Entity}QueryDto } from './dto/{entity}-query.dto';
+import { IPaginatedResult } from '../../common/abstracts/base-repository.abstract';
+
+@Injectable()
+export class {Module}Service {
+  constructor(private readonly {entity}Repository: {Entity}Repository) {}
+
+  async create{Entity}(
+    create{Entity}Dto: Create{Entity}Dto,
+  ): Promise<{Entity}Entity> {
+    // Transform DTO to entity data with proper type conversions
+    const {entity}Data: Partial<{Entity}Entity> = {
+      ...create{Entity}Dto,
+      // Apply any necessary transformations
+    };
+
+    return await this.{entity}Repository.create({entity}Data);
+  }
+
+  async findById(id: string): Promise<{Entity}Entity> {
+    const {entity} = await this.{entity}Repository.findById(id);
+    if (!{entity}) {
+      throw new NotFoundException(`{Entity} with ID ${id} not found`);
+    }
+    return {entity};
+  }
+
+  async findAll{Entity}s(
+    queryDto: {Entity}QueryDto,
+  ): Promise<IPaginatedResult<{Entity}Entity>> {
+    return await this.{entity}Repository.findAllWithFilters(queryDto);
+  }
+
+  async update{Entity}(
+    id: string,
+    update{Entity}Dto: Update{Entity}Dto,
+  ): Promise<{Entity}Entity> {
+    // Check if entity exists
+    await this.findById(id);
+
+    // Transform DTO to entity data
+    const updateData: Partial<{Entity}Entity> = {
+      ...update{Entity}Dto,
+      // Apply any necessary transformations
+    };
+
+    const updated = await this.{entity}Repository.update(id, updateData);
+    if (!updated) {
+      throw new NotFoundException(`{Entity} with ID ${id} not found`);
+    }
+    return updated;
+  }
+
+  async delete{Entity}(id: string): Promise<void> {
+    const exists = await this.{entity}Repository.exists(id);
+    if (!exists) {
+      throw new NotFoundException(`{Entity} with ID ${id} not found`);
+    }
+
+    const deleted = await this.{entity}Repository.delete(id);
+    if (!deleted) {
+      throw new NotFoundException(`Failed to delete {entity} with ID ${id}`);
+    }
+  }
+
+  // Additional business logic methods as needed
+}
+```
+
+### 5. Controller Implementation
+```typescript
+// src/modules/{module}/{module}.controller.ts
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { {Module}Service } from './{module}.service';
+import { Create{Entity}Dto } from './dto/create-{entity}.dto';
+import { Update{Entity}Dto } from './dto/update-{entity}.dto';
+import { {Entity}QueryDto } from './dto/{entity}-query.dto';
+import { {Entity}Entity } from '../../database/entities/{entity}.entity';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
+
+@ApiTags('{Module}s')
+@Controller('{module}s')
+export class {Module}Controller {
+  constructor(private readonly {module}Service: {Module}Service) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new {entity}' })
+  @ApiBody({ type: Create{Entity}Dto })
+  @ApiResponse({
+    status: 201,
+    description: '{Entity} created successfully',
+    type: {Entity}Entity,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  async create(
+    @Body() create{Entity}Dto: Create{Entity}Dto,
+  ): Promise<{Entity}Entity> {
+    return this.{module}Service.create{Entity}(create{Entity}Dto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all {entity}s with pagination and filtering' })
+  @ApiQuery({ type: {Entity}QueryDto })
+  @ApiPaginatedResponse({Entity}Entity)
+  async findAll(@Query() queryDto: {Entity}QueryDto) {
+    return this.{module}Service.findAll{Entity}s(queryDto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a {entity} by ID' })
+  @ApiParam({ name: 'id', description: '{Entity} ID' })
+  @ApiResponse({
+    status: 200,
+    description: '{Entity} found',
+    type: {Entity}Entity,
+  })
+  @ApiResponse({ status: 404, description: '{Entity} not found' })
+  async findOne(@Param('id') id: string): Promise<{Entity}Entity> {
+    return this.{module}Service.findById(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a {entity}' })
+  @ApiParam({ name: 'id', description: '{Entity} ID' })
+  @ApiBody({ type: Update{Entity}Dto })
+  @ApiResponse({
+    status: 200,
+    description: '{Entity} updated successfully',
+    type: {Entity}Entity,
+  })
+  @ApiResponse({ status: 404, description: '{Entity} not found' })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  async update(
+    @Param('id') id: string,
+    @Body() update{Entity}Dto: Update{Entity}Dto,
+  ): Promise<{Entity}Entity> {
+    return this.{module}Service.update{Entity}(id, update{Entity}Dto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a {entity}' })
+  @ApiParam({ name: 'id', description: '{Entity} ID' })
+  @ApiResponse({ status: 204, description: '{Entity} deleted successfully' })
+  @ApiResponse({ status: 404, description: '{Entity} not found' })
+  async remove(@Param('id') id: string): Promise<void> {
+    return this.{module}Service.delete{Entity}(id);
+  }
+}
+```
+
+### 6. Module Configuration
+```typescript
+// src/modules/{module}/{module}.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { {Module}Controller } from './{module}.controller';
+import { {Module}Service } from './{module}.service';
+import { {Entity}Repository } from '../../database/repositories/{entity}.repository';
+import { {Entity}Entity } from '../../database/entities/{entity}.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([{Entity}Entity])],
+  controllers: [{Module}Controller],
+  providers: [{Module}Service, {Entity}Repository],
+  exports: [{Module}Service, {Entity}Repository],
+})
+export class {Module}Module {}
+```
+
+### 7. DTO Patterns
+
+#### Create DTO
+```typescript
+// src/modules/{module}/dto/create-{entity}.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEnum, IsOptional, IsNumber, Min } from 'class-validator';
+
+export class Create{Entity}Dto {
+  @ApiProperty({ description: 'Field description', example: 'Example value' })
+  @IsString()
+  fieldName: string;
+
+  @ApiProperty({ description: 'Optional field', required: false })
+  @IsOptional()
+  @IsString()
+  optionalField?: string;
+
+  @ApiProperty({ description: 'Numeric field', example: 100 })
+  @IsNumber()
+  @Min(0)
+  numericField: number;
+}
+```
+
+#### Update DTO
+```typescript
+// src/modules/{module}/dto/update-{entity}.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
+
+export class Update{Entity}Dto {
+  @ApiProperty({ description: 'Field description', required: false })
+  @IsString()
+  @IsOptional()
+  fieldName?: string;
+
+  @ApiProperty({ description: 'Numeric field', required: false })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  numericField?: number;
+}
+```
+
+#### Query DTO
+```typescript
+// src/modules/{module}/dto/{entity}-query.dto.ts
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, IsEnum, IsNumber, Min, Max } from 'class-validator';
+
+export class {Entity}QueryDto {
+  @ApiPropertyOptional({ description: 'Page number', example: 1, minimum: 1 })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(String(value)))
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({ description: 'Items per page', example: 10, minimum: 1, maximum: 100 })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(String(value)))
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+
+  @ApiPropertyOptional({ description: 'Field to sort by', example: 'name' })
+  @IsOptional()
+  @IsString()
+  sortBy?: string = 'createdAt';
+
+  @ApiPropertyOptional({ description: 'Sort order', enum: ['ASC', 'DESC'] })
+  @IsOptional()
+  @IsEnum(['ASC', 'DESC'])
+  sortOrder?: 'ASC' | 'DESC' = 'DESC';
+
+  @ApiPropertyOptional({ description: 'Search term', example: 'search text' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  // Entity-specific filters
+  @ApiPropertyOptional({ description: 'Filter by status', enum: ['ACTIVE', 'INACTIVE'] })
+  @IsOptional()
+  @IsEnum(['ACTIVE', 'INACTIVE'])
+  status?: string;
+}
+```
+
+## Implementation Requirements
+
+### MANDATORY Rules
+1. **ALL entities MUST extend the base timestamp and user tracking fields**
+2. **ALL repositories MUST implement the standard CRUD operations**
+3. **ALL services MUST handle NotFoundException properly**
+4. **ALL controllers MUST include proper Swagger documentation**
+5. **ALL DTOs MUST include validation decorators**
+6. **ALL modules MUST export both service and repository**
+7. **ALL database operations MUST go through the repository layer**
+8. **ALL business logic MUST be in the service layer**
+9. **ALL HTTP handling MUST be in the controller layer**
+
+### Best Practices
+- Use dependency injection consistently
+- Implement proper error handling with specific error messages
+- Include comprehensive API documentation
+- Use TypeScript types strictly
+- Follow the existing naming conventions
+- Test controllers, services, and repositories
+- Use transactions for complex operations
+- Implement proper validation at all layers
+
+This pattern ensures consistency, maintainability, and clear separation of concerns across all API modules.

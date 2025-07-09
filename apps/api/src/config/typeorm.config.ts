@@ -1,0 +1,21 @@
+import { DataSource } from 'typeorm';
+import { config } from 'dotenv';
+import { BuildingEntity } from '../database/entities/building.entity';
+
+config();
+
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  entities: [BuildingEntity],
+  migrations: ['src/database/migrations/*.ts'],
+  migrationsTableName: 'migrations',
+  synchronize: false,
+  logging: process.env.NODE_ENV === 'development',
+  ssl: false,
+  extra: {
+    connectionLimit: 10,
+    acquireTimeout: 60000,
+    timeout: 60000,
+  },
+});

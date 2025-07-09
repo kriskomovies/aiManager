@@ -8,12 +8,11 @@ export default registerAs(
     type: 'postgres',
     url: process.env.DATABASE_URL,
     entities: [BuildingEntity],
-    synchronize: false, // Disabled to prevent schema conflicts
+    migrations: ['dist/database/migrations/*.js'], // Use compiled JS for runtime
+    migrationsTableName: 'migrations',
+    synchronize: false, // NEVER use true in production
     logging: process.env.NODE_ENV === 'development',
-    ssl:
-      process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: false }
-        : false,
+    ssl: false, // Local PostgreSQL doesn't need SSL
     extra: {
       connectionLimit: 10,
       acquireTimeout: 60000,
