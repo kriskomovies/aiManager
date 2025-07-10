@@ -268,7 +268,7 @@ export function ApartmentsTable({ buildingId }: ApartmentsTableProps) {
           'separator',
           {
             label: 'Редактирай Апартамент',
-            onClick: () => navigate(`/apartments/${row.id}/edit`),
+            onClick: () => navigate(`/buildings/${effectiveBuildingId}/apartments/${row.id}/edit`),
             icon: Edit,
           },
           {

@@ -6,6 +6,7 @@ import { ArrowLeft, Home, Users, CreditCard, AlertTriangle, Edit } from 'lucide-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
+import { useGetApartmentByIdQuery } from '@/redux/services/apartment.service';
 import { ApartmentInformation } from '../../components/apartments/apartment-details/apartment-information';
 import { ApartmentPayments } from '../../components/apartments/apartment-details/payments/apartment-payments';
 import { ApartmentIrregularities } from '../../components/apartments/apartment-details/irregularities/apartment-irregularities';
@@ -15,24 +16,30 @@ export function ApartmentDetailsPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Mock data for apartment details
+  // Fetch apartment data
+  const { data: apartmentData, isLoading, error } = useGetApartmentByIdQuery(id!, {
+    skip: !id,
+  });
+
+  // Mock data for apartment details (fallback and additional mock data)
   const mockApartment = {
     id: id || '1',
-    number: 'Ап. 1',
-    floor: 1,
-    quadrature: 80.5,
-    residents: [
+    number: apartmentData?.number || 'Ап. 1',
+    floor: apartmentData?.floor || 1,
+    quadrature: Number(apartmentData?.quadrature) || 80.5,
+    residents: apartmentData?.residents || [
       { name: 'Захари', surname: 'Марчев', isMainContact: true },
       { name: 'Мария', surname: 'Марчева', isMainContact: false }
     ],
-    monthlyRent: 585.00,
-    maintenanceFee: 120.00,
-    debt: 1478.50,
-    status: 'OCCUPIED',
-    irregularitiesCount: 9,
-    totalPayments: 2500.00,
-    lastPaymentDate: '2025-01-15',
-    buildingName: 'Сграда "Изгрев"' // Mock building name - TODO: Replace with actual building data
+    monthlyRent: Number(apartmentData?.monthlyRent) || 585.00,
+    maintenanceFee: Number(apartmentData?.maintenanceFee) || 120.00,
+    debt: Number(apartmentData?.debt) || 1478.50,
+    status: apartmentData?.status || 'OCCUPIED',
+    irregularitiesCount: 9, // Mock data - TODO: Add when irregularities system is implemented
+    totalPayments: 2500.00, // Mock data - TODO: Add when financial system is implemented
+    lastPaymentDate: '2025-01-15', // Mock data - TODO: Add when financial system is implemented
+    buildingName: 'Сграда "Изгрев"', // Mock building name - TODO: Replace with actual building data
+    buildingId: apartmentData?.buildingId // Real building ID from API
   };
 
   useEffect(() => {
@@ -47,8 +54,35 @@ export function ApartmentDetailsPage() {
   };
 
   const handleEdit = () => {
-    navigate(`/apartments/${id}/edit`);
+    if (mockApartment.buildingId) {
+      navigate(`/buildings/${mockApartment.buildingId}/apartments/${id}/edit`);
+    } else {
+      // Fallback - this shouldn't happen in normal operation
+      console.error('Building ID not available for apartment edit');
+    }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <span className="ml-2">Зареждане...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600 mb-4">Грешка при зареждане на данните за апартамента.</p>
+        <Button onClick={() => navigate('/buildings')} variant="outline">
+          Назад към сгради
+        </Button>
+      </div>
+    );
+  }
 
   // Animation variants
   const containerVariants = {
@@ -110,7 +144,7 @@ export function ApartmentDetailsPage() {
               </div>
               <h1 className="text-xl font-semibold text-gray-900 truncate">{mockApartment.number}</h1>
               <p className="text-sm text-gray-500 truncate">
-                Етаж {mockApartment.floor} • {mockApartment.quadrature} кв.м.
+                Етаж {mockApartment.floor} • {(mockApartment.quadrature || 0).toFixed(2)} кв.м.
               </p>
             </div>
           </div>
@@ -141,7 +175,7 @@ export function ApartmentDetailsPage() {
       >
         <InformationCard
           title="Делничен"
-          value={`${mockApartment.monthlyRent.toFixed(2)} лв.`}
+          value={`${(mockApartment.monthlyRent || 0).toFixed(2)} лв.`}
           icon={Home}
           iconColor="text-blue-600"
           iconBgColor="bg-blue-50"
@@ -152,7 +186,7 @@ export function ApartmentDetailsPage() {
         
         <InformationCard
           title="Задължения"
-          value={`${mockApartment.debt.toFixed(2)} лв.`}
+          value={`${(mockApartment.debt || 0).toFixed(2)} лв.`}
           icon={CreditCard}
           iconColor="text-red-600"
           iconBgColor="bg-red-50"

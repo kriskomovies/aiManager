@@ -58,6 +58,11 @@ const router = createBrowserRouter([
         errorElement: <GeneralErrorPage />,
       },
       {
+        path: '/apartments/:id/edit',
+        element: <AddEditApartmentPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
         path: '/apartments/:id',
         element: <ApartmentDetailsPage />,
         errorElement: <GeneralErrorPage />,

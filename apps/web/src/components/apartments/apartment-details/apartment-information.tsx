@@ -100,7 +100,7 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Квадратура</label>
-                      <p className="text-sm text-gray-900">{apartment.quadrature} кв.м.</p>
+                      <p className="text-sm text-gray-900">{(apartment.quadrature || 0).toFixed(2)} кв.м.</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Обща части</label>
@@ -162,11 +162,11 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Месечна наемна цена</label>
-                  <p className="text-sm font-semibold text-gray-900">{apartment.monthlyRent.toFixed(2)} лв.</p>
+                  <p className="text-sm font-semibold text-gray-900">{(apartment.monthlyRent || 0).toFixed(2)} лв.</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Такса поддръжка</label>
-                  <p className="text-sm font-semibold text-gray-900">{apartment.maintenanceFee.toFixed(2)} лв.</p>
+                  <p className="text-sm font-semibold text-gray-900">{(apartment.maintenanceFee || 0).toFixed(2)} лв.</p>
                 </div>
               </div>
             </div>
