@@ -6,9 +6,9 @@ import { ArrowLeft, Home, Users, CreditCard, AlertTriangle, Edit } from 'lucide-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
-import { ApartmentInformation } from './apartment-details/apartment-information';
-import { ApartmentPayments } from './apartment-details/apartment-payments';
-import { ApartmentIrregularities } from './apartment-details/apartment-irregularities';
+import { ApartmentInformation } from '../../components/apartments/apartment-details/apartment-information';
+import { ApartmentPayments } from '../../components/apartments/apartment-details/payments/apartment-payments';
+import { ApartmentIrregularities } from '../../components/apartments/apartment-details/irregularities/apartment-irregularities';
 
 export function ApartmentDetailsPage() {
   const { id } = useParams<{ id: string }>();

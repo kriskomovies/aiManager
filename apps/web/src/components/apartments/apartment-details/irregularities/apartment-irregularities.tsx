@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabConfig } from '@/components/ui/tabs';
 import { ChevronDown, AlertTriangle, Archive, Bell } from 'lucide-react';
-import { ApartmentIrregularitiesTable } from '@/components/apartments/apartment-details/apartment-irregularities-table';
+import { ApartmentIrregularitiesTable } from './apartment-irregularities-table';
 
 interface ApartmentIrregularitiesProps {
   apartmentId: string;

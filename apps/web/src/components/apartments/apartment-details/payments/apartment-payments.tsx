@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabConfig } from '@/components/ui/tabs';
 import { ChevronDown, CreditCard, Receipt, Wrench } from 'lucide-react';
-import { ApartmentTaxesTable } from '@/components/apartments/apartment-details/apartment-taxes-table';
-import { ApartmentRepairsTable } from '@/components/apartments/apartment-details/apartment-repairs-table';
+import { ApartmentTaxesTable } from './apartment-taxes-table';
+import { ApartmentRepairsTable } from './apartment-repairs-table';
 
 interface ApartmentPaymentsProps {
   apartmentId: string;

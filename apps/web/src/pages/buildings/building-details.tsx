@@ -16,13 +16,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
-import { ApartmentsTab } from './building-details/apartments-tab';
-import { CashTab } from './building-details/cash-tab';
-import { CashierTab } from './building-details/cashier-tab';
-import { IrregularitiesTab } from './building-details/irregularities-tab';
-import { UsersTab } from './building-details/users-tab';
-import { MessagesTab } from './building-details/messages-tab';
-import { CalendarTab } from './building-details/calendar-tab';
+import { ApartmentsTab } from '@/components/buildings/building-details/apartments-tab';
+import { CashTab } from '@/components/buildings/building-details/cash-tab';
+import { CashierTab } from '@/components/buildings/building-details/cashier-tab';
+import { IrregularitiesTab } from '@/components/buildings/building-details/irregularities-tab';
+import { UsersTab } from '@/components/buildings/building-details/users-tab';
+import { MessagesTab } from '@/components/buildings/building-details/messages-tab';
+import { CalendarTab } from '@/components/buildings/building-details/calendar-tab';
 
 type TabType = 'apartments' | 'cash' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
 
