@@ -12,7 +12,12 @@ export type ModalType =
   | 'reference-payments'
   | 'payment'
   | 'edit-apartment-irregularity'
-  | 'delete-apartment-irregularity';
+  | 'delete-apartment-irregularity'
+  | 'create-inventory'
+  | 'edit-inventory'
+  | 'delete-inventory'
+  | 'transfer-inventory-money'
+  | 'inventory-transfers';
 
 export interface ModalData {
   buildingId?: string;
@@ -23,6 +28,9 @@ export interface ModalData {
   userName?: string;
   irregularityId?: string;
   irregularityTitle?: string;
+  inventoryId?: string;
+  inventoryName?: string;
+  inventoryData?: unknown;
   title?: string;
   message?: string;
   confirmText?: string;

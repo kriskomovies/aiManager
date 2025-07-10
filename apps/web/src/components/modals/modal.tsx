@@ -10,6 +10,11 @@ import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
 import { PaymentModal } from './bodies/payment-modal';
 import { EditApartmentIrregularityModal } from './bodies/edit-apartment-irregularity';
 import { DeleteApartmentIrregularityModal } from './bodies/delete-apartment-irregularity';
+import { CreateInventoryModal } from './bodies/create-inventory-modal';
+import { EditInventoryModal } from './bodies/edit-inventory-modal';
+import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
+import { TransferInventoryMoneyModal } from './bodies/transfer-inventory-money-modal';
+import { InventoryTransfersModal } from './bodies/inventory-transfers-modal';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -68,6 +73,21 @@ export function ModalContainer() {
       case 'delete-apartment-irregularity':
         return <DeleteApartmentIrregularityModal onClose={handleClose} />;
       
+      case 'create-inventory':
+        return <CreateInventoryModal onClose={handleClose} />;
+      
+      case 'edit-inventory':
+        return <EditInventoryModal onClose={handleClose} />;
+      
+      case 'delete-inventory':
+        return <DeleteInventoryModal onClose={handleClose} />;
+      
+      case 'transfer-inventory-money':
+        return <TransferInventoryMoneyModal onClose={handleClose} />;
+      
+      case 'inventory-transfers':
+        return <InventoryTransfersModal onClose={handleClose} />;
+      
       default:
         return null;
     }
@@ -98,11 +118,13 @@ export function ModalContainer() {
                 ? 'w-full max-w-6xl' 
                 : modal.type === 'payment'
                 ? 'w-full max-w-2xl'
+                : modal.type === 'create-inventory'
+                ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
                 : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
-            {modal.type === 'reference-fees' || modal.type === 'reference-payments' || modal.type === 'payment' ? (
+            {modal.type === 'reference-fees' || modal.type === 'reference-payments' || modal.type === 'payment' || modal.type === 'inventory-transfers' ? (
               renderModalBody()
             ) : (
               <>

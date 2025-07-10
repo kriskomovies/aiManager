@@ -17,14 +17,14 @@ import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
 import { ApartmentsTab } from '@/components/buildings/building-details/apartments-tab';
-import { CashTab } from '@/components/buildings/building-details/cash-tab';
+import { InventoryTab } from '@/components/buildings/building-details/inventory-tab';
 import { CashierTab } from '@/components/buildings/building-details/cashier-tab';
 import { IrregularitiesTab } from '@/components/buildings/building-details/irregularities-tab';
 import { UsersTab } from '@/components/buildings/building-details/users-tab';
 import { MessagesTab } from '@/components/buildings/building-details/messages-tab';
 import { CalendarTab } from '@/components/buildings/building-details/calendar-tab';
 
-type TabType = 'apartments' | 'cash' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
+type TabType = 'apartments' | 'inventory' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
 
 const tabs: TabConfig[] = [
   {
@@ -33,7 +33,7 @@ const tabs: TabConfig[] = [
     icon: Home,
   },
   {
-    id: 'cash',
+    id: 'inventory',
     label: 'Каса',
     icon: Users,
   },
@@ -273,7 +273,7 @@ export function BuildingDetailsPage() {
         className="min-h-[400px] w-full"
       >
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
-        {activeTab === 'cash' && <CashTab />}
+        {activeTab === 'inventory' && <InventoryTab />}
         {activeTab === 'cashier' && <CashierTab />}
         {activeTab === 'irregularities' && <IrregularitiesTab />}
         {activeTab === 'users' && <UsersTab />}
