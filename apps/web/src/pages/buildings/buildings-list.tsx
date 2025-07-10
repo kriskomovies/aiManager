@@ -121,14 +121,15 @@ export function BuildingsListPage() {
         variants={itemVariants}
       >
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h2 className="text-lg font-semibold text-gray-900">Сгради</h2>
             <motion.div
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
+              className="w-full sm:w-auto"
             >
               <Button 
-                className="gap-2"
+                className="gap-2 w-full sm:w-auto"
                 onClick={handleAddBuilding}
               >
                 <Plus className="h-4 w-4" />

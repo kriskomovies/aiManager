@@ -203,50 +203,52 @@ export function BuildingDetailsPage() {
       animate="visible"
     >
       <motion.div 
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        className="space-y-4"
         variants={itemVariants}
       >
-        <div className="flex items-center gap-4">
-          <motion.button
-            onClick={handleBack}
-            className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-full text-gray-600 hover:text-gray-900 transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </motion.button>
-          
-          <div className="flex flex-col min-w-0 flex-1">
-            <h1 className="text-xl font-semibold text-gray-900 truncate">{building.name}</h1>
-            <p className="text-sm text-gray-500 truncate">{building.address}</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-2"
-              onClick={handleEdit}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4 min-w-0">
+            <motion.button
+              onClick={handleBack}
+              className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-full text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <Pencil className="h-4 w-4" />
-              <span className="hidden sm:inline">Редактирай</span>
-            </Button>
-          </motion.div>
+              <ArrowLeft className="h-5 w-5" />
+            </motion.button>
+            
+            <div className="flex flex-col min-w-0 flex-1">
+              <h1 className="text-xl font-semibold text-gray-900 truncate">{building.name}</h1>
+              <p className="text-sm text-gray-500 truncate">{building.address}</p>
+            </div>
+          </div>
           
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Button size="sm" className="gap-2 bg-red-500 hover:bg-red-600">
-              <span className="hidden sm:inline">Добави бележка</span>
-              <span className="sm:hidden">Бележка</span>
-            </Button>
-          </motion.div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2"
+                onClick={handleEdit}
+              >
+                <Pencil className="h-4 w-4" />
+                <span className="hidden sm:inline">Редактирай</span>
+              </Button>
+            </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button size="sm" className="gap-2 bg-red-500 hover:bg-red-600">
+                <span className="hidden sm:inline">Добави бележка</span>
+                <span className="sm:hidden">Бележка</span>
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
 
