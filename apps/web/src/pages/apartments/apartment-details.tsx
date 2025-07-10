@@ -174,13 +174,13 @@ export function ApartmentDetailsPage() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <InformationCard
-          title="Делничен"
+          title="Депозит"
           value={`${(mockApartment.monthlyRent || 0).toFixed(2)} лв.`}
           icon={Home}
           iconColor="text-blue-600"
           iconBgColor="bg-blue-50"
           valueColor="text-blue-600"
-          subtitle="Месечна наемна цена"
+          subtitle="Обща сума, внесена като депозит към домоуправителя"
           variants={itemVariants}
         />
         

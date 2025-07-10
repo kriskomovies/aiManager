@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { MoreVertical, ExternalLink, Edit, Trash2, Eye } from 'lucide-react';
+import { ExternalLink, Eye } from 'lucide-react';
 
 interface ApartmentTaxesTableProps {
   apartmentId: string;
@@ -93,13 +92,7 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
     }
   };
 
-  const handleEdit = (taxId: string) => {
-    console.log('Edit tax:', taxId);
-  };
 
-  const handleDelete = (taxId: string) => {
-    console.log('Delete tax:', taxId);
-  };
 
   const handleView = (taxId: string) => {
     console.log('View tax:', taxId);
@@ -178,36 +171,15 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       width: '70px',
       minWidth: '70px',
       cell: row => {
-        const menuItems: (DropdownMenuItem | 'separator')[] = [
-          {
-            label: 'Преглед',
-            onClick: () => handleView(row.id),
-            icon: Eye,
-          },
-          {
-            label: 'Редактирай',
-            onClick: () => handleEdit(row.id),
-            icon: Edit,
-          },
-          'separator',
-          {
-            label: 'Изтрий',
-            onClick: () => handleDelete(row.id),
-            icon: Trash2,
-          },
-        ];
-
         return (
           <div onClick={(e) => e.stopPropagation()}>
-            <DropdownMenu
-              trigger={
-                <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation">
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              }
-              items={menuItems}
-              align="right"
-            />
+            <button 
+              onClick={() => handleView(row.id)}
+              className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Преглед"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
           </div>
         );
       },

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { MoreVertical, ExternalLink, Edit, Trash2, Eye, Receipt } from 'lucide-react';
+import { ExternalLink, Eye, Receipt } from 'lucide-react';
 
 interface ApartmentRepairsTableProps {
   apartmentId: string;
@@ -75,13 +74,7 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
     }
   };
 
-  const handleEdit = (repairId: string) => {
-    console.log('Edit repair:', repairId);
-  };
 
-  const handleDelete = (repairId: string) => {
-    console.log('Delete repair:', repairId);
-  };
 
   const handleView = (repairId: string) => {
     console.log('View repair:', repairId);
@@ -168,44 +161,25 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
     {
       header: 'Действия',
       accessorKey: 'id',
-      width: '70px',
-      minWidth: '70px',
+      width: '100px',
+      minWidth: '100px',
       cell: row => {
-        const menuItems: (DropdownMenuItem | 'separator')[] = [
-          {
-            label: 'Преглед',
-            onClick: () => handleView(row.id),
-            icon: Eye,
-          },
-          {
-            label: 'Фактура',
-            onClick: () => handleBill(row.id),
-            icon: Receipt,
-          },
-          'separator',
-          {
-            label: 'Редактирай',
-            onClick: () => handleEdit(row.id),
-            icon: Edit,
-          },
-          {
-            label: 'Изтрий',
-            onClick: () => handleDelete(row.id),
-            icon: Trash2,
-          },
-        ];
-
         return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <DropdownMenu
-              trigger={
-                <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation">
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              }
-              items={menuItems}
-              align="right"
-            />
+          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
+            <button 
+              onClick={() => handleView(row.id)}
+              className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Преглед"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleBill(row.id)}
+              className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Фактура"
+            >
+              <Receipt className="w-4 h-4" />
+            </button>
           </div>
         );
       },

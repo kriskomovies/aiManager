@@ -10,7 +10,9 @@ export type ModalType =
   | 'confirm-action'
   | 'reference-fees'
   | 'reference-payments'
-  | 'payment';
+  | 'payment'
+  | 'edit-apartment-irregularity'
+  | 'delete-apartment-irregularity';
 
 export interface ModalData {
   buildingId?: string;
@@ -19,6 +21,8 @@ export interface ModalData {
   apartmentNumber?: string;
   userId?: string;
   userName?: string;
+  irregularityId?: string;
+  irregularityTitle?: string;
   title?: string;
   message?: string;
   confirmText?: string;

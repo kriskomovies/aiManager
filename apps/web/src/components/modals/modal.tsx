@@ -8,6 +8,8 @@ import { DeleteApartmentModal } from './bodies/delete-apartment-modal';
 import { ReferenceFeesModal } from './bodies/reference-fees-modal';
 import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
 import { PaymentModal } from './bodies/payment-modal';
+import { EditApartmentIrregularityModal } from './bodies/edit-apartment-irregularity';
+import { DeleteApartmentIrregularityModal } from './bodies/delete-apartment-irregularity';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -60,11 +62,11 @@ export function ModalContainer() {
       case 'payment':
         return <PaymentModal />;
       
-      // Add more modal types here as needed
-      // case 'add-building':
-      //   return <AddBuildingModal onClose={handleClose} />;
-      // case 'edit-building':
-      //   return <EditBuildingModal onClose={handleClose} />;
+      case 'edit-apartment-irregularity':
+        return <EditApartmentIrregularityModal onClose={handleClose} />;
+      
+      case 'delete-apartment-irregularity':
+        return <DeleteApartmentIrregularityModal onClose={handleClose} />;
       
       default:
         return null;

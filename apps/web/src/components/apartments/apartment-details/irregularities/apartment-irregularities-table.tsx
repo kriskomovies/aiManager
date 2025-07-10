@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, type DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Trash2, Eye, FileText, Archive, Check } from 'lucide-react';
+import { Edit, Trash2, FileText } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
 interface ApartmentIrregularitiesTableProps {
   apartmentId: string;
@@ -21,6 +22,7 @@ interface IrregularityRecord {
 }
 
 export function ApartmentIrregularitiesTable({ apartmentId, isArchive }: ApartmentIrregularitiesTableProps) {
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof IrregularityRecord;
@@ -107,23 +109,22 @@ export function ApartmentIrregularitiesTable({ apartmentId, isArchive }: Apartme
   };
 
   const handleEdit = (irregularityId: string) => {
-    console.log('Edit irregularity:', irregularityId);
+    dispatch(openModal({
+      type: 'edit-apartment-irregularity',
+      data: { irregularityId, apartmentId }
+    }));
   };
 
   const handleDelete = (irregularityId: string) => {
-    console.log('Delete irregularity:', irregularityId);
-  };
-
-  const handleView = (irregularityId: string) => {
-    console.log('View irregularity:', irregularityId);
-  };
-
-  const handleArchive = (irregularityId: string) => {
-    console.log('Archive irregularity:', irregularityId);
-  };
-
-  const handleMarkResolved = (irregularityId: string) => {
-    console.log('Mark irregularity as resolved:', irregularityId);
+    const irregularity = mockData.find(item => item.id === irregularityId);
+    dispatch(openModal({
+      type: 'delete-apartment-irregularity',
+      data: { 
+        irregularityId, 
+        apartmentId,
+        irregularityTitle: irregularity?.title || 'Неизвестна нередност'
+      }
+    }));
   };
 
   const getStatusBadge = (status: IrregularityRecord['status']) => {
@@ -198,52 +199,25 @@ export function ApartmentIrregularitiesTable({ apartmentId, isArchive }: Apartme
     {
       header: 'Действия',
       accessorKey: 'id',
-      width: '70px',
-      minWidth: '70px',
+      width: '100px',
+      minWidth: '100px',
       cell: row => {
-        const menuItems: (DropdownMenuItem | 'separator')[] = [
-          {
-            label: 'Преглед',
-            onClick: () => handleView(row.id),
-            icon: Eye,
-          },
-          {
-            label: 'Редактирай',
-            onClick: () => handleEdit(row.id),
-            icon: Edit,
-          },
-          'separator',
-          ...(isArchive ? [] : [
-            {
-              label: 'Маркирай като решена',
-              onClick: () => handleMarkResolved(row.id),
-              icon: Check,
-            } as DropdownMenuItem,
-            {
-              label: 'Архивирай',
-              onClick: () => handleArchive(row.id),
-              icon: Archive,
-            } as DropdownMenuItem,
-            'separator' as const,
-          ]),
-          {
-            label: 'Изтрий',
-            onClick: () => handleDelete(row.id),
-            icon: Trash2,
-          },
-        ];
-
         return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <DropdownMenu
-              trigger={
-                <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation">
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              }
-              items={menuItems}
-              align="right"
-            />
+          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
+            <button 
+              onClick={() => handleEdit(row.id)}
+              className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Редактирай"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => handleDelete(row.id)}
+              className="p-2 text-gray-500 hover:text-red-700 transition-colors rounded-md hover:bg-red-50 active:bg-red-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Изтрий"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
         );
       },
