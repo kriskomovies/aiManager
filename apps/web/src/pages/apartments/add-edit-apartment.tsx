@@ -19,10 +19,10 @@ import {
   useGetApartmentByIdQuery 
 } from '@/redux/services/apartment.service';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
-import { addApartmentSchema, AddApartmentFormData } from './add-apartment.schema';
+import { addApartmentSchema, AddApartmentFormData } from './add-edit-apartment.schema';
 import { ApartmentType, ResidentRole } from '@repo/interfaces';
 
-export function AddApartmentPage() {
+export function AddEditApartmentPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { buildingId, id } = useParams<{ buildingId?: string; id?: string }>();

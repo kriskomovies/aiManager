@@ -6,8 +6,9 @@ import { store } from './redux/store';
 import { RootLayout } from './components/layout/root-layout';
 import { BuildingDetailsPage } from './pages/buildings/building-details';
 import { BuildingsListPage } from './pages/buildings/buildings-list';
-import { AddBuildingPage } from './pages/buildings/add-building';
-import { AddApartmentPage } from './pages/apartments/add-apartment';
+import { AddEditBuildingPage } from './pages/buildings/add-edit-building';
+import { AddEditApartmentPage } from './pages/apartments/add-edit-apartment';
+import { ApartmentDetailsPage } from './pages/apartments/apartment-details';
 import { HomePage } from './pages/home/home';
 import { ErrorBoundary } from './components/error-boundary';
 import { NotFoundPage } from './components/error-pages/not-found';
@@ -33,12 +34,12 @@ const router = createBrowserRouter([
       },
       {
         path: '/buildings/add',
-        element: <AddBuildingPage />,
+        element: <AddEditBuildingPage />,
         errorElement: <GeneralErrorPage />,
       },
       {
         path: '/buildings/:id/edit',
-        element: <AddBuildingPage />,
+        element: <AddEditBuildingPage />,
         errorElement: <GeneralErrorPage />,
       },
       {
@@ -48,17 +49,17 @@ const router = createBrowserRouter([
       },
       {
         path: '/apartments/add/:buildingId',
-        element: <AddApartmentPage />,
-        errorElement: <GeneralErrorPage />,
-      },
-      {
-        path: '/apartments/:id/edit',
-        element: <AddApartmentPage />,
+        element: <AddEditApartmentPage />,
         errorElement: <GeneralErrorPage />,
       },
       {
         path: '/buildings/:buildingId/apartments/:id/edit',
-        element: <AddApartmentPage />,
+        element: <AddEditApartmentPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/apartments/:id',
+        element: <ApartmentDetailsPage />,
         errorElement: <GeneralErrorPage />,
       },
       {

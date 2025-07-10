@@ -20,9 +20,9 @@ import {
   useGetBuildingQuery 
 } from '@/redux/services/building.service';
 import { BuildingType, TaxGenerationPeriod } from '@repo/interfaces';
-import { addBuildingSchema, type AddBuildingFormData } from './add-building.schema';
+import { addBuildingSchema, type AddBuildingFormData } from './add-edit-building.schema';
 
-export function AddBuildingPage() {
+export function AddEditBuildingPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();

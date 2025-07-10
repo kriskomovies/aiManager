@@ -131,10 +131,13 @@ export function ApartmentsTable({ buildingId }: ApartmentsTableProps) {
       width: '100px',
       minWidth: '100px',
       cell: row => (
-        <div className="flex items-center gap-2">
-          <Home className="h-4 w-4 text-gray-400" />
-          <span className="text-red-500 font-medium">{row.number}</span>
-        </div>
+        <button
+          onClick={() => navigate(`/apartments/${row.id}`)}
+          className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors font-medium"
+        >
+          <Home className="h-4 w-4" />
+          <span className="hover:underline">{row.number}</span>
+        </button>
       ),
     },
     {
