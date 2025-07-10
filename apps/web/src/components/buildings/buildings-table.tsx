@@ -40,54 +40,68 @@ export function BuildingsTable() {
       accessorKey: 'name',
       sortable: true,
       searchable: true,
+      width: '25%',
+      minWidth: '180px',
       cell: row => (
-        <div className="font-medium text-red-600 hover:text-red-800 cursor-pointer">
+        <div className="font-medium text-red-600 hover:text-red-800 cursor-pointer truncate">
           {row.name}
         </div>
       ),
     },
     {
-      header: 'Апартаменти',
+      header: window.innerWidth < 640 ? 'Апарт.' : 'Апартаменти',
       accessorKey: 'apartmentCount',
       sortable: true,
+      width: '12%',
+      minWidth: '80px',
     },
     {
-      header: 'Нередности',
+      header: window.innerWidth < 640 ? 'Неред.' : 'Нередности',
       accessorKey: 'irregularities',
+      sortable: true,
+      width: '12%',
+      minWidth: '80px',
       cell: row => (
         <IrregularitiesBadge count={row.irregularities} />
       ),
-      sortable: true,
     },
     {
       header: 'Каса',
       accessorKey: 'balance',
+      sortable: true,
+      width: '15%',
+      minWidth: '100px',
       cell: row => (
         <CashBadge value={row.balance} />
       ),
-      sortable: true,
     },
     {
-      header: 'Месечна Такса',
+      header: window.innerWidth < 640 ? 'Мес. Такса' : 'Месечна Такса',
       accessorKey: 'monthlyFee',
-      cell: row => (
-        <span className="text-gray-700">{row.monthlyFee.toFixed(2)} лв.</span>
-      ),
       sortable: true,
+      width: '15%',
+      minWidth: '100px',
+      cell: row => (
+        <span className="text-gray-700 text-xs sm:text-sm">{row.monthlyFee.toFixed(2)} лв.</span>
+      ),
     },
     {
-      header: 'Задължения',
+      header: window.innerWidth < 640 ? 'Дълговe' : 'Дълговe',
       accessorKey: 'debt',
+      sortable: true,
+      width: '15%',
+      minWidth: '100px',
       cell: row => (
         <DebtBadge value={row.debt} />
       ),
-      sortable: true,
     },
     {
       header: 'Действия',
       accessorKey: 'id',
+      minWidth: '100px',
+      width: '100px',
       cell: row => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -96,7 +110,7 @@ export function BuildingsTable() {
             className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
             title="Редактирай"
           >
-            <Edit className="w-4 h-4" />
+            <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
           <button
             onClick={(e) => {
@@ -106,7 +120,7 @@ export function BuildingsTable() {
             className="p-1 text-gray-500 hover:text-red-600 transition-colors"
             title="Изтрий"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         </div>
       ),

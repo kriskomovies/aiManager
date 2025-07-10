@@ -68,9 +68,9 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <motion.div 
-        className="grid grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
         variants={statsVariants}
         initial="hidden"
         animate="visible"
@@ -83,6 +83,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           iconBgColor="bg-blue-50"
           subtitle={stats.balanceChange}
           variants={itemVariants}
+          priority="high"
         />
         
         <InformationCard
@@ -94,6 +95,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           valueColor="text-red-500"
           subtitle={stats.obligationsChange}
           variants={itemVariants}
+          priority="high"
         />
         
         <InformationCard
@@ -103,8 +105,9 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           iconColor="text-purple-500"
           iconBgColor="bg-purple-50"
           variants={itemVariants}
+          priority="medium"
         >
-          <p className="text-sm text-red-500">{stats.apartmentsWithDebt}</p>
+          <p className="text-xs sm:text-sm text-red-500">{stats.apartmentsWithDebt}</p>
         </InformationCard>
         
         <InformationCard
@@ -115,6 +118,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           iconBgColor="bg-orange-50"
           subtitle={stats.debtsDetails}
           variants={itemVariants}
+          priority="medium"
         />
       </motion.div>
 
@@ -127,35 +131,38 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
         }}
       >
-        <div className="flex items-center justify-between border-b p-4 px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b p-4 px-6 gap-4">
           <h2 className="text-lg font-semibold">Апартаменти</h2>
-          <div className="space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-block"
+              className="w-full sm:w-auto"
             >
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Домова Книга
               </Button>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-block"
+              className="w-full sm:w-auto"
             >
               <Button 
                 size="sm" 
-                className="bg-red-500 hover:bg-red-600"
+                className="bg-red-500 hover:bg-red-600 w-full sm:w-auto"
                 onClick={() => navigate(`/apartments/add/${building.id}`)}
               >
-                Добави Апартамент
+                <span className="hidden sm:inline">Добави Апартамент</span>
+                <span className="sm:hidden">Добави</span>
               </Button>
             </motion.div>
           </div>
         </div>
-        <div className="p-6">
-          <ApartmentsTable buildingId={building.id} />
+        <div className="p-4 sm:p-6">
+          <div className="overflow-x-auto">
+            <ApartmentsTable buildingId={building.id} />
+          </div>
         </div>
       </motion.div>
     </div>

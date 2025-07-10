@@ -251,7 +251,11 @@ export function AddBuildingPage() {
   };
 
   const handleBack = () => {
-    navigate('/buildings');
+    if (isEditMode && id) {
+      navigate(`/buildings/${id}`);
+    } else {
+      navigate('/buildings');
+    }
   };
 
   const handleAddCompany = () => {
@@ -277,7 +281,12 @@ export function AddBuildingPage() {
           whileTap={{ scale: 0.98 }}
         >
           <ArrowLeft className="h-5 w-5" />
-          <span className="text-sm font-medium">Назад към сгради</span>
+          <span className="text-sm font-medium">
+            {isEditMode && buildingData?.name 
+              ? `Назад към ${buildingData.name}` 
+              : 'Назад към сгради'
+            }
+          </span>
         </motion.button>
       </motion.div>
 

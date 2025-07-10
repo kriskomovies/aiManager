@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabConfig } from '@/components/ui/tabs';
 import { ArrowLeft } from 'lucide-react';
 import {
   Home,
@@ -24,12 +25,6 @@ import { MessagesTab } from './building-details/messages-tab';
 import { CalendarTab } from './building-details/calendar-tab';
 
 type TabType = 'apartments' | 'cash' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
-
-interface TabConfig {
-  id: TabType;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
 
 const tabs: TabConfig[] = [
   {
@@ -208,7 +203,7 @@ export function BuildingDetailsPage() {
       animate="visible"
     >
       <motion.div 
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         variants={itemVariants}
       >
         <div className="flex items-center gap-4">
@@ -221,13 +216,13 @@ export function BuildingDetailsPage() {
             <ArrowLeft className="h-5 w-5" />
           </motion.button>
           
-          <div className="flex flex-col">
-            <h1 className="text-xl font-semibold text-gray-900">{building.name}</h1>
-            <p className="text-sm text-gray-500">{building.address}</p>
+          <div className="flex flex-col min-w-0 flex-1">
+            <h1 className="text-xl font-semibold text-gray-900 truncate">{building.name}</h1>
+            <p className="text-sm text-gray-500 truncate">{building.address}</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -239,7 +234,7 @@ export function BuildingDetailsPage() {
               onClick={handleEdit}
             >
               <Pencil className="h-4 w-4" />
-              Редактирай
+              <span className="hidden sm:inline">Редактирай</span>
             </Button>
           </motion.div>
           
@@ -248,34 +243,23 @@ export function BuildingDetailsPage() {
             whileTap={{ scale: 0.98 }}
           >
             <Button size="sm" className="gap-2 bg-red-500 hover:bg-red-600">
-              Добави бележка
+              <span className="hidden sm:inline">Добави бележка</span>
+              <span className="sm:hidden">Бележка</span>
             </Button>
           </motion.div>
         </div>
       </motion.div>
 
       <motion.div 
-        className="flex border-b"
         variants={tabsVariants}
       >
-        {tabs.map((tab) => {
-          const IconComponent = tab.icon;
-          return (
-            <Button
-              key={tab.id}
-              variant="ghost"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 rounded-none ${
-                activeTab === tab.id 
-                  ? 'text-red-500 border-b-2 border-red-500' 
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <IconComponent className="h-4 w-4" />
-              {tab.label}
-            </Button>
-          );
-        })}
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={(tabId) => setActiveTab(tabId as TabType)}
+          variant="underline"
+          className="mb-6"
+        />
       </motion.div>
 
       {/* Tab Content */}
@@ -284,6 +268,7 @@ export function BuildingDetailsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
+        className="min-h-[400px] w-full"
       >
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
         {activeTab === 'cash' && <CashTab />}
