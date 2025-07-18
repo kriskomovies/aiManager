@@ -12,7 +12,12 @@ import {
   IsEmail,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApartmentType, ApartmentStatus, ResidentRole } from '@repo/interfaces';
+import {
+  ApartmentType,
+  ApartmentStatus,
+  ResidentRole,
+  IUpdateApartmentRequest,
+} from '@repo/interfaces';
 
 export class UpdateResidentDto {
   @ApiProperty({
@@ -62,7 +67,7 @@ export class UpdateResidentDto {
   isMainContact: boolean;
 }
 
-export class UpdateApartmentDto {
+export class UpdateApartmentDto implements IUpdateApartmentRequest {
   @ApiProperty({
     description: 'Apartment type',
     enum: ApartmentType,

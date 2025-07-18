@@ -273,7 +273,7 @@ export function BuildingDetailsPage() {
         className="min-h-[400px] w-full"
       >
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
-        {activeTab === 'inventory' && <InventoryTab />}
+        {activeTab === 'inventory' && <InventoryTab buildingId={id!} />}
         {activeTab === 'cashier' && <CashierTab />}
         {activeTab === 'irregularities' && <IrregularitiesTab />}
         {activeTab === 'users' && <UsersTab />}

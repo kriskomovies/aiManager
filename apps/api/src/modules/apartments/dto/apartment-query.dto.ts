@@ -10,9 +10,13 @@ import {
   Min,
   Max,
 } from 'class-validator';
-import { ApartmentType, ApartmentStatus } from '@repo/interfaces';
+import {
+  ApartmentType,
+  ApartmentStatus,
+  IBackendApartmentQueryParams,
+} from '@repo/interfaces';
 
-export class ApartmentQueryDto {
+export class ApartmentQueryDto implements IBackendApartmentQueryParams {
   @ApiPropertyOptional({
     description: 'Page number',
     example: 1,

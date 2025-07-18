@@ -6,8 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
 import { Plus, Loader2 } from 'lucide-react';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
+import { 
+  useCreateInventoryMutation, 
+  useTransferMoneyMutation,
+  useGetInventoriesByBuildingQuery 
+} from '@/redux/services/inventory.service';
+import { ICreateInventoryRequest, IInventoryTransferRequest } from '@repo/interfaces';
 
 interface CreateInventoryFormData {
   name: string;
@@ -26,11 +33,22 @@ interface CreateInventoryModalProps {
 
 export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
   const dispatch = useAppDispatch();
+  const modalData = useAppSelector(selectModalData);
+  const buildingId = modalData?.buildingId;
+  
+  // Get inventories for the building to populate transfer options
+  const { data: inventories = [] } = useGetInventoriesByBuildingQuery(buildingId!, {
+    skip: !buildingId
+  });
+  
+  // API mutations
+  const [createInventory] = useCreateInventoryMutation();
+  const [transferMoney] = useTransferMoneyMutation();
   
   const [formData, setFormData] = useState<CreateInventoryFormData>({
     name: '',
     description: '',
-    visibleInApp: false,
+    visibleInApp: true,
     amountType: 'add-new',
     amount: 0,
     fromInventory: '',
@@ -40,18 +58,29 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock inventory options for transfer
-  const inventoryOptions = [
-    { value: 'main-cash', label: 'Основна Каса' },
-    { value: 'deposit', label: 'Депозит' },
-    { value: 'maintenance', label: 'Каса Поддръжка' },
-  ];
+  // Convert inventories to select options
+  const inventoryOptions = inventories.map(inventory => ({
+    value: inventory.id,
+    label: `${inventory.name} (${inventory.amount.toFixed(2)} лв.)`
+  }));
 
   const handleInputChange = (field: keyof CreateInventoryFormData, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+  };
+
+  // Helper function to get selected inventory details
+  const getSelectedInventory = () => {
+    return inventories.find(inv => inv.id === formData.fromInventory);
+  };
+
+  // Check if transfer amount exceeds available balance
+  const isTransferAmountValid = () => {
+    if (!formData.fromInventory || !formData.transferAmount) return true;
+    const sourceInventory = getSelectedInventory();
+    return !sourceInventory || formData.transferAmount <= sourceInventory.amount;
   };
 
   const handleAmountTypeChange = (value: string) => {
@@ -79,14 +108,75 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
       return;
     }
 
+    if (!buildingId) {
+      dispatch(addAlert({
+        type: 'error',
+        title: 'Грешка',
+        message: 'Липсва информация за сградата.',
+        duration: 5000
+      }));
+      return;
+    }
+
+    // Validate transfer amount if needed
+    if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
+        (!formData.fromInventory || !formData.transferAmount || formData.transferAmount <= 0)) {
+      dispatch(addAlert({
+        type: 'error',
+        title: 'Грешка',
+        message: 'Моля въведете валидна каса и сума за прехвърляне.',
+        duration: 5000
+      }));
+      return;
+    }
+
+    // Validate that transfer amount doesn't exceed available balance
+    if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
+        formData.fromInventory && formData.transferAmount) {
+      const sourceInventory = inventories.find(inv => inv.id === formData.fromInventory);
+      if (sourceInventory && formData.transferAmount > sourceInventory.amount) {
+        dispatch(addAlert({
+          type: 'error',
+          title: 'Недостатъчна наличност',
+          message: `Касата "${sourceInventory.name}" има само ${sourceInventory.amount.toFixed(2)} лв. Не можете да прехвърлите ${formData.transferAmount.toFixed(2)} лв.`,
+          duration: 5000
+        }));
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement actual create inventory API call
-      console.log('Creating inventory with data:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Prepare inventory creation data
+      const initialAmount = formData.amountType === 'add-new' ? (formData.amount || 0) :
+                           formData.amountType === 'combined' ? (formData.amount || 0) : 0;
+
+      const createInventoryData: ICreateInventoryRequest = {
+        buildingId,
+        name: formData.name.trim(),
+        title: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        visibleInApp: formData.visibleInApp,
+        initialAmount
+      };
+
+      // Create the inventory
+      const newInventory = await createInventory(createInventoryData).unwrap();
+
+      // If we need to transfer money from another inventory
+      if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
+          formData.fromInventory && formData.transferAmount && formData.transferAmount > 0) {
+        
+        const transferData: IInventoryTransferRequest = {
+          fromInventoryId: formData.fromInventory,
+          toInventoryId: newInventory.id,
+          amount: formData.transferAmount,
+          description: formData.description.trim() || `Прехвърляне към ${formData.name}`
+        };
+
+        await transferMoney(transferData).unwrap();
+      }
       
       dispatch(addAlert({
         type: 'success',
@@ -99,10 +189,14 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
     } catch (error) {
       console.error('Error creating inventory:', error);
       
+      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || 
+                          (error as { message?: string })?.message || 
+                          'Възникна грешка при създаването на касата. Моля опитайте отново.';
+      
       dispatch(addAlert({
         type: 'error',
         title: 'Грешка при създаване',
-        message: 'Възникна грешка при създаването на касата. Моля опитайте отново.',
+        message: errorMessage,
         duration: 5000
       }));
     } finally {
@@ -170,11 +264,17 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                     disabled={isSubmitting}
                     min="0"
                     step="0.01"
+                    className={!isTransferAmountValid() ? 'border-red-500 focus:border-red-500' : ''}
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
                     лв.
                   </span>
                 </div>
+                {!isTransferAmountValid() && (
+                  <p className="text-xs text-red-600 mt-1">
+                    Недостатъчна наличност! Максимум: {getSelectedInventory()?.amount.toFixed(2)} лв.
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -243,11 +343,17 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                         disabled={isSubmitting}
                         min="0"
                         step="0.01"
+                        className={!isTransferAmountValid() ? 'border-red-500 focus:border-red-500' : ''}
                       />
                       <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
                         лв.
                       </span>
                     </div>
+                    {!isTransferAmountValid() && (
+                      <p className="text-xs text-red-600 mt-1">
+                        Недостатъчна наличност! Максимум: {getSelectedInventory()?.amount.toFixed(2)} лв.
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -397,7 +503,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
           </Button>
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isTransferAmountValid()}
           >
             {isSubmitting ? (
               <>

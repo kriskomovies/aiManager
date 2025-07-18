@@ -6,26 +6,15 @@ import {
   ICreateBuildingRequest,
   IUpdateBuildingRequest,
   IBuildingQueryParams,
-  IPaginatedResponse 
+  IPaginatedResponse,
+  IBackendBuildingResponse,
+  IBackendBuildingApiResponse,
+  IBackendBuildingQueryParams,
+  IBackendPaginatedResponse
 } from '@repo/interfaces';
 
-// API Response structure from backend
-interface BackendPaginatedResponse<T> {
-  data: {
-    data: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-  statusCode: number;
-  timestamp: string;
-}
-
 // Transform backend response to frontend format
-const transformPaginatedResponse = <T>(response: BackendPaginatedResponse<T>): IPaginatedResponse<T> => ({
+const transformPaginatedResponse = <T>(response: IBackendPaginatedResponse<T>): IPaginatedResponse<T> => ({
   items: response.data.data,
   meta: {
     page: response.data.page,
@@ -43,7 +32,7 @@ export const buildingApi = createApi({
     getBuildings: builder.query<IPaginatedResponse<IBuildingListItem>, IBuildingQueryParams>({
       query: (params) => {
         // Transform frontend params to backend params
-        const backendParams: any = {
+        const backendParams: IBackendBuildingQueryParams = {
           page: params.page,
           limit: params.pageSize, // Backend expects 'limit' not 'pageSize'
           search: params.search,
@@ -55,12 +44,12 @@ export const buildingApi = createApi({
         if (params.sort) {
           const [field, direction] = params.sort.split(':');
           backendParams.sortBy = field;
-          backendParams.sortOrder = direction?.toUpperCase() || 'DESC';
+          backendParams.sortOrder = direction?.toUpperCase() as 'ASC' | 'DESC' || 'DESC';
         }
         
         // Remove undefined values
         Object.keys(backendParams).forEach(key => 
-          backendParams[key] === undefined && delete backendParams[key]
+          backendParams[key as keyof IBackendBuildingQueryParams] === undefined && delete backendParams[key as keyof IBackendBuildingQueryParams]
         );
         
         return {
@@ -68,19 +57,19 @@ export const buildingApi = createApi({
           params: backendParams,
         };
       },
-      transformResponse: (response: BackendPaginatedResponse<any>) => {
+      transformResponse: (response: IBackendPaginatedResponse<IBackendBuildingResponse>) => {
         const transformed = transformPaginatedResponse(response);
         
         // Transform each building to match IBuildingListItem
-        const buildings: IBuildingListItem[] = transformed.items.map((building: any) => ({
+        const buildings: IBuildingListItem[] = (transformed.items as IBackendBuildingResponse[]).map((building: IBackendBuildingResponse) => ({
           id: building.id,
           name: building.name,
           address: `${building.street} ${building.number}${building.entrance ? `, Entrance ${building.entrance}` : ''}, ${building.district}, ${building.city} ${building.postalCode}`,
           type: building.type,
           apartmentCount: building.totalUnits || building.apartmentCount || 0,
-          balance: parseFloat(building.balance || '0'),
-          monthlyFee: parseFloat(building.monthlyFee || '0'),
-          debt: parseFloat(building.debt || '0'),
+          balance: parseFloat(building.balance.toString()),
+          monthlyFee: parseFloat(building.monthlyFee.toString()),
+          debt: parseFloat(building.debt.toString()),
           irregularities: building.irregularities || 0,
           status: building.status,
           createdAt: building.createdAt,
@@ -95,14 +84,14 @@ export const buildingApi = createApi({
     }),
     getBuilding: builder.query<IBuildingResponse, string>({
       query: (id) => `buildings/${id}`,
-      transformResponse: (response: { data: any; statusCode: number; timestamp: string }) => {
+      transformResponse: (response: IBackendBuildingApiResponse<IBackendBuildingResponse>) => {
         const building = response.data;
         return {
           ...building,
           address: `${building.street} ${building.number}${building.entrance ? `, Entrance ${building.entrance}` : ''}, ${building.district}, ${building.city} ${building.postalCode}`,
-          balance: parseFloat(building.balance || '0'),
-          monthlyFee: parseFloat(building.monthlyFee || '0'),
-          debt: parseFloat(building.debt || '0'),
+          balance: parseFloat(building.balance.toString()),
+          monthlyFee: parseFloat(building.monthlyFee.toString()),
+          debt: parseFloat(building.debt.toString()),
           apartmentCount: building.totalUnits || building.apartmentCount || 0,
           irregularities: building.irregularities || 0,
         };
@@ -115,14 +104,14 @@ export const buildingApi = createApi({
         method: 'POST',
         body: building,
       }),
-      transformResponse: (response: { data: any; statusCode: number; timestamp: string }) => {
+      transformResponse: (response: IBackendBuildingApiResponse<IBackendBuildingResponse>) => {
         const building = response.data;
         return {
           ...building,
           address: `${building.street} ${building.number}${building.entrance ? `, Entrance ${building.entrance}` : ''}, ${building.district}, ${building.city} ${building.postalCode}`,
-          balance: parseFloat(building.balance || '0'),
-          monthlyFee: parseFloat(building.monthlyFee || '0'),
-          debt: parseFloat(building.debt || '0'),
+          balance: parseFloat(building.balance.toString()),
+          monthlyFee: parseFloat(building.monthlyFee.toString()),
+          debt: parseFloat(building.debt.toString()),
           apartmentCount: building.totalUnits || building.apartmentCount || 0,
           irregularities: building.irregularities || 0,
         };
@@ -135,14 +124,14 @@ export const buildingApi = createApi({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (response: { data: any; statusCode: number; timestamp: string }) => {
+      transformResponse: (response: IBackendBuildingApiResponse<IBackendBuildingResponse>) => {
         const building = response.data;
         return {
           ...building,
           address: `${building.street} ${building.number}${building.entrance ? `, Entrance ${building.entrance}` : ''}, ${building.district}, ${building.city} ${building.postalCode}`,
-          balance: parseFloat(building.balance || '0'),
-          monthlyFee: parseFloat(building.monthlyFee || '0'),
-          debt: parseFloat(building.debt || '0'),
+          balance: parseFloat(building.balance.toString()),
+          monthlyFee: parseFloat(building.monthlyFee.toString()),
+          debt: parseFloat(building.debt.toString()),
           apartmentCount: building.totalUnits || building.apartmentCount || 0,
           irregularities: building.irregularities || 0,
         };

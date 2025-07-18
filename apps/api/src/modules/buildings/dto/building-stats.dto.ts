@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IBackendBuildingStatsResponse } from '@repo/interfaces';
 
-export class BuildingStatsDto {
+export class BuildingStatsDto implements IBackendBuildingStatsResponse {
   @ApiProperty({
     description: 'Building ID',
     example: '550e8400-e29b-41d4-a716-446655440000',
@@ -41,13 +42,13 @@ export class BuildingStatsDto {
     description: 'Monthly rental income',
     example: 48000,
   })
-  monthlyRevenue: number;
+  monthlyRevenue: string | number;
 
   @ApiProperty({
     description: 'Annual rental income',
     example: 576000,
   })
-  annualRevenue: number;
+  annualRevenue: string | number;
 
   @ApiProperty({
     description: 'Whether the building is fully occupied',
@@ -65,5 +66,5 @@ export class BuildingStatsDto {
     description: 'Next tax generation date',
     example: '2024-02-01T00:00:00Z',
   })
-  nextTaxDate: Date;
+  nextTaxDate: string;
 }

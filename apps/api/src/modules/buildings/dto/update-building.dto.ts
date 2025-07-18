@@ -14,9 +14,10 @@ import {
   BuildingType,
   BuildingStatus,
   TaxGenerationPeriod,
+  IUpdateBuildingRequest,
 } from '@repo/interfaces';
 
-export class UpdateBuildingDto {
+export class UpdateBuildingDto implements IUpdateBuildingRequest {
   @ApiProperty({
     description: 'Building name',
     example: 'Сграда Витоша',

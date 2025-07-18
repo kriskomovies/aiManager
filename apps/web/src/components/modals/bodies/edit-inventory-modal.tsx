@@ -4,30 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Toggle } from '@/components/ui/toggle';
+
 import { Edit, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
-
-interface InventoryData {
-  id: string;
-  name: string;
-  title?: string;
-  description?: string;
-  visibleInApp: boolean;
-  amount: number;
-  isMandatory: boolean;
-  type: 'main' | 'deposit' | 'custom';
-}
+import { 
+  useUpdateInventoryMutation
+} from '@/redux/services/inventory.service';
+import { IInventoryResponse, IUpdateInventoryRequest } from '@repo/interfaces';
 
 interface EditInventoryFormData {
   name: string;
   description: string;
   visibleInApp: boolean;
   currentAmount: number;
-  addAmount: boolean;
-  newAmount: number;
 }
 
 interface EditInventoryModalProps {
@@ -38,15 +29,16 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   
-  const inventoryData = modalData?.inventoryData as InventoryData;
+  const inventoryData = modalData?.inventoryData as IInventoryResponse;
+
+  // API mutations
+  const [updateInventory] = useUpdateInventoryMutation();
 
   const [formData, setFormData] = useState<EditInventoryFormData>({
     name: '',
     description: '',
     visibleInApp: false,
     currentAmount: 0,
-    addAmount: false,
-    newAmount: 0,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,8 +51,6 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
         description: inventoryData.description || '',
         visibleInApp: inventoryData.visibleInApp,
         currentAmount: inventoryData.amount,
-        addAmount: false,
-        newAmount: 0,
       });
     }
   }, [inventoryData]);
@@ -85,14 +75,41 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
       return;
     }
 
+    if (!inventoryData?.id) {
+      dispatch(addAlert({
+        type: 'error',
+        title: 'Грешка',
+        message: 'Липсва информация за касата.',
+        duration: 5000
+      }));
+      return;
+    }
+
+
+
+    // Check if trying to edit main inventory name
+    if (inventoryData.isMain && formData.name !== inventoryData.name) {
+      dispatch(addAlert({
+        type: 'error',
+        title: 'Грешка',
+        message: 'Не можете да променяте името на основната каса.',
+        duration: 5000
+      }));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement actual update inventory API call
-      console.log('Updating inventory with data:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Prepare update data
+      const updateData: IUpdateInventoryRequest = {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        visibleInApp: formData.visibleInApp,
+      };
+
+      // Update inventory details
+      await updateInventory({ id: inventoryData.id, updates: updateData }).unwrap();
       
       dispatch(addAlert({
         type: 'success',
@@ -105,10 +122,14 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
     } catch (error) {
       console.error('Error updating inventory:', error);
       
+      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || 
+                          (error as { message?: string })?.message || 
+                          'Възникна грешка при обновяването на касата. Моля опитайте отново.';
+      
       dispatch(addAlert({
         type: 'error',
         title: 'Грешка при обновяване',
-        message: 'Възникна грешка при обновяването на касата. Моля опитайте отново.',
+        message: errorMessage,
         duration: 5000
       }));
     } finally {
@@ -135,6 +156,11 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
       {/* Subtitle */}
       <p className="text-sm text-gray-600 mb-6">
         {inventoryData?.description || `Редактиране на каса "${inventoryData?.name || 'Неизвестна'}"`}
+        {inventoryData?.isMain && (
+          <span className="block mt-1 text-amber-600 font-medium">
+            Основна каса - ограничени промени
+          </span>
+        )}
       </p>
 
       {/* Form */}
@@ -146,9 +172,14 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
             value={formData.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="Въведете име на касата"
-            disabled={isSubmitting}
+            disabled={isSubmitting || inventoryData?.isMain}
             required
           />
+          {inventoryData?.isMain && (
+            <p className="text-xs text-amber-600 mt-1">
+              Името на основната каса не може да бъде променено
+            </p>
+          )}
         </div>
 
         <div>
@@ -178,14 +209,13 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
           <Label>Сума</Label>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="currentAmount">Наличност</Label>
+              <Label htmlFor="currentAmount">Текуща наличност</Label>
               <div className="relative">
                 <Input
                   id="currentAmount"
                   type="number"
                   value={formData.currentAmount}
-                  onChange={(e) => handleInputChange('currentAmount', parseFloat(e.target.value) || 0)}
-                  disabled={isSubmitting}
+                  disabled={true}
                   min="0"
                   step="0.01"
                 />
@@ -193,40 +223,16 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
                   лв.
                 </span>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Наличността се управлява чрез трансфери между каси
+              </p>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Toggle
-                pressed={formData.addAmount}
-                onPressedChange={(pressed) => handleInputChange('addAmount', pressed)}
-                disabled={isSubmitting}
-                className="data-[state=on]:bg-red-500 data-[state=on]:text-white"
-              />
-              <Label className="text-sm">
-                Добави Сума
-              </Label>
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                💡 <strong>Информация:</strong> За добавяне или прехвърляне на суми използвайте бутона "Прехвърляне на пари" в главната страница на касите.
+              </p>
             </div>
-
-            {formData.addAmount && (
-              <div>
-                <Label htmlFor="newAmount">Сума</Label>
-                <div className="relative">
-                  <Input
-                    id="newAmount"
-                    type="number"
-                    value={formData.newAmount}
-                    onChange={(e) => handleInputChange('newAmount', parseFloat(e.target.value) || 0)}
-                    placeholder="Сума за внасяне в касата"
-                    disabled={isSubmitting}
-                    min="0"
-                    step="0.01"
-                  />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
-                    лв.
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

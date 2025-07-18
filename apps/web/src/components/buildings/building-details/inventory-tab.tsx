@@ -8,7 +8,11 @@ import {
   Building2,
 } from 'lucide-react';
 
-export function InventoryTab() {
+interface InventoryTabProps {
+  buildingId: string;
+}
+
+export function InventoryTab({ buildingId }: InventoryTabProps) {
   // Mock data for the information cards
   const inventoryStats = {
     mainCash: {
@@ -86,7 +90,7 @@ export function InventoryTab() {
       </div>
 
       {/* All Inventories Component with Tabs */}
-      <BuildingInventory />
+      <BuildingInventory buildingId={buildingId} />
     </div>
   );
 }

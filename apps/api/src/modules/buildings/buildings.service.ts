@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BuildingEntity } from '../../database/entities/building.entity';
 import { BuildingRepository } from '../../database/repositories/building.repository';
+import { InventoriesService } from '../inventories/inventories.service';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { UpdateBuildingDto } from './dto/update-building.dto';
 import { BuildingQueryDto } from './dto/building-query.dto';
@@ -10,7 +11,10 @@ import { BuildingStatus } from '@repo/interfaces';
 
 @Injectable()
 export class BuildingsService {
-  constructor(private readonly buildingRepository: BuildingRepository) {}
+  constructor(
+    private readonly buildingRepository: BuildingRepository,
+    private readonly inventoriesService: InventoriesService,
+  ) {}
 
   async createBuilding(
     createBuildingDto: CreateBuildingDto,
@@ -20,7 +24,7 @@ export class BuildingsService {
       ...createBuildingDto,
       homebookStartDate: new Date(createBuildingDto.homebookStartDate),
       // Set default values for fields not in DTO but required by database
-      status: createBuildingDto.status || BuildingStatus.ACTIVE,
+      status: BuildingStatus.ACTIVE,
       balance: 0,
       monthlyFee: 0,
       debt: 0,
@@ -32,7 +36,12 @@ export class BuildingsService {
       annualRevenue: 0,
     };
 
-    return await this.buildingRepository.create(buildingData);
+    const building = await this.buildingRepository.create(buildingData);
+
+    // Create main inventory for the building
+    await this.inventoriesService.createMainInventoryForBuilding(building.id);
+
+    return building;
   }
 
   async findById(id: string): Promise<BuildingEntity> {
@@ -117,7 +126,8 @@ export class BuildingsService {
       annualRevenue,
       isFullyOccupied: occupiedUnits === totalUnits && totalUnits > 0,
       canGenerateTax: building.status === BuildingStatus.ACTIVE,
-      nextTaxDate: building.nextTaxDate || new Date(),
+      nextTaxDate:
+        building.nextTaxDate?.toISOString() || new Date().toISOString(),
     };
 
     return stats;

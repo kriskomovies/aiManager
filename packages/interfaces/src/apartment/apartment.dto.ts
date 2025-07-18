@@ -101,6 +101,7 @@ export interface IUpdateApartmentRequest {
   cashierNote?: string;
   monthlyRent?: number;
   maintenanceFee?: number;
+  debt?: number;
 }
 
 // Apartment Response DTO
@@ -160,4 +161,84 @@ export interface IApartmentStats {
   averageRent: number;
   totalResidents: number;
   totalPets: number;
+}
+
+// Backend API Response Types
+export interface IBackendApartmentResponse {
+  id: string;
+  buildingId: string;
+  type: ApartmentType;
+  number: string;
+  floor: number;
+  quadrature: string | number;
+  commonParts?: string | number;
+  idealParts?: string | number;
+  residentsCount: number;
+  pets: number;
+  status: ApartmentStatus;
+  invoiceEnabled: boolean;
+  blockForPayment: boolean;
+  cashierNote?: string;
+  monthlyRent?: string | number;
+  maintenanceFee?: string | number;
+  debt?: string | number;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+  building?: {
+    id: string;
+    name: string;
+    address: string;
+  };
+  residents?: Array<{
+    id: string;
+    apartmentId: string;
+    name: string;
+    surname: string;
+    phone: string;
+    email: string;
+    role: ResidentRole;
+    isMainContact: boolean;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+}
+
+export interface IBackendApartmentStatsResponse {
+  totalApartments: number;
+  occupiedApartments: number;
+  vacantApartments: number;
+  maintenanceApartments: number;
+  reservedApartments: number;
+  occupancyRate: number;
+  totalDebt: string | number;
+  totalMonthlyRevenue: string | number;
+  averageQuadrature: string | number;
+  totalQuadrature: string | number;
+  apartmentsWithDebt: number;
+  averageRent: string | number;
+  totalResidents: number;
+  totalPets: number;
+}
+
+export interface IBackendApartmentApiResponse<T> {
+  data: T;
+  statusCode: number;
+  timestamp: string;
+}
+
+export interface IBackendApartmentQueryParams {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+  search?: string;
+  buildingId?: string;
+  type?: ApartmentType;
+  status?: ApartmentStatus;
+  floor?: number;
+  hasDebt?: boolean;
+  minQuadrature?: number;
+  maxQuadrature?: number;
 } 

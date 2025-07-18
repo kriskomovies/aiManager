@@ -12,11 +12,11 @@ import {
 } from 'class-validator';
 import {
   BuildingType,
-  BuildingStatus,
   TaxGenerationPeriod,
+  ICreateBuildingRequest,
 } from '@repo/interfaces';
 
-export class CreateBuildingDto {
+export class CreateBuildingDto implements ICreateBuildingRequest {
   @ApiProperty({
     description: 'Building name',
     example: 'Сграда Витоша',
@@ -31,16 +31,6 @@ export class CreateBuildingDto {
   })
   @IsEnum(BuildingType)
   type: BuildingType;
-
-  @ApiProperty({
-    description: 'Building status',
-    enum: BuildingStatus,
-    example: BuildingStatus.ACTIVE,
-    required: false,
-  })
-  @IsEnum(BuildingStatus)
-  @IsOptional()
-  status?: BuildingStatus;
 
   // Address fields
   @ApiProperty({
@@ -74,9 +64,11 @@ export class CreateBuildingDto {
   @ApiProperty({
     description: 'Entrance',
     example: 'А',
+    required: false,
   })
   @IsString()
-  entrance: string;
+  @IsOptional()
+  entrance?: string;
 
   @ApiProperty({
     description: 'Postal code',
@@ -89,34 +81,42 @@ export class CreateBuildingDto {
   @ApiProperty({
     description: 'Common parts area in square meters',
     example: 150.5,
+    required: false,
   })
   @IsNumber()
   @Min(0)
-  commonPartsArea: number;
+  @IsOptional()
+  commonPartsArea?: number;
 
   @ApiProperty({
     description: 'Total building area in square meters',
     example: 2500,
+    required: false,
   })
   @IsNumber()
   @Min(0)
-  quadrature: number;
+  @IsOptional()
+  quadrature?: number;
 
   @ApiProperty({
     description: 'Number of parking slots',
     example: 24,
+    required: false,
   })
   @IsNumber()
   @Min(0)
-  parkingSlots: number;
+  @IsOptional()
+  parkingSlots?: number;
 
   @ApiProperty({
     description: 'Number of basements',
     example: 1,
+    required: false,
   })
   @IsNumber()
   @Min(0)
-  basements: number;
+  @IsOptional()
+  basements?: number;
 
   // Tax settings
   @ApiProperty({
@@ -154,9 +154,11 @@ export class CreateBuildingDto {
   @ApiProperty({
     description: 'Description of the building',
     example: 'Modern residential building with elevator',
+    required: false,
   })
   @IsString()
-  description: string;
+  @IsOptional()
+  description?: string;
 
   // People with access - for now just store as array of IDs
   @ApiProperty({

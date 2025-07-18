@@ -7,20 +7,24 @@ import {
   Plus
 } from 'lucide-react';
 
-export function AllInventoriesTab() {
+interface AllInventoriesTabProps {
+  buildingId: string;
+}
+
+export function AllInventoriesTab({ buildingId }: AllInventoriesTabProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateInventory = () => {
     dispatch(openModal({
       type: 'create-inventory',
-      data: {}
+      data: { buildingId }
     }));
   };
 
   const handleTransferMoney = () => {
     dispatch(openModal({
       type: 'transfer-inventory-money',
-      data: {}
+      data: { buildingId }
     }));
   };
 
@@ -47,7 +51,7 @@ export function AllInventoriesTab() {
           </Button>
         </div>
       </div>
-      <InventoriesTable />
+      <InventoriesTable buildingId={buildingId} />
     </div>
   );
 }

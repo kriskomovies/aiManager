@@ -13,6 +13,7 @@ import {
   TaxGenerationPeriod,
 } from '@repo/interfaces';
 import { ApartmentEntity } from './apartment.entity';
+import { InventoryEntity } from './inventory.entity';
 
 @Entity('buildings')
 export class BuildingEntity {
@@ -274,6 +275,11 @@ export class BuildingEntity {
     cascade: true,
   })
   apartments: ApartmentEntity[];
+
+  @OneToMany(() => InventoryEntity, (inventory) => inventory.building, {
+    cascade: true,
+  })
+  inventories: InventoryEntity[];
 
   // Computed property for address
   get address(): string {

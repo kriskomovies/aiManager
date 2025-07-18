@@ -12,7 +12,11 @@ import {
   IsEmail,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApartmentType, ResidentRole } from '@repo/interfaces';
+import {
+  ApartmentType,
+  ResidentRole,
+  ICreateApartmentRequest,
+} from '@repo/interfaces';
 
 export class CreateResidentDto {
   @ApiProperty({ description: 'Resident first name', example: 'John' })
@@ -53,7 +57,7 @@ export class CreateResidentDto {
   isMainContact: boolean;
 }
 
-export class CreateApartmentDto {
+export class CreateApartmentDto implements ICreateApartmentRequest {
   @ApiProperty({
     description: 'Building ID this apartment belongs to',
     example: '550e8400-e29b-41d4-a716-446655440000',
@@ -174,11 +178,9 @@ export class CreateApartmentDto {
   @ApiProperty({
     description: 'Residents data',
     type: [CreateResidentDto],
-    required: false,
   })
-  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateResidentDto)
-  residents?: CreateResidentDto[];
+  residents: CreateResidentDto[];
 }

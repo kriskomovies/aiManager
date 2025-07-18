@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
+import { useGetInventoriesByBuildingQuery } from '@/redux/services/inventory.service';
+import { IInventoryResponse } from '@repo/interfaces';
 import { 
   Eye, 
   Edit, 
@@ -12,70 +14,26 @@ import {
   TrendingUp
 } from 'lucide-react';
 
-interface InventoryData {
-  id: string;
-  name: string;
-  title?: string;
-  description?: string;
-  visibleInApp: boolean;
-  amount: number;
-  isMandatory: boolean;
-  type: 'main' | 'deposit' | 'custom';
+interface InventoriesTableProps {
+  buildingId: string;
 }
 
-export function InventoriesTable() {
+export function InventoriesTable({ buildingId }: InventoriesTableProps) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
-    field: keyof InventoryData;
+    field: keyof IInventoryResponse;
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Mock data for inventories
-  const mockInventories: InventoryData[] = [
-    {
-      id: '1',
-      name: 'Основна Каса',
-      title: 'Основна Каса за Сграда',
-      description: 'Основна каса за всички общи разходи и приходи на сградата',
-      visibleInApp: true,
-      amount: 585.00,
-      isMandatory: true,
-      type: 'main'
-    },
-    {
-      id: '2',
-      name: 'Депозит',
-      title: 'Депозитна Каса',
-      description: 'Каса за депозити от наематели и собственици',
-      visibleInApp: true,
-      amount: 200.00,
-      isMandatory: true,
-      type: 'deposit'
-    },
-    {
-      id: '3',
-      name: 'Резервна Каса',
-      title: 'Резервна Каса за Спешни Случаи',
-      description: 'Резервна каса за непредвидени разходи и спешни ремонти',
-      visibleInApp: false,
-      amount: 150.00,
-      isMandatory: false,
-      type: 'custom'
-    },
-    {
-      id: '4',
-      name: 'Каса за Ремонти',
-      title: 'Каса за Ремонти и Поддръжка',
-      description: 'Специализирана каса за ремонтни дейности и поддръжка на сградата',
-      visibleInApp: true,
-      amount: 320.50,
-      isMandatory: false,
-      type: 'custom'
-    },
-  ];
+  // Fetch inventories data
+  const { 
+    data: inventories = [], 
+    isLoading, 
+    error 
+  } = useGetInventoriesByBuildingQuery(buildingId);
 
-  const handleViewInventory = (inventory: InventoryData) => {
+  const handleViewInventory = (inventory: IInventoryResponse) => {
     dispatch(openModal({
       type: 'inventory-transfers',
       data: { 
@@ -86,7 +44,7 @@ export function InventoriesTable() {
     }));
   };
 
-  const handleEditInventory = (inventory: InventoryData) => {
+  const handleEditInventory = (inventory: IInventoryResponse) => {
     dispatch(openModal({
       type: 'edit-inventory',
       data: { 
@@ -97,7 +55,7 @@ export function InventoriesTable() {
     }));
   };
 
-  const handleDeleteInventory = (inventory: InventoryData) => {
+  const handleDeleteInventory = (inventory: IInventoryResponse) => {
     dispatch(openModal({
       type: 'delete-inventory',
       data: { 
@@ -108,7 +66,7 @@ export function InventoriesTable() {
     }));
   };
 
-  const columns: Column<InventoryData>[] = [
+  const columns: Column<IInventoryResponse>[] = [
     {
       header: 'Име на каса',
       accessorKey: 'name',
@@ -118,13 +76,12 @@ export function InventoriesTable() {
       minWidth: '200px',
       cell: row => (
         <div className="flex items-center gap-2">
-          {row.type === 'main' && <Wallet className="h-4 w-4 text-green-600" />}
-          {row.type === 'deposit' && <TrendingUp className="h-4 w-4 text-blue-600" />}
-          {row.type === 'custom' && <Wallet className="h-4 w-4 text-gray-600" />}
+          {row.isMain && <Wallet className="h-4 w-4 text-green-600" />}
+          {!row.isMain && <TrendingUp className="h-4 w-4 text-blue-600" />}
           <span className="font-medium text-gray-900">{row.name}</span>
-          {row.isMandatory && (
+          {row.isMain && (
             <Badge variant="neutral" className="text-xs">
-              Задължителна
+              Основна
             </Badge>
           )}
         </div>
@@ -171,7 +128,7 @@ export function InventoriesTable() {
             <Eye className="h-4 w-4" />
           </Button>
           
-          {!row.isMandatory && (
+          {!row.isMain && (
             <>
               <Button
                 variant="ghost"
@@ -199,10 +156,19 @@ export function InventoriesTable() {
     },
   ];
 
+  // Handle loading and error states
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <p className="text-red-600">Грешка при зареждането на касите</p>
+      </div>
+    );
+  }
+
   const transformedData = {
-    items: mockInventories,
+    items: inventories,
     meta: {
-      pageCount: Math.ceil(mockInventories.length / 10),
+      pageCount: Math.ceil(inventories.length / 10),
     },
   };
 
@@ -210,9 +176,9 @@ export function InventoriesTable() {
     <DataTable
       columns={columns}
       data={transformedData.items}
-      isLoading={false}
+      isLoading={isLoading}
       isFetching={false}
-      error={null}
+      error={error}
       page={page}
       pageCount={transformedData.meta.pageCount}
       sorting={sorting}

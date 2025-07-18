@@ -3,18 +3,15 @@ import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
-  IsEnum,
+  IsBoolean,
   IsNumber,
+  IsUUID,
   Min,
   Max,
 } from 'class-validator';
-import {
-  BuildingType,
-  BuildingStatus,
-  IBackendBuildingQueryParams,
-} from '@repo/interfaces';
+import { IBackendQueryParams } from '@repo/interfaces';
 
-export class BuildingQueryDto implements IBackendBuildingQueryParams {
+export class InventoryQueryDto implements IBackendQueryParams {
   @ApiPropertyOptional({
     description: 'Page number for pagination',
     example: 1,
@@ -53,58 +50,64 @@ export class BuildingQueryDto implements IBackendBuildingQueryParams {
     example: 'DESC',
   })
   @IsOptional()
-  @IsEnum(['ASC', 'DESC'])
+  @IsString()
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
 
   @ApiPropertyOptional({
-    description: 'Search term for building name or address',
-    example: 'sunset',
+    description: 'Search term for inventory name, title, or description',
+    example: 'repair',
   })
   @IsOptional()
   @IsString()
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by building type',
-    enum: BuildingType,
-    example: BuildingType.RESIDENTIAL,
+    description: 'Filter by building ID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
   })
   @IsOptional()
-  @IsEnum(BuildingType)
-  type?: BuildingType;
+  @IsUUID()
+  buildingId?: string;
 
   @ApiPropertyOptional({
-    description: 'Filter by building status',
-    enum: BuildingStatus,
-    example: BuildingStatus.ACTIVE,
+    description: 'Filter by main inventory status',
+    example: false,
   })
   @IsOptional()
-  @IsEnum(BuildingStatus)
-  status?: BuildingStatus;
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  isMain?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Filter by minimum occupancy rate',
-    example: 80,
-    minimum: 0,
-    maximum: 100,
+    description: 'Filter by visibility in app',
+    example: true,
   })
   @IsOptional()
-  @Transform(({ value }) => parseInt(String(value)))
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  minOccupancyRate?: number;
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  visibleInApp?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Filter by maximum occupancy rate',
-    example: 100,
-    minimum: 0,
-    maximum: 100,
+    description: 'Transaction type filter',
+    example: 'TRANSFER',
   })
   @IsOptional()
-  @Transform(({ value }) => parseInt(String(value)))
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  maxOccupancyRate?: number;
+  @IsString()
+  type?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter transactions from date',
+    example: '2024-01-01',
+  })
+  @IsOptional()
+  @IsString()
+  fromDate?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter transactions to date',
+    example: '2024-12-31',
+  })
+  @IsOptional()
+  @IsString()
+  toDate?: string;
 }

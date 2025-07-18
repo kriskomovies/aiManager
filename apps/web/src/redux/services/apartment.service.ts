@@ -8,7 +8,23 @@ import {
   IApartmentStats,
   ApartmentStatus,
   IPaginatedResponse,
+  IBackendApartmentResponse,
+  IBackendApartmentApiResponse,
+  IBackendApartmentStatsResponse,
+  IBackendPaginatedResponse,
+  IBackendApartmentQueryParams,
 } from '@repo/interfaces';
+
+// Transform backend response to frontend format
+const transformPaginatedResponse = <T>(response: IBackendPaginatedResponse<T>): IPaginatedResponse<T> => ({
+  items: response.data.data,
+  meta: {
+    page: response.data.page,
+    pageSize: response.data.limit,
+    pageCount: response.data.totalPages,
+    total: response.data.total,
+  },
+});
 
 export const apartmentService = createApi({
   reducerPath: 'apartmentService',
@@ -17,18 +33,74 @@ export const apartmentService = createApi({
   endpoints: (builder) => ({
     // Get all apartments with filtering and pagination
     getApartments: builder.query<IPaginatedResponse<IApartmentResponse>, IApartmentQueryParams>({
-      query: (params) => ({
-        url: 'apartments',
-        params,
-      }),
+      query: (params) => {
+        // Transform frontend params to backend params
+        const backendParams: IBackendApartmentQueryParams = {
+          page: params.page,
+          limit: params.pageSize,
+          search: params.search,
+          buildingId: params.buildingId,
+          type: params.type,
+          status: params.status,
+          floor: params.floor,
+          hasDebt: params.hasDebt,
+          minQuadrature: params.minQuadrature,
+          maxQuadrature: params.maxQuadrature,
+        };
+
+        // Transform sort parameter
+        if (params.sort) {
+          const [field, direction] = params.sort.split(':');
+          backendParams.sortBy = field;
+          backendParams.sortOrder = direction?.toUpperCase() as 'ASC' | 'DESC' || 'DESC';
+        }
+
+        // Remove undefined values
+        Object.keys(backendParams).forEach(key =>
+          backendParams[key as keyof IBackendApartmentQueryParams] === undefined && delete backendParams[key as keyof IBackendApartmentQueryParams]
+        );
+
+        return {
+          url: 'apartments',
+          params: backendParams,
+        };
+      },
+      transformResponse: (response: IBackendPaginatedResponse<IBackendApartmentResponse>) => {
+        const transformed = transformPaginatedResponse(response);
+        
+        // Transform each apartment
+        const apartments: IApartmentResponse[] = (transformed.items as IBackendApartmentResponse[]).map((apartment: IBackendApartmentResponse) => ({
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        }));
+        
+        return {
+          ...transformed,
+          items: apartments,
+        };
+      },
       providesTags: ['Apartment'],
     }),
 
     // Get apartment by ID
     getApartmentById: builder.query<IApartmentResponse, string>({
       query: (id) => `apartments/${id}`,
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       providesTags: (_result, _error, id) => [{ type: 'Apartment', id }],
     }),
@@ -36,8 +108,16 @@ export const apartmentService = createApi({
     // Get apartments by building ID
     getApartmentsByBuilding: builder.query<IApartmentResponse[], string>({
       query: (buildingId) => `apartments/building/${buildingId}`,
-      transformResponse: (response: { data: IApartmentResponse[]; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse[]>) => {
+        return response.data.map((apartment: IBackendApartmentResponse) => ({
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        }));
       },
       providesTags: (_result, _error, buildingId) => [
         { type: 'Apartment', id: `building-${buildingId}` },
@@ -51,8 +131,17 @@ export const apartmentService = createApi({
         method: 'POST',
         body: apartment,
       }),
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       invalidatesTags: ['Apartment', 'ApartmentStats'],
     }),
@@ -64,8 +153,17 @@ export const apartmentService = createApi({
         method: 'PATCH',
         body: updates,
       }),
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Apartment', id },
@@ -93,8 +191,16 @@ export const apartmentService = createApi({
         url: 'apartments/stats',
         params: buildingId ? { buildingId } : undefined,
       }),
-      transformResponse: (response: { data: IApartmentStats; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentStatsResponse>) => {
+        const stats = response.data;
+        return {
+          ...stats,
+          totalDebt: parseFloat(stats.totalDebt.toString()),
+          totalMonthlyRevenue: parseFloat(stats.totalMonthlyRevenue.toString()),
+          averageQuadrature: parseFloat(stats.averageQuadrature.toString()),
+          totalQuadrature: parseFloat(stats.totalQuadrature.toString()),
+          averageRent: parseFloat(stats.averageRent.toString()),
+        };
       },
       providesTags: ['ApartmentStats'],
     }),
@@ -106,8 +212,17 @@ export const apartmentService = createApi({
         method: 'PATCH',
         body: { status },
       }),
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Apartment', id },
@@ -123,8 +238,17 @@ export const apartmentService = createApi({
         method: 'POST',
         body: { amount },
       }),
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Apartment', id },
@@ -140,8 +264,17 @@ export const apartmentService = createApi({
         method: 'POST',
         body: { amount },
       }),
-      transformResponse: (response: { data: IApartmentResponse; statusCode: number; timestamp: string }) => {
-        return response.data;
+      transformResponse: (response: IBackendApartmentApiResponse<IBackendApartmentResponse>) => {
+        const apartment = response.data;
+        return {
+          ...apartment,
+          quadrature: parseFloat(apartment.quadrature.toString()),
+          commonParts: apartment.commonParts ? parseFloat(apartment.commonParts.toString()) : undefined,
+          idealParts: apartment.idealParts ? parseFloat(apartment.idealParts.toString()) : undefined,
+          monthlyRent: apartment.monthlyRent ? parseFloat(apartment.monthlyRent.toString()) : undefined,
+          maintenanceFee: apartment.maintenanceFee ? parseFloat(apartment.maintenanceFee.toString()) : undefined,
+          debt: apartment.debt ? parseFloat(apartment.debt.toString()) : undefined,
+        };
       },
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Apartment', id },

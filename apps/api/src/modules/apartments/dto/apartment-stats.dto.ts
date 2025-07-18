@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IBackendApartmentStatsResponse } from '@repo/interfaces';
 
-export class ApartmentStatsDto {
+export class ApartmentStatsDto implements IBackendApartmentStatsResponse {
   @ApiProperty({
     description: 'Total number of apartments',
     example: 48,
@@ -41,25 +42,25 @@ export class ApartmentStatsDto {
     description: 'Total debt across all apartments',
     example: 1500.5,
   })
-  totalDebt: number;
+  totalDebt: string | number;
 
   @ApiProperty({
     description: 'Total monthly revenue potential',
     example: 38400,
   })
-  totalMonthlyRevenue: number;
+  totalMonthlyRevenue: string | number;
 
   @ApiProperty({
     description: 'Average apartment size in square meters',
     example: 85.3,
   })
-  averageQuadrature: number;
+  averageQuadrature: string | number;
 
   @ApiProperty({
     description: 'Total quadrature of all apartments',
     example: 4094.4,
   })
-  totalQuadrature: number;
+  totalQuadrature: string | number;
 
   @ApiProperty({
     description: 'Number of apartments with debt',
@@ -71,7 +72,7 @@ export class ApartmentStatsDto {
     description: 'Average monthly rent',
     example: 800,
   })
-  averageRent: number;
+  averageRent: string | number;
 
   @ApiProperty({
     description: 'Total number of residents',

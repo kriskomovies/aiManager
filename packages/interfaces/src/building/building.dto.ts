@@ -138,4 +138,73 @@ export interface IBuildingQueryParams {
   district?: string;
   status?: BuildingStatus;
   hasDebt?: boolean;
+}
+
+// Backend API Response Types
+export interface IBackendBuildingResponse {
+  id: string;
+  name: string;
+  type: BuildingType;
+  city: string;
+  district: string;
+  street: string;
+  number: string;
+  entrance?: string;
+  postalCode: string;
+  commonPartsArea?: number;
+  quadrature?: number;
+  parkingSlots?: number;
+  basements?: number;
+  apartmentCount?: number;
+  totalUnits?: number;
+  balance: string | number;
+  monthlyFee: string | number;
+  debt: string | number;
+  taxGenerationPeriod: TaxGenerationPeriod;
+  taxGenerationDay: number;
+  homebookStartDate: string;
+  invoiceEnabled: boolean;
+  status: BuildingStatus;
+  description?: string;
+  irregularities?: number;
+  createdAt: string;
+  updatedAt: string;
+  peopleWithAccess?: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }>;
+}
+
+export interface IBackendBuildingStatsResponse {
+  buildingId: string;
+  buildingName: string;
+  totalUnits: number;
+  occupiedUnits: number;
+  vacantUnits: number;
+  occupancyRate: number;
+  monthlyRevenue: string | number;
+  annualRevenue: string | number;
+  isFullyOccupied: boolean;
+  canGenerateTax: boolean;
+  nextTaxDate: string;
+}
+
+export interface IBackendBuildingApiResponse<T> {
+  data: T;
+  statusCode: number;
+  timestamp: string;
+}
+
+export interface IBackendBuildingQueryParams {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+  search?: string;
+  type?: BuildingType;
+  status?: BuildingStatus;
+  minOccupancyRate?: number;
+  maxOccupancyRate?: number;
 } 

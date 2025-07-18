@@ -3,13 +3,21 @@ import { config } from 'dotenv';
 import { BuildingEntity } from '../database/entities/building.entity';
 import { ApartmentEntity } from '../database/entities/apartment.entity';
 import { ResidentEntity } from '../database/entities/resident.entity';
+import { InventoryEntity } from '../database/entities/inventory.entity';
+import { InventoryTransactionEntity } from '../database/entities/inventory-transaction.entity';
 
 config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: [BuildingEntity, ApartmentEntity, ResidentEntity],
+  entities: [
+    BuildingEntity,
+    ApartmentEntity,
+    ResidentEntity,
+    InventoryEntity,
+    InventoryTransactionEntity,
+  ],
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',
   synchronize: false,

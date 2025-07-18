@@ -12,7 +12,11 @@ import {
   Clock
 } from 'lucide-react';
 
-export function BuildingInventory() {
+interface BuildingInventoryProps {
+  buildingId: string;
+}
+
+export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
   const [activeTab, setActiveTab] = useState('inventories');
 
   const tabs: TabConfig[] = [
@@ -41,7 +45,7 @@ export function BuildingInventory() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'inventories':
-        return <AllInventoriesTab />;
+        return <AllInventoriesTab buildingId={buildingId} />;
       case 'expenses':
         return <ExpensesTab />;
       case 'monthly-fees':
