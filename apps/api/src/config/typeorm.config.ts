@@ -5,6 +5,8 @@ import { ApartmentEntity } from '../database/entities/apartment.entity';
 import { ResidentEntity } from '../database/entities/resident.entity';
 import { InventoryEntity } from '../database/entities/inventory.entity';
 import { InventoryTransactionEntity } from '../database/entities/inventory-transaction.entity';
+import { TenantPaymentMethodEntity } from '../database/entities/tenant-payment-method.entity';
+import { UserPaymentMethodEntity } from '../database/entities/user-payment-method.entity';
 
 config();
 
@@ -17,6 +19,8 @@ export const AppDataSource = new DataSource({
     ResidentEntity,
     InventoryEntity,
     InventoryTransactionEntity,
+    TenantPaymentMethodEntity,
+    UserPaymentMethodEntity,
   ],
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',

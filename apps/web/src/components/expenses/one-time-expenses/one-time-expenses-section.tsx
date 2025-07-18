@@ -1,10 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { OneTimeExpensesTable } from './one-time-expenses-table';
 import { Plus } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
 export function OneTimeExpensesSection() {
+  const dispatch = useAppDispatch();
+
   const handleCreateExpense = () => {
-    console.log('Create one-time expense');
+    dispatch(openModal({
+      type: 'create-one-time-expense'
+    }));
   };
 
   return (

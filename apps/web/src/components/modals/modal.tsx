@@ -15,6 +15,7 @@ import { EditInventoryModal } from './bodies/edit-inventory-modal';
 import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
 import { TransferInventoryMoneyModal } from './bodies/transfer-inventory-money-modal';
 import { InventoryTransfersModal } from './bodies/inventory-transfers-modal';
+import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-modal';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -87,6 +88,9 @@ export function ModalContainer() {
       
       case 'inventory-transfers':
         return <InventoryTransfersModal onClose={handleClose} />;
+      
+      case 'create-one-time-expense':
+        return <CreateOneTimeExpenseModal onClose={handleClose} />;
       
       default:
         return null;
