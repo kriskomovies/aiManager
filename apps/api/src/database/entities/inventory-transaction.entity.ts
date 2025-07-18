@@ -9,6 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType } from '@repo/interfaces';
 import { InventoryEntity } from './inventory.entity';
+import { UserPaymentMethodEntity } from './user-payment-method.entity';
 
 @Entity('inventory_transactions')
 export class InventoryTransactionEntity {
@@ -32,6 +33,13 @@ export class InventoryTransactionEntity {
   })
   @Column({ type: 'uuid', name: 'to_inventory_id', nullable: true })
   toInventoryId?: string;
+
+  @ApiProperty({
+    description: 'User payment method ID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @Column({ type: 'uuid', name: 'user_payment_method_id', nullable: true })
+  userPaymentMethodId?: string;
 
   @ApiProperty({
     description: 'Transaction type',
@@ -95,4 +103,11 @@ export class InventoryTransactionEntity {
   })
   @JoinColumn({ name: 'to_inventory_id' })
   toInventory?: InventoryEntity;
+
+  @ManyToOne(() => UserPaymentMethodEntity, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'user_payment_method_id' })
+  userPaymentMethod?: UserPaymentMethodEntity;
 }

@@ -4,6 +4,7 @@ import { companyApi } from './services/company.service';
 import { buildingApi } from './services/building.service';
 import { apartmentService } from './services/apartment.service';
 import { inventoryService } from './services/inventory.service';
+import { paymentMethodService } from './services/payment-method.service';
 import appStateReducer from './slices/app-state';
 import alertReducer from './slices/alert-slice';
 import modalReducer from './slices/modal-slice';
@@ -17,6 +18,7 @@ export const store = configureStore({
     [buildingApi.reducerPath]: buildingApi.reducer,
     [apartmentService.reducerPath]: apartmentService.reducer,
     [inventoryService.reducerPath]: inventoryService.reducer,
+    [paymentMethodService.reducerPath]: paymentMethodService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -24,6 +26,7 @@ export const store = configureStore({
       buildingApi.middleware,
       apartmentService.middleware,
       inventoryService.middleware,
+      paymentMethodService.middleware,
     ),
 });
 

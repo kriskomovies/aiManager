@@ -234,6 +234,29 @@ export const inventoryService = createApi({
       },
       providesTags: ['InventoryTransaction'],
     }),
+
+    // Create expense transaction
+    createExpense: builder.mutation<IInventoryTransaction, { sourceInventoryId: string; userPaymentMethodId: string; amount: number; description?: string }>({
+      query: ({ sourceInventoryId, userPaymentMethodId, amount, description }) => ({
+        url: 'inventories/expense',
+        method: 'POST',
+        body: {
+          sourceInventoryId,
+          userPaymentMethodId,
+          amount,
+          description,
+        },
+      }),
+      transformResponse: (response: IBackendApiResponse<IBackendTransactionResponse>) => {
+        const transaction = response.data;
+        return {
+          ...transaction,
+          amount: parseFloat(transaction.amount.toString()),
+          type: transaction.type as IInventoryTransaction['type'],
+        };
+      },
+      invalidatesTags: ['Inventory', 'InventoryTransaction', 'InventoryStats'],
+    }),
   }),
 });
 
@@ -247,4 +270,5 @@ export const {
   useTransferMoneyMutation,
   useGetInventoryStatsQuery,
   useGetInventoryTransactionsQuery,
+  useCreateExpenseMutation,
 } = inventoryService; 

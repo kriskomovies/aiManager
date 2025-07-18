@@ -4,12 +4,17 @@ import { Plus } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 
-export function OneTimeExpensesSection() {
+interface OneTimeExpensesSectionProps {
+  buildingId: string;
+}
+
+export function OneTimeExpensesSection({ buildingId }: OneTimeExpensesSectionProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateExpense = () => {
     dispatch(openModal({
-      type: 'create-one-time-expense'
+      type: 'create-one-time-expense',
+      data: { buildingId }
     }));
   };
 

@@ -23,6 +23,7 @@ import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { InventoryTransferDto } from './dto/inventory-transfer.dto';
 import { InventoryQueryDto } from './dto/inventory-query.dto';
+import { CreateExpenseDto } from './dto/create-expense.dto';
 import { InventoryEntity } from '../../database/entities/inventory.entity';
 import { InventoryTransactionEntity } from '../../database/entities/inventory-transaction.entity';
 import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
@@ -171,5 +172,25 @@ export class InventoriesController {
     @Body() transferDto: InventoryTransferDto,
   ): Promise<InventoryTransactionEntity> {
     return this.inventoriesService.transferMoney(transferDto);
+  }
+
+  @Post('expense')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create an expense transaction' })
+  @ApiBody({ type: CreateExpenseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Expense created successfully',
+    type: InventoryTransactionEntity,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid expense data or insufficient funds',
+  })
+  @ApiResponse({ status: 404, description: 'Inventory or payment method not found' })
+  async createExpense(
+    @Body() createExpenseDto: CreateExpenseDto,
+  ): Promise<InventoryTransactionEntity> {
+    return this.inventoriesService.createExpense(createExpenseDto);
   }
 }

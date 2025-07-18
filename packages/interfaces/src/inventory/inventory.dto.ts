@@ -41,6 +41,7 @@ export interface IInventoryTransferRequest {
   toInventoryId: string;
   amount: number;
   description?: string;
+  userPaymentMethodId?: string;
 }
 
 // Inventory Transaction interface
@@ -48,6 +49,7 @@ export interface IInventoryTransaction {
   id: string;
   fromInventoryId?: string;
   toInventoryId?: string;
+  userPaymentMethodId?: string;
   type: TransactionType;
   amount: number;
   description?: string;
@@ -56,6 +58,11 @@ export interface IInventoryTransaction {
   createdBy?: string;
   fromInventory?: Partial<IInventory>;
   toInventory?: Partial<IInventory>;
+  userPaymentMethod?: {
+    id: string;
+    method: string;
+    displayName: string;
+  };
 }
 
 // Inventory Response DTO
@@ -111,6 +118,7 @@ export interface IInventoryTransactionQueryParams {
   type?: TransactionType;
   fromDate?: string;
   toDate?: string;
+  userPaymentMethodId?: string;
 }
 
 // Backend API Response Types
@@ -134,6 +142,7 @@ export interface IBackendTransactionResponse {
   id: string;
   fromInventoryId?: string;
   toInventoryId?: string;
+  userPaymentMethodId?: string;
   type: string;
   amount: string | number;
   description?: string;
@@ -169,4 +178,5 @@ export interface IBackendQueryParams {
   type?: string;
   fromDate?: string;
   toDate?: string;
+  userPaymentMethodId?: string;
 } 

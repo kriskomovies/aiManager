@@ -12,6 +12,7 @@ import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { InventoryTransferDto } from './dto/inventory-transfer.dto';
 import { InventoryQueryDto } from './dto/inventory-query.dto';
+import { CreateExpenseDto } from './dto/create-expense.dto';
 import { TransactionType, IInventoryStats } from '@repo/interfaces';
 import { IPaginatedResult } from '../../common/abstracts/base-repository.abstract';
 
@@ -255,5 +256,51 @@ export class InventoriesService {
       inventoryId,
       queryDto,
     );
+  }
+
+  async createExpense(
+    createExpenseDto: CreateExpenseDto,
+  ): Promise<InventoryTransactionEntity> {
+    // Validate source inventory exists and get current amount
+    const sourceInventory = await this.getInventoryById(
+      createExpenseDto.sourceInventoryId,
+    );
+
+    // Validate sufficient funds
+    if (sourceInventory.amount < createExpenseDto.amount) {
+      throw new BadRequestException(
+        `Insufficient funds in ${sourceInventory.name}. Available: ${sourceInventory.amount.toFixed(2)}, Required: ${createExpenseDto.amount.toFixed(2)}`,
+      );
+    }
+
+    if (createExpenseDto.amount <= 0) {
+      throw new BadRequestException('Expense amount must be greater than 0');
+    }
+
+    // Perform expense transaction
+    return await this.dataSource.transaction(async (manager) => {
+      // Update inventory amount (deduct expense)
+      const newAmount = Number(sourceInventory.amount) - createExpenseDto.amount;
+
+      await manager.update(InventoryEntity, createExpenseDto.sourceInventoryId, {
+        amount: newAmount,
+      });
+
+      // Create transaction record
+      const transactionData: Partial<InventoryTransactionEntity> = {
+        fromInventoryId: createExpenseDto.sourceInventoryId,
+        toInventoryId: undefined, // No target inventory for expenses
+        userPaymentMethodId: createExpenseDto.userPaymentMethodId,
+        type: TransactionType.EXPENSE_PAID,
+        amount: createExpenseDto.amount,
+        description: createExpenseDto.description || 'One-time expense',
+      };
+
+      const transaction = manager.create(
+        InventoryTransactionEntity,
+        transactionData,
+      );
+      return await manager.save(transaction);
+    });
   }
 }
