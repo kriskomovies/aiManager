@@ -20,7 +20,7 @@ import { ApartmentsTab } from '@/components/buildings/building-details/apartment
 import { InventoryTab } from '@/components/buildings/building-details/inventory-tab';
 import { CashierTab } from '@/components/buildings/building-details/cashier-tab';
 import { IrregularitiesTab } from '@/components/buildings/building-details/irregularities-tab';
-import { UsersTab } from '@/components/buildings/building-details/users-tab';
+import { UsersTab } from '@/components/buildings/building-details/residents-tab';
 import { MessagesTab } from '@/components/buildings/building-details/messages-tab';
 import { CalendarTab } from '@/components/buildings/building-details/calendar-tab';
 
@@ -276,7 +276,7 @@ export function BuildingDetailsPage() {
         {activeTab === 'inventory' && <InventoryTab buildingId={id!} />}
         {activeTab === 'cashier' && <CashierTab />}
         {activeTab === 'irregularities' && <IrregularitiesTab buildingId={id!} />}
-        {activeTab === 'users' && <UsersTab />}
+        {activeTab === 'users' && <UsersTab buildingId={id!} />}
         {activeTab === 'messages' && <MessagesTab />}
         {activeTab === 'calendar' && <CalendarTab />}
       </motion.div>
