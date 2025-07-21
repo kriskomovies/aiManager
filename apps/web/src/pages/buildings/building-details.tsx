@@ -24,7 +24,14 @@ import { UsersTab } from '@/components/buildings/building-details/residents-tab'
 import { MessagesTab } from '@/components/buildings/building-details/messages-tab';
 import { CalendarTab } from '@/components/buildings/building-details/calendar-tab';
 
-type TabType = 'apartments' | 'inventory' | 'cashier' | 'irregularities' | 'users' | 'messages' | 'calendar';
+type TabType =
+  | 'apartments'
+  | 'inventory'
+  | 'cashier'
+  | 'irregularities'
+  | 'users'
+  | 'messages'
+  | 'calendar';
 
 const tabs: TabConfig[] = [
   {
@@ -69,22 +76,24 @@ export function BuildingDetailsPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<TabType>('apartments');
-  
+
   // API call to get building data
-  const { 
-    data: building, 
-    isLoading, 
-    error 
-  } = useGetBuildingQuery(id!, { 
-    skip: !id 
+  const {
+    data: building,
+    isLoading,
+    error,
+  } = useGetBuildingQuery(id!, {
+    skip: !id,
   });
 
   useEffect(() => {
     if (building) {
-      dispatch(setPageInfo({
-        title: 'Детайли на сграда',
-        subtitle: 'Управление на апартаменти и информация'
-      }));
+      dispatch(
+        setPageInfo({
+          title: 'Детайли на сграда',
+          subtitle: 'Управление на апартаменти и информация',
+        })
+      );
     }
   }, [building, dispatch]);
 
@@ -121,10 +130,7 @@ export function BuildingDetailsPage() {
           <p className="text-gray-600 mb-4">
             Възникна грешка при зареждането на данните за сградата.
           </p>
-          <Button
-            onClick={handleBack}
-            className="gap-2"
-          >
+          <Button onClick={handleBack} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Назад към сгради
           </Button>
@@ -144,10 +150,7 @@ export function BuildingDetailsPage() {
           <p className="text-gray-600 mb-4">
             Сградата с ID {id} не съществува или е била изтрита.
           </p>
-          <Button
-            onClick={handleBack}
-            className="gap-2"
-          >
+          <Button onClick={handleBack} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Назад към сгради
           </Button>
@@ -162,50 +165,47 @@ export function BuildingDetailsPage() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   const tabsVariants = {
-    hidden: { 
-      opacity: 0, 
-      x: -20 
+    hidden: {
+      opacity: 0,
+      x: -20,
     },
     visible: {
       opacity: 1,
       x: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.div 
-        className="space-y-4"
-        variants={itemVariants}
-      >
+      <motion.div className="space-y-4" variants={itemVariants}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4 min-w-0">
             <motion.button
@@ -216,21 +216,22 @@ export function BuildingDetailsPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </motion.button>
-            
+
             <div className="flex flex-col min-w-0 flex-1">
-              <h1 className="text-xl font-semibold text-gray-900 truncate">{building.name}</h1>
-              <p className="text-sm text-gray-500 truncate">{building.address}</p>
+              <h1 className="text-xl font-semibold text-gray-900 truncate">
+                {building.name}
+              </h1>
+              <p className="text-sm text-gray-500 truncate">
+                {building.address}
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button 
-                variant="outline" 
-                size="sm" 
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                variant="outline"
+                size="sm"
                 className="gap-2"
                 onClick={handleEdit}
               >
@@ -238,11 +239,8 @@ export function BuildingDetailsPage() {
                 <span className="hidden sm:inline">Редактирай</span>
               </Button>
             </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
+
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button size="sm" className="gap-2 bg-red-500 hover:bg-red-600">
                 <span className="hidden sm:inline">Добави бележка</span>
                 <span className="sm:hidden">Бележка</span>
@@ -252,13 +250,11 @@ export function BuildingDetailsPage() {
         </div>
       </motion.div>
 
-      <motion.div 
-        variants={tabsVariants}
-      >
+      <motion.div variants={tabsVariants}>
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
-          onTabChange={(tabId) => setActiveTab(tabId as TabType)}
+          onTabChange={tabId => setActiveTab(tabId as TabType)}
           variant="underline"
           className="mb-6"
         />
@@ -275,7 +271,9 @@ export function BuildingDetailsPage() {
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
         {activeTab === 'inventory' && <InventoryTab buildingId={id!} />}
         {activeTab === 'cashier' && <CashierTab buildingId={id!} />}
-        {activeTab === 'irregularities' && <IrregularitiesTab buildingId={id!} />}
+        {activeTab === 'irregularities' && (
+          <IrregularitiesTab buildingId={id!} />
+        )}
         {activeTab === 'users' && <UsersTab buildingId={id!} />}
         {activeTab === 'messages' && <MessagesTab buildingId={id!} />}
         {activeTab === 'calendar' && <CalendarTab />}

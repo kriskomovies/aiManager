@@ -13,10 +13,12 @@ export function BuildingsListPage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(setPageInfo({
-      title: 'Сгради',
-      subtitle: 'Управлявайте всички сгради'
-    }));
+    dispatch(
+      setPageInfo({
+        title: 'Сгради',
+        subtitle: 'Управлявайте всички сгради',
+      })
+    );
   }, [dispatch]);
 
   const handleAddBuilding = () => {
@@ -29,23 +31,23 @@ export function BuildingsListPage() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   return (
@@ -56,7 +58,7 @@ export function BuildingsListPage() {
       animate="visible"
     >
       {/* Statistics Cards */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         variants={itemVariants}
       >
@@ -116,7 +118,7 @@ export function BuildingsListPage() {
       </motion.div>
 
       {/* Buildings Table Section */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-xl shadow-sm border"
         variants={itemVariants}
       >
@@ -128,7 +130,7 @@ export function BuildingsListPage() {
               whileTap={{ scale: 0.97 }}
               className="w-full sm:w-auto"
             >
-              <Button 
+              <Button
                 className="gap-2 w-full sm:w-auto"
                 onClick={handleAddBuilding}
               >

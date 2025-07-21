@@ -7,7 +7,11 @@ interface SuggestionChipProps {
   className?: string;
 }
 
-export function SuggestionChip({ text, onClick, className }: SuggestionChipProps) {
+export function SuggestionChip({
+  text,
+  onClick,
+  className,
+}: SuggestionChipProps) {
   return (
     <motion.button
       onClick={onClick}
@@ -28,4 +32,4 @@ export function SuggestionChip({ text, onClick, className }: SuggestionChipProps
       {text}
     </motion.button>
   );
-} 
+}

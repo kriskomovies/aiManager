@@ -13,13 +13,16 @@ import { ArrowLeft, Plus, X } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { addAlert } from '@/redux/slices/alert-slice';
-import { 
-  useCreateApartmentMutation, 
+import {
+  useCreateApartmentMutation,
   useUpdateApartmentMutation,
-  useGetApartmentByIdQuery 
+  useGetApartmentByIdQuery,
 } from '@/redux/services/apartment.service';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
-import { addApartmentSchema, AddApartmentFormData } from './add-edit-apartment.schema';
+import {
+  addApartmentSchema,
+  AddApartmentFormData,
+} from './add-edit-apartment.schema';
 import { ApartmentType, ResidentRole } from '@repo/interfaces';
 
 export function AddEditApartmentPage() {
@@ -27,22 +30,26 @@ export function AddEditApartmentPage() {
   const dispatch = useAppDispatch();
   const { buildingId, id } = useParams<{ buildingId?: string; id?: string }>();
   const isEditMode = Boolean(id);
-  
-  // API hooks
-  const { data: building, isLoading: isBuildingLoading } = useGetBuildingQuery(buildingId!, {
-    skip: !buildingId,
-  });
-  const { 
-    data: apartmentData, 
-    isLoading: isLoadingApartment, 
-    error: loadingError 
-  } = useGetApartmentByIdQuery(id!, { 
-    skip: !isEditMode 
-  });
-  
 
-  const [createApartment, { isLoading: isCreating }] = useCreateApartmentMutation();
-  const [updateApartment, { isLoading: isUpdating }] = useUpdateApartmentMutation();
+  // API hooks
+  const { data: building, isLoading: isBuildingLoading } = useGetBuildingQuery(
+    buildingId!,
+    {
+      skip: !buildingId,
+    }
+  );
+  const {
+    data: apartmentData,
+    isLoading: isLoadingApartment,
+    error: loadingError,
+  } = useGetApartmentByIdQuery(id!, {
+    skip: !isEditMode,
+  });
+
+  const [createApartment, { isLoading: isCreating }] =
+    useCreateApartmentMutation();
+  const [updateApartment, { isLoading: isUpdating }] =
+    useUpdateApartmentMutation();
 
   // Form setup
   const {
@@ -104,41 +111,60 @@ export function AddEditApartmentPage() {
         cashierNote: apartmentData.cashierNote || '',
         monthlyRent: apartmentData.monthlyRent || 0,
         maintenanceFee: apartmentData.maintenanceFee || 0,
-        residents: apartmentData.residents ? apartmentData.residents.map(resident => ({
-          name: resident.name,
-          surname: resident.surname,
-          phone: resident.phone,
-          email: resident.email,
-          role: resident.role,
-          isMainContact: resident.isMainContact,
-        })) : [],
+        residents: apartmentData.residents
+          ? apartmentData.residents.map(resident => ({
+              name: resident.name,
+              surname: resident.surname,
+              phone: resident.phone,
+              email: resident.email,
+              role: resident.role,
+              isMainContact: resident.isMainContact,
+            }))
+          : [],
       };
-      
+
       // Reset form with loaded data
       reset(formData);
-      
+
       // Set buildingId if not provided in URL
       if (!buildingId && apartmentData.buildingId) {
         // We need to navigate to include buildingId in the URL
-        navigate(`/buildings/${apartmentData.buildingId}/apartments/${id}/edit`, { replace: true });
+        navigate(
+          `/buildings/${apartmentData.buildingId}/apartments/${id}/edit`,
+          { replace: true }
+        );
       }
     }
-  }, [apartmentData, isLoadingApartment, isEditMode, reset, buildingId, id, navigate]);
+  }, [
+    apartmentData,
+    isLoadingApartment,
+    isEditMode,
+    reset,
+    buildingId,
+    id,
+    navigate,
+  ]);
 
   // Set page info
   useEffect(() => {
     if (building) {
-      dispatch(setPageInfo({
-        title: isEditMode ? 'Редактирай Апартамент' : 'Нов Апартамент',
-        subtitle: isEditMode 
-          ? `Редактирайте апартамент в ${building.name} - ${building.address}`
-          : `Създайте нов апартамент в ${building.name} - ${building.address}`
-      }));
+      dispatch(
+        setPageInfo({
+          title: isEditMode ? 'Редактирай Апартамент' : 'Нов Апартамент',
+          subtitle: isEditMode
+            ? `Редактирайте апартамент в ${building.name} - ${building.address}`
+            : `Създайте нов апартамент в ${building.name} - ${building.address}`,
+        })
+      );
     } else {
-      dispatch(setPageInfo({
-        title: isEditMode ? 'Редактирай Апартамент' : 'Нов Апартамент',
-        subtitle: isEditMode ? 'Редактирайте апартамента' : 'Създайте нов апартамент в системата'
-      }));
+      dispatch(
+        setPageInfo({
+          title: isEditMode ? 'Редактирай Апартамент' : 'Нов Апартамент',
+          subtitle: isEditMode
+            ? 'Редактирайте апартамента'
+            : 'Създайте нов апартамент в системата',
+        })
+      );
     }
   }, [dispatch, building, isEditMode]);
 
@@ -148,38 +174,38 @@ export function AddEditApartmentPage() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   const formSectionVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 30 
+    hidden: {
+      opacity: 0,
+      y: 30,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.4,
-        staggerChildren: 0.05
-      }
-    }
+        staggerChildren: 0.05,
+      },
+    },
   };
 
   // Type options
@@ -207,15 +233,17 @@ export function AddEditApartmentPage() {
     remove(index);
   };
 
-  const onSubmit: SubmitHandler<AddApartmentFormData> = async (data) => {
+  const onSubmit: SubmitHandler<AddApartmentFormData> = async data => {
     const effectiveBuildingId = buildingId || apartmentData?.buildingId;
-    
+
     if (!effectiveBuildingId) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Не е избрана сграда',
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Не е избрана сграда',
+        })
+      );
       return;
     }
 
@@ -231,15 +259,17 @@ export function AddEditApartmentPage() {
           maintenanceFee: data.maintenanceFee || undefined,
           cashierNote: data.cashierNote || undefined,
         };
-        
+
         // Update existing apartment
         await updateApartment({ id: id!, updates: updatePayload }).unwrap();
-        
-        dispatch(addAlert({
-          type: 'success',
-          title: 'Успешно обновяване!',
-          message: `Апартамент "${data.number}" беше обновен успешно.`,
-        }));
+
+        dispatch(
+          addAlert({
+            type: 'success',
+            title: 'Успешно обновяване!',
+            message: `Апартамент "${data.number}" беше обновен успешно.`,
+          })
+        );
       } else {
         // For creates, include buildingId
         const createPayload = {
@@ -252,36 +282,47 @@ export function AddEditApartmentPage() {
           maintenanceFee: data.maintenanceFee || undefined,
           cashierNote: data.cashierNote || undefined,
         };
-        
+
         // Create new apartment
         await createApartment(createPayload).unwrap();
-        
-        dispatch(addAlert({
-          type: 'success',
-          title: 'Успех',
-          message: 'Апартаментът беше създаден успешно',
-        }));
+
+        dispatch(
+          addAlert({
+            type: 'success',
+            title: 'Успех',
+            message: 'Апартаментът беше създаден успешно',
+          })
+        );
       }
-      
+
       navigate(`/buildings/${effectiveBuildingId}`);
     } catch (error) {
       console.error('Error saving apartment:', error);
-      
-      let errorMessage = isEditMode 
+
+      let errorMessage = isEditMode
         ? 'Грешка при обновяване на апартамента'
         : 'Грешка при създаване на апартамента';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: errorMessage,
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: errorMessage,
+        })
+      );
     }
   };
 
@@ -308,7 +349,9 @@ export function AddEditApartmentPage() {
   if (isEditMode && loadingError) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">Грешка при зареждане на данните за апартамента.</p>
+        <p className="text-red-600 mb-4">
+          Грешка при зареждане на данните за апартамента.
+        </p>
         <Button onClick={() => navigate('/buildings')} variant="outline">
           Назад към сгради
         </Button>
@@ -317,7 +360,7 @@ export function AddEditApartmentPage() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
@@ -346,7 +389,7 @@ export function AddEditApartmentPage() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Basic Information Grid */}
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
@@ -365,7 +408,9 @@ export function AddEditApartmentPage() {
                     ))}
                   </Select>
                   {errors.type && (
-                    <p className="text-sm text-red-500">{errors.type.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.type.message}
+                    </p>
                   )}
                 </motion.div>
 
@@ -378,7 +423,9 @@ export function AddEditApartmentPage() {
                     className={errors.number ? 'border-red-500' : ''}
                   />
                   {errors.number && (
-                    <p className="text-sm text-red-500">{errors.number.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.number.message}
+                    </p>
                   )}
                 </motion.div>
 
@@ -392,12 +439,14 @@ export function AddEditApartmentPage() {
                     className={errors.floor ? 'border-red-500' : ''}
                   />
                   {errors.floor && (
-                    <p className="text-sm text-red-500">{errors.floor.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.floor.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
@@ -413,7 +462,9 @@ export function AddEditApartmentPage() {
                     className="bg-gray-50"
                   />
                   {errors.residentsCount && (
-                    <p className="text-sm text-red-500">{errors.residentsCount.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.residentsCount.message}
+                    </p>
                   )}
                 </motion.div>
 
@@ -428,7 +479,9 @@ export function AddEditApartmentPage() {
                     className={errors.pets ? 'border-red-500' : ''}
                   />
                   {errors.pets && (
-                    <p className="text-sm text-red-500">{errors.pets.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.pets.message}
+                    </p>
                   )}
                 </motion.div>
 
@@ -448,12 +501,14 @@ export function AddEditApartmentPage() {
                     </span>
                   </div>
                   {errors.quadrature && (
-                    <p className="text-sm text-red-500">{errors.quadrature.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.quadrature.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 variants={formSectionVariants}
               >
@@ -473,7 +528,9 @@ export function AddEditApartmentPage() {
                     </span>
                   </div>
                   {errors.commonParts && (
-                    <p className="text-sm text-red-500">{errors.commonParts.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.commonParts.message}
+                    </p>
                   )}
                 </motion.div>
 
@@ -493,7 +550,9 @@ export function AddEditApartmentPage() {
                     </span>
                   </div>
                   {errors.idealParts && (
-                    <p className="text-sm text-red-500">{errors.idealParts.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.idealParts.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -517,7 +576,7 @@ export function AddEditApartmentPage() {
                     </Button>
                   </motion.div>
                 </div>
-                
+
                 <div className="space-y-4">
                   {fields.map((field, index) => (
                     <motion.div
@@ -529,7 +588,9 @@ export function AddEditApartmentPage() {
                       className="p-4 border rounded-lg bg-gray-50 relative"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-red-500">Собственик</span>
+                        <span className="text-sm font-medium text-red-500">
+                          Собственик
+                        </span>
                         <motion.button
                           type="button"
                           onClick={() => handleRemoveResident(index)}
@@ -540,7 +601,7 @@ export function AddEditApartmentPage() {
                           <X className="h-3 w-3 text-red-600" />
                         </motion.button>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div className="space-y-1">
                           <Label htmlFor={`residents.${index}.name`}>Име</Label>
@@ -548,52 +609,82 @@ export function AddEditApartmentPage() {
                             id={`residents.${index}.name`}
                             placeholder="Име"
                             {...register(`residents.${index}.name`)}
-                            className={errors.residents?.[index]?.name ? 'border-red-500' : ''}
+                            className={
+                              errors.residents?.[index]?.name
+                                ? 'border-red-500'
+                                : ''
+                            }
                           />
                           {errors.residents?.[index]?.name && (
-                            <p className="text-sm text-red-500">{errors.residents[index]?.name?.message}</p>
+                            <p className="text-sm text-red-500">
+                              {errors.residents[index]?.name?.message}
+                            </p>
                           )}
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor={`residents.${index}.surname`}>Фамилия</Label>
+                          <Label htmlFor={`residents.${index}.surname`}>
+                            Фамилия
+                          </Label>
                           <Input
                             id={`residents.${index}.surname`}
                             placeholder="Фамилия"
                             {...register(`residents.${index}.surname`)}
-                            className={errors.residents?.[index]?.surname ? 'border-red-500' : ''}
+                            className={
+                              errors.residents?.[index]?.surname
+                                ? 'border-red-500'
+                                : ''
+                            }
                           />
                           {errors.residents?.[index]?.surname && (
-                            <p className="text-sm text-red-500">{errors.residents[index]?.surname?.message}</p>
+                            <p className="text-sm text-red-500">
+                              {errors.residents[index]?.surname?.message}
+                            </p>
                           )}
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor={`residents.${index}.phone`}>Телефон</Label>
+                          <Label htmlFor={`residents.${index}.phone`}>
+                            Телефон
+                          </Label>
                           <Input
                             id={`residents.${index}.phone`}
                             placeholder="Телефон"
                             type="tel"
                             {...register(`residents.${index}.phone`)}
-                            className={errors.residents?.[index]?.phone ? 'border-red-500' : ''}
+                            className={
+                              errors.residents?.[index]?.phone
+                                ? 'border-red-500'
+                                : ''
+                            }
                           />
                           {errors.residents?.[index]?.phone && (
-                            <p className="text-sm text-red-500">{errors.residents[index]?.phone?.message}</p>
+                            <p className="text-sm text-red-500">
+                              {errors.residents[index]?.phone?.message}
+                            </p>
                           )}
                         </div>
                         <div className="space-y-1">
-                          <Label htmlFor={`residents.${index}.email`}>Имейл</Label>
+                          <Label htmlFor={`residents.${index}.email`}>
+                            Имейл
+                          </Label>
                           <Input
                             id={`residents.${index}.email`}
                             placeholder="Имейл"
                             type="email"
                             {...register(`residents.${index}.email`)}
-                            className={errors.residents?.[index]?.email ? 'border-red-500' : ''}
+                            className={
+                              errors.residents?.[index]?.email
+                                ? 'border-red-500'
+                                : ''
+                            }
                           />
                           {errors.residents?.[index]?.email && (
-                            <p className="text-sm text-red-500">{errors.residents[index]?.email?.message}</p>
+                            <p className="text-sm text-red-500">
+                              {errors.residents[index]?.email?.message}
+                            </p>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="mt-3 flex items-center gap-4">
                         <div className="flex items-center space-x-2">
                           <input
@@ -602,7 +693,10 @@ export function AddEditApartmentPage() {
                             {...register(`residents.${index}.isMainContact`)}
                             className="rounded border-gray-300 text-red-600 focus:ring-red-500"
                           />
-                          <Label htmlFor={`residents.${index}.isMainContact`} className="text-sm">
+                          <Label
+                            htmlFor={`residents.${index}.isMainContact`}
+                            className="text-sm"
+                          >
                             Основен контакт
                           </Label>
                         </div>
@@ -614,16 +708,19 @@ export function AddEditApartmentPage() {
                       </div>
                     </motion.div>
                   ))}
-                  
+
                   {fields.length === 0 && (
                     <p className="text-sm text-gray-500 italic text-center py-4">
-                      Няма добавени живущи. Натиснете "Добави Живущ" за да добавите.
+                      Няма добавени живущи. Натиснете "Добави Живущ" за да
+                      добавите.
                     </p>
                   )}
                 </div>
-                
+
                 {errors.residents && (
-                  <p className="text-sm text-red-500 mt-2">{errors.residents.message}</p>
+                  <p className="text-sm text-red-500 mt-2">
+                    {errors.residents.message}
+                  </p>
                 )}
               </motion.div>
 
@@ -634,11 +731,13 @@ export function AddEditApartmentPage() {
                     id="invoiceToggle"
                     label="Добави Данни за Фактура"
                     pressed={watch('invoiceEnabled')}
-                    onPressedChange={(pressed) => setValue('invoiceEnabled', pressed)}
+                    onPressedChange={pressed =>
+                      setValue('invoiceEnabled', pressed)
+                    }
                   />
                 </div>
                 {watch('invoiceEnabled') && (
-                  <motion.div 
+                  <motion.div
                     className="pl-4 border-l-2 border-gray-200"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -662,10 +761,12 @@ export function AddEditApartmentPage() {
                           </span>
                         </div>
                         {errors.monthlyRent && (
-                          <p className="text-sm text-red-500">{errors.monthlyRent.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.monthlyRent.message}
+                          </p>
                         )}
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="maintenanceFee">Такса Поддръжка</Label>
                         <div className="relative">
@@ -682,7 +783,9 @@ export function AddEditApartmentPage() {
                           </span>
                         </div>
                         {errors.maintenanceFee && (
-                          <p className="text-sm text-red-500">{errors.maintenanceFee.message}</p>
+                          <p className="text-sm text-red-500">
+                            {errors.maintenanceFee.message}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -695,7 +798,9 @@ export function AddEditApartmentPage() {
                 <h3 className="text-md font-medium mb-4">Други</h3>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="cashierNote">Бележка Видима за Касиера</Label>
+                    <Label htmlFor="cashierNote">
+                      Бележка Видима за Касиера
+                    </Label>
                     <Input
                       id="cashierNote"
                       placeholder="Въведете бележка за касиера..."
@@ -703,24 +808,28 @@ export function AddEditApartmentPage() {
                       className={errors.cashierNote ? 'border-red-500' : ''}
                     />
                     {errors.cashierNote && (
-                      <p className="text-sm text-red-500">{errors.cashierNote.message}</p>
+                      <p className="text-sm text-red-500">
+                        {errors.cashierNote.message}
+                      </p>
                     )}
                   </div>
-                  
+
                   <div>
                     <Toggle
                       id="blockForPayment"
                       label="Блокирай за Изипей"
                       pressed={watch('blockForPayment')}
-                      onPressedChange={(pressed) => setValue('blockForPayment', pressed)}
+                      onPressedChange={pressed =>
+                        setValue('blockForPayment', pressed)
+                      }
                     />
                   </div>
                 </div>
               </motion.div>
 
               {/* Action Buttons */}
-              <motion.div 
-                className="flex justify-end space-x-3 pt-6" 
+              <motion.div
+                className="flex justify-end space-x-3 pt-6"
                 variants={itemVariants}
               >
                 <motion.div
@@ -745,10 +854,13 @@ export function AddEditApartmentPage() {
                     className="bg-red-500 hover:bg-red-600 text-white"
                     disabled={isSubmitting || isCreating || isUpdating}
                   >
-                    {isSubmitting || isCreating || isUpdating 
-                      ? (isEditMode ? 'Обновяване...' : 'Създаване...') 
-                      : (isEditMode ? 'Обнови' : 'Създай')
-                    }
+                    {isSubmitting || isCreating || isUpdating
+                      ? isEditMode
+                        ? 'Обновяване...'
+                        : 'Създаване...'
+                      : isEditMode
+                        ? 'Обнови'
+                        : 'Създай'}
                   </Button>
                 </motion.div>
               </motion.div>

@@ -1,5 +1,11 @@
 import { motion } from 'framer-motion';
-import { Euro, TrendingDown, TrendingUp, Building, Calculator } from 'lucide-react';
+import {
+  Euro,
+  TrendingDown,
+  TrendingUp,
+  Building,
+  Calculator,
+} from 'lucide-react';
 import { InformationCard } from '@/components/information-card';
 import { CashierTable } from '@/components/cashier/cashier-table';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
@@ -12,15 +18,18 @@ interface CashierTabProps {
 export function CashierTab({ buildingId }: CashierTabProps) {
   // Fetch building data
   const { data: building } = useGetBuildingQuery(buildingId);
-  
+
   // Fetch apartments to calculate stats
   const { data: apartments = [] } = useGetApartmentsByBuildingQuery(buildingId);
 
   // Calculate statistics
   const stats = {
     balance: building?.balance || 585.0,
-    obligations: apartments.reduce((sum, apt) => sum + (apt.debt || 0), 0) || 1478.5,
-    monthlyTax: building?.monthlyFee ? building.monthlyFee * (apartments.length || 13) : 170.0,
+    obligations:
+      apartments.reduce((sum, apt) => sum + (apt.debt || 0), 0) || 1478.5,
+    monthlyTax: building?.monthlyFee
+      ? building.monthlyFee * (apartments.length || 13)
+      : 170.0,
     apartmentCount: apartments.length || 13,
     totalDebt: apartments.filter(apt => (apt.debt || 0) > 0).length || 9,
   };

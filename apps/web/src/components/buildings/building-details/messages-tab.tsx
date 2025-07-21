@@ -12,10 +12,12 @@ export function MessagesTab({ buildingId }: MessagesTabProps) {
   const dispatch = useAppDispatch();
 
   const handleAddMessage = () => {
-    dispatch(openModal({
-      type: 'create-new-message',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'create-new-message',
+        data: { buildingId },
+      })
+    );
   };
 
   return (
@@ -41,4 +43,4 @@ export function MessagesTab({ buildingId }: MessagesTabProps) {
       </div>
     </div>
   );
-} 
+}

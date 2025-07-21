@@ -26,14 +26,17 @@ interface CreateNewMessageModalProps {
 export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   // Get the building ID from modal data
   const buildingId = modalData?.buildingId;
 
   // Fetch apartments with residents for the building to populate recipients
-  const { data: apartments = [] } = useGetApartmentsByBuildingQuery(buildingId || '', {
-    skip: !buildingId
-  });
+  const { data: apartments = [] } = useGetApartmentsByBuildingQuery(
+    buildingId || '',
+    {
+      skip: !buildingId,
+    }
+  );
 
   const [formData, setFormData] = useState<CreateNewMessageFormData>({
     title: '',
@@ -45,10 +48,13 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: keyof CreateNewMessageFormData, value: string | string[]) => {
+  const handleInputChange = (
+    field: keyof CreateNewMessageFormData,
+    value: string | string[]
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -57,12 +63,12 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
     if (value.includes('all')) {
       setFormData(prev => ({
         ...prev,
-        recipients: ['all']
+        recipients: ['all'],
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        recipients: value
+        recipients: value,
       }));
     }
   };
@@ -71,20 +77,27 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
     const file = event.target.files?.[0] || null;
     setFormData(prev => ({
       ...prev,
-      attachedFile: file
+      attachedFile: file,
     }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.title.trim() || !formData.description.trim() || !formData.deliveryMethod || formData.recipients.length === 0) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля попълнете всички задължителни полета.',
-        duration: 5000
-      }));
+
+    if (
+      !formData.title.trim() ||
+      !formData.description.trim() ||
+      !formData.deliveryMethod ||
+      formData.recipients.length === 0
+    ) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля попълнете всички задължителни полета.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -93,36 +106,48 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
     try {
       // TODO: Implement actual create API call
       console.log('Creating new message with data:', formData);
-      
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно създаване!',
-        message: 'Съобщението беше създадено успешно.',
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно създаване!',
+          message: 'Съобщението беше създадено успешно.',
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error creating message:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при създаването на съобщението. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при създаването на съобщението. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при създаване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при създаване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -142,13 +167,15 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
 
   // Create recipient options from apartments only
   const recipientOptions: MultiSelectOption[] = [];
-  
+
   // Add "All apartments" option
-  const apartmentsWithResidents = apartments.filter(apt => (apt.residents?.length || 0) > 0);
+  const apartmentsWithResidents = apartments.filter(
+    apt => (apt.residents?.length || 0) > 0
+  );
   if (apartmentsWithResidents.length > 0) {
     recipientOptions.push({
       value: 'all',
-      label: `Всички (${apartmentsWithResidents.length} апартамента)`
+      label: `Всички (${apartmentsWithResidents.length} апартамента)`,
     });
   }
 
@@ -156,7 +183,7 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
   apartmentsWithResidents.forEach(apartment => {
     recipientOptions.push({
       value: `apartment_${apartment.id}`,
-      label: `Апартамент ${apartment.number} (${apartment.residents?.length || 0} жители)`
+      label: `Апартамент ${apartment.number} (${apartment.residents?.length || 0} жители)`,
     });
   });
 
@@ -180,7 +207,7 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
           <Input
             id="title"
             value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={e => handleInputChange('title', e.target.value)}
             placeholder="Въведете заглавие на съобщението"
             disabled={isSubmitting}
             required
@@ -193,7 +220,7 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
           <textarea
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Въведете съдържанието на съобщението"
             disabled={isSubmitting}
             required
@@ -209,7 +236,9 @@ export function CreateNewMessageModal({ onClose }: CreateNewMessageModalProps) {
             <Select
               id="deliveryMethod"
               value={formData.deliveryMethod}
-              onChange={(e) => handleInputChange('deliveryMethod', e.target.value)}
+              onChange={e =>
+                handleInputChange('deliveryMethod', e.target.value)
+              }
               disabled={isSubmitting}
               required
             >

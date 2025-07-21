@@ -15,7 +15,7 @@ export function UsersTab({ buildingId }: ResidentsTabProps) {
 
   // Calculate statistics from apartments data
   const residents = apartments.flatMap(apartment => apartment.residents || []);
-  
+
   const stats = {
     totalResidents: residents.length,
     totalApartments: apartments.filter(apt => apt.residentsCount > 0).length,
@@ -43,7 +43,7 @@ export function UsersTab({ buildingId }: ResidentsTabProps) {
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         variants={containerAnimation}
         initial="hidden"
@@ -96,11 +96,11 @@ export function UsersTab({ buildingId }: ResidentsTabProps) {
             </div>
           </div>
         </div>
-        
+
         <div className="p-6">
           <BuildingResidentsTable buildingId={buildingId} />
         </div>
       </div>
     </div>
   );
-} 
+}

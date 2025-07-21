@@ -9,9 +9,7 @@ import { Edit, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
-import { 
-  useUpdateInventoryMutation
-} from '@/redux/services/inventory.service';
+import { useUpdateInventoryMutation } from '@/redux/services/inventory.service';
 import { IInventoryResponse, IUpdateInventoryRequest } from '@repo/interfaces';
 
 interface EditInventoryFormData {
@@ -28,7 +26,7 @@ interface EditInventoryModalProps {
 export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   const inventoryData = modalData?.inventoryData as IInventoryResponse;
 
   // API mutations
@@ -55,46 +53,53 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
     }
   }, [inventoryData]);
 
-  const handleInputChange = (field: keyof EditInventoryFormData, value: string | number | boolean) => {
+  const handleInputChange = (
+    field: keyof EditInventoryFormData,
+    value: string | number | boolean
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля въведете име на касата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля въведете име на касата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (!inventoryData?.id) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Липсва информация за касата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Липсва информация за касата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
-
-
     // Check if trying to edit main inventory name
     if (inventoryData.isMain && formData.name !== inventoryData.name) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Не можете да променяте името на основната каса.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Не можете да променяте името на основната каса.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -109,29 +114,38 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
       };
 
       // Update inventory details
-      await updateInventory({ id: inventoryData.id, updates: updateData }).unwrap();
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно обновяване!',
-        message: `Касата "${formData.name}" беше обновена успешно.`,
-        duration: 5000
-      }));
-      
+      await updateInventory({
+        id: inventoryData.id,
+        updates: updateData,
+      }).unwrap();
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно обновяване!',
+          message: `Касата "${formData.name}" беше обновена успешно.`,
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error updating inventory:', error);
-      
-      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || 
-                          (error as { message?: string })?.message || 
-                          'Възникна грешка при обновяването на касата. Моля опитайте отново.';
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при обновяване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        'Възникна грешка при обновяването на касата. Моля опитайте отново.';
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при обновяване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -155,7 +169,8 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
 
       {/* Subtitle */}
       <p className="text-sm text-gray-600 mb-6">
-        {inventoryData?.description || `Редактиране на каса "${inventoryData?.name || 'Неизвестна'}"`}
+        {inventoryData?.description ||
+          `Редактиране на каса "${inventoryData?.name || 'Неизвестна'}"`}
         {inventoryData?.isMain && (
           <span className="block mt-1 text-amber-600 font-medium">
             Основна каса - ограничени промени
@@ -170,7 +185,7 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={e => handleInputChange('name', e.target.value)}
             placeholder="Въведете име на касата"
             disabled={isSubmitting || inventoryData?.isMain}
             required
@@ -187,7 +202,7 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
           <Input
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Описание на касата"
             disabled={isSubmitting}
           />
@@ -197,7 +212,7 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
           <Checkbox
             id="visibleInApp"
             checked={formData.visibleInApp}
-            onChange={(e) => handleInputChange('visibleInApp', e.target.checked)}
+            onChange={e => handleInputChange('visibleInApp', e.target.checked)}
             disabled={isSubmitting}
           />
           <Label htmlFor="visibleInApp" className="text-sm">
@@ -230,7 +245,9 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
 
             <div className="p-3 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                💡 <strong>Информация:</strong> За добавяне или прехвърляне на суми използвайте бутона "Прехвърляне на пари" в главната страница на касите.
+                💡 <strong>Информация:</strong> За добавяне или прехвърляне на
+                суми използвайте бутона "Прехвърляне на пари" в главната
+                страница на касите.
               </p>
             </div>
           </div>
@@ -246,10 +263,7 @@ export function EditInventoryModal({ onClose }: EditInventoryModalProps) {
           >
             Отказ
           </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

@@ -16,7 +16,10 @@ export interface MultiSelectProps {
 }
 
 const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
-  ({ options, value, onChange, placeholder = "Изберете опции...", className }, ref) => {
+  (
+    { options, value, onChange, placeholder = 'Изберете опции...', className },
+    ref
+  ) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     const handleToggleOption = (optionValue: string) => {
@@ -30,7 +33,9 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
       onChange(value.filter(v => v !== optionValue));
     };
 
-    const selectedOptions = options.filter(option => value.includes(option.value));
+    const selectedOptions = options.filter(option =>
+      value.includes(option.value)
+    );
 
     return (
       <div ref={ref} className={cn('relative', className)}>
@@ -49,7 +54,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
                 >
                   {option.label}
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleRemoveOption(option.value);
                     }}
@@ -75,7 +80,9 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
                 onClick={() => handleToggleOption(option.value)}
               >
                 <div className="flex h-4 w-4 items-center justify-center">
-                  {value.includes(option.value) && <Check className="h-3 w-3" />}
+                  {value.includes(option.value) && (
+                    <Check className="h-3 w-3" />
+                  )}
                 </div>
                 <span>{option.label}</span>
               </div>
@@ -95,4 +102,4 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
 );
 MultiSelect.displayName = 'MultiSelect';
 
-export { MultiSelect }; 
+export { MultiSelect };

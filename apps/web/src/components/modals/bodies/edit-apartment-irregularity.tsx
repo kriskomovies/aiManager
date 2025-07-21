@@ -21,10 +21,12 @@ interface EditApartmentIrregularityModalProps {
   onClose: () => void;
 }
 
-export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregularityModalProps) {
+export function EditApartmentIrregularityModal({
+  onClose,
+}: EditApartmentIrregularityModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   const irregularityId = modalData?.irregularityId;
   const apartmentId = modalData?.apartmentId;
 
@@ -39,10 +41,13 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: keyof IrregularityFormData, value: string) => {
+  const handleInputChange = (
+    field: keyof IrregularityFormData,
+    value: string
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -50,20 +55,22 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
     const file = event.target.files?.[0] || null;
     setFormData(prev => ({
       ...prev,
-      attachedFile: file
+      attachedFile: file,
     }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!irregularityId) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Няма избрана нередност за редактиране.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Няма избрана нередност за редактиране.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -71,37 +78,56 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
 
     try {
       // TODO: Implement actual update API call
-      console.log('Updating irregularity:', irregularityId, 'for apartment:', apartmentId, 'with data:', formData);
-      
+      console.log(
+        'Updating irregularity:',
+        irregularityId,
+        'for apartment:',
+        apartmentId,
+        'with data:',
+        formData
+      );
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно обновяване!',
-        message: 'Нередността беше обновена успешно.',
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно обновяване!',
+          message: 'Нередността беше обновена успешно.',
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error updating irregularity:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при обновяването на нередността. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при обновяването на нередността. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при обновяване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при обновяване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -144,7 +170,7 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
+              onChange={e => handleInputChange('title', e.target.value)}
               placeholder="Въведете заглавие на нередността"
               disabled={isSubmitting}
               required
@@ -156,7 +182,7 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
             <Input
               id="responsible"
               value={formData.responsible}
-              onChange={(e) => handleInputChange('responsible', e.target.value)}
+              onChange={e => handleInputChange('responsible', e.target.value)}
               placeholder="Въведете отговорник"
               disabled={isSubmitting}
               required
@@ -168,7 +194,7 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
             <Input
               id="reportedBy"
               value={formData.reportedBy}
-              onChange={(e) => handleInputChange('reportedBy', e.target.value)}
+              onChange={e => handleInputChange('reportedBy', e.target.value)}
               placeholder="Въведете докладчик"
               disabled={isSubmitting}
               required
@@ -180,7 +206,12 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
             <Select
               id="status"
               value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as IrregularityFormData['status'])}
+              onChange={e =>
+                handleInputChange(
+                  'status',
+                  e.target.value as IrregularityFormData['status']
+                )
+              }
               disabled={isSubmitting}
             >
               {statusOptions.map(option => (
@@ -218,10 +249,7 @@ export function EditApartmentIrregularityModal({ onClose }: EditApartmentIrregul
           >
             Отмени
           </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

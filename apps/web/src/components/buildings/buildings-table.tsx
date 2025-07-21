@@ -2,7 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { IBuildingListItem } from '@repo/interfaces';
 import { useState } from 'react';
-import { CashBadge, DebtBadge, IrregularitiesBadge } from '@/components/ui/badge';
+import {
+  CashBadge,
+  DebtBadge,
+  IrregularitiesBadge,
+} from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
@@ -25,13 +29,15 @@ export function BuildingsTable() {
   });
 
   const handleDeleteBuilding = (building: IBuildingListItem) => {
-    dispatch(openModal({
-      type: 'delete-building',
-      data: {
-        buildingId: building.id,
-        buildingName: building.name,
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-building',
+        data: {
+          buildingId: building.id,
+          buildingName: building.name,
+        },
+      })
+    );
   };
 
   const columns: Column<IBuildingListItem>[] = [
@@ -61,9 +67,7 @@ export function BuildingsTable() {
       sortable: true,
       width: '12%',
       minWidth: '80px',
-      cell: row => (
-        <IrregularitiesBadge count={row.irregularities} />
-      ),
+      cell: row => <IrregularitiesBadge count={row.irregularities} />,
     },
     {
       header: 'Каса',
@@ -71,9 +75,7 @@ export function BuildingsTable() {
       sortable: true,
       width: '15%',
       minWidth: '100px',
-      cell: row => (
-        <CashBadge value={row.balance} />
-      ),
+      cell: row => <CashBadge value={row.balance} />,
     },
     {
       header: window.innerWidth < 640 ? 'Мес. Такса' : 'Месечна Такса',
@@ -82,7 +84,9 @@ export function BuildingsTable() {
       width: '15%',
       minWidth: '100px',
       cell: row => (
-        <span className="text-gray-700 text-xs sm:text-sm">{row.monthlyFee.toFixed(2)} лв.</span>
+        <span className="text-gray-700 text-xs sm:text-sm">
+          {row.monthlyFee.toFixed(2)} лв.
+        </span>
       ),
     },
     {
@@ -91,9 +95,7 @@ export function BuildingsTable() {
       sortable: true,
       width: '15%',
       minWidth: '100px',
-      cell: row => (
-        <DebtBadge value={row.debt} />
-      ),
+      cell: row => <DebtBadge value={row.debt} />,
     },
     {
       header: 'Действия',
@@ -103,7 +105,7 @@ export function BuildingsTable() {
       cell: row => (
         <div className="flex items-center gap-1">
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               navigate(`/buildings/${row.id}/edit`);
             }}
@@ -113,7 +115,7 @@ export function BuildingsTable() {
             <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
           <button
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               handleDeleteBuilding(row);
             }}

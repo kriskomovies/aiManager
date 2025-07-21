@@ -21,19 +21,19 @@ const mockFeeData: FeeItem[] = [
     id: '1',
     feeType: 'Такса 01/25',
     period: 'Януари 2025',
-    amount: 70.00,
+    amount: 70.0,
   },
   {
     id: '2',
     feeType: 'Ток Стълбище',
     period: 'Януари 2025',
-    amount: 100.00,
+    amount: 100.0,
   },
   {
     id: '3',
     feeType: 'Такса Асансьор',
     period: 'Януари 2025',
-    amount: 50.00,
+    amount: 50.0,
   },
 ];
 
@@ -41,7 +41,7 @@ export function PaymentModal() {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const apartmentNumber = modalData?.apartmentNumber || '7';
-  
+
   const [paymentMode, setPaymentMode] = useState<'all' | 'manual'>('all');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paidByUser, setPaidByUser] = useState('');
@@ -53,9 +53,11 @@ export function PaymentModal() {
 
   const handleManualAmountChange = (id: string, value: string) => {
     const numericValue = parseFloat(value) || 0;
-    setFeeItems(prev => prev.map(item => 
-      item.id === id ? { ...item, manualAmount: numericValue } : item
-    ));
+    setFeeItems(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, manualAmount: numericValue } : item
+      )
+    );
   };
 
   const totalAmount = feeItems.reduce((sum, item) => {
@@ -84,9 +86,7 @@ export function PaymentModal() {
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-gray-50">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Плащане
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">Плащане</h2>
         <button
           onClick={handleClose}
           className="p-1 hover:bg-gray-200 rounded-full transition-colors"
@@ -119,7 +119,7 @@ export function PaymentModal() {
             <Select
               id="paidByUser"
               value={paidByUser}
-              onChange={(e) => setPaidByUser(e.target.value)}
+              onChange={e => setPaidByUser(e.target.value)}
             >
               <option value="">Изберете потребител</option>
               {/* Empty for now as requested */}
@@ -130,7 +130,7 @@ export function PaymentModal() {
             <Select
               id="paymentMethod"
               value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
+              onChange={e => setPaymentMethod(e.target.value)}
             >
               <option value="">Изберете метод</option>
               {paymentMethodOptions.map(option => (
@@ -147,14 +147,22 @@ export function PaymentModal() {
           <Button
             variant={paymentMode === 'all' ? 'default' : 'outline'}
             onClick={() => setPaymentMode('all')}
-            className={paymentMode === 'all' ? 'bg-red-500 hover:bg-red-600 text-white' : ''}
+            className={
+              paymentMode === 'all'
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : ''
+            }
           >
             Плати Всичко
           </Button>
           <Button
             variant={paymentMode === 'manual' ? 'default' : 'outline'}
             onClick={() => setPaymentMode('manual')}
-            className={paymentMode === 'manual' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''}
+            className={
+              paymentMode === 'manual'
+                ? 'bg-gray-500 hover:bg-gray-600 text-white'
+                : ''
+            }
           >
             Въведи Ръчно
           </Button>
@@ -174,7 +182,7 @@ export function PaymentModal() {
               </tr>
             </thead>
             <tbody>
-              {feeItems.map((item) => (
+              {feeItems.map(item => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 border-b text-sm">{item.feeType}</td>
                   <td className="px-4 py-3 border-b text-sm">{item.period}</td>
@@ -189,7 +197,9 @@ export function PaymentModal() {
                         min="0"
                         max={item.amount}
                         value={item.manualAmount?.toString() || ''}
-                        onChange={(e) => handleManualAmountChange(item.id, e.target.value)}
+                        onChange={e =>
+                          handleManualAmountChange(item.id, e.target.value)
+                        }
                         placeholder="0.00"
                         className="w-24"
                       />
@@ -212,10 +222,7 @@ export function PaymentModal() {
 
       {/* Footer */}
       <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
-        <Button
-          onClick={handleClose}
-          variant="outline"
-        >
+        <Button onClick={handleClose} variant="outline">
           Отказ
         </Button>
         <Button

@@ -6,13 +6,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 import { useGetInventoriesByBuildingQuery } from '@/redux/services/inventory.service';
 import { IInventoryResponse } from '@repo/interfaces';
-import { 
-  Eye, 
-  Edit, 
-  Trash2, 
-  Wallet,
-  TrendingUp
-} from 'lucide-react';
+import { Eye, Edit, Trash2, Wallet, TrendingUp } from 'lucide-react';
 
 interface InventoriesTableProps {
   buildingId: string;
@@ -27,43 +21,49 @@ export function InventoriesTable({ buildingId }: InventoriesTableProps) {
   } | null>(null);
 
   // Fetch inventories data
-  const { 
-    data: inventories = [], 
-    isLoading, 
-    error 
+  const {
+    data: inventories = [],
+    isLoading,
+    error,
   } = useGetInventoriesByBuildingQuery(buildingId);
 
   const handleViewInventory = (inventory: IInventoryResponse) => {
-    dispatch(openModal({
-      type: 'inventory-transfers',
-      data: { 
-        inventoryId: inventory.id,
-        inventoryName: inventory.name,
-        inventoryData: inventory
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'inventory-transfers',
+        data: {
+          inventoryId: inventory.id,
+          inventoryName: inventory.name,
+          inventoryData: inventory,
+        },
+      })
+    );
   };
 
   const handleEditInventory = (inventory: IInventoryResponse) => {
-    dispatch(openModal({
-      type: 'edit-inventory',
-      data: { 
-        inventoryId: inventory.id,
-        inventoryName: inventory.name,
-        inventoryData: inventory
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'edit-inventory',
+        data: {
+          inventoryId: inventory.id,
+          inventoryName: inventory.name,
+          inventoryData: inventory,
+        },
+      })
+    );
   };
 
   const handleDeleteInventory = (inventory: IInventoryResponse) => {
-    dispatch(openModal({
-      type: 'delete-inventory',
-      data: { 
-        inventoryId: inventory.id,
-        inventoryName: inventory.name,
-        inventoryData: inventory
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-inventory',
+        data: {
+          inventoryId: inventory.id,
+          inventoryName: inventory.name,
+          inventoryData: inventory,
+        },
+      })
+    );
   };
 
   const columns: Column<IInventoryResponse>[] = [
@@ -94,7 +94,7 @@ export function InventoriesTable({ buildingId }: InventoriesTableProps) {
       width: '150px',
       minWidth: '150px',
       cell: row => (
-        <Badge variant={row.visibleInApp ? "positive" : "neutral"}>
+        <Badge variant={row.visibleInApp ? 'positive' : 'neutral'}>
           {row.visibleInApp ? 'Да' : 'Не'}
         </Badge>
       ),
@@ -127,7 +127,7 @@ export function InventoriesTable({ buildingId }: InventoriesTableProps) {
           >
             <Eye className="h-4 w-4" />
           </Button>
-          
+
           {!row.isMain && (
             <>
               <Button
@@ -139,7 +139,7 @@ export function InventoriesTable({ buildingId }: InventoriesTableProps) {
               >
                 <Edit className="h-4 w-4" />
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="sm"

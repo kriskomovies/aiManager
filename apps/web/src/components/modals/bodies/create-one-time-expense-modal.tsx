@@ -7,7 +7,10 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addAlert } from '@/redux/slices/alert-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
-import { useGetInventoriesByBuildingQuery, useCreateExpenseMutation } from '@/redux/services/inventory.service';
+import {
+  useGetInventoriesByBuildingQuery,
+  useCreateExpenseMutation,
+} from '@/redux/services/inventory.service';
 
 interface CreateOneTimeExpenseModalProps {
   onClose: () => void;
@@ -20,10 +23,12 @@ interface OneTimeExpenseFormData {
   note: string;
 }
 
-export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModalProps) {
+export function CreateOneTimeExpenseModal({
+  onClose,
+}: CreateOneTimeExpenseModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   const [formData, setFormData] = useState<OneTimeExpenseFormData>({
     amount: 0,
     paymentMethod: '',
@@ -37,56 +42,69 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
   const buildingId = modalData?.buildingId;
 
   // Fetch payment methods from database
-  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = useGetActiveUserPaymentMethodsQuery();
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } =
+    useGetActiveUserPaymentMethodsQuery();
 
   // Fetch inventories for the building
-  const { data: inventories = [], isLoading: isLoadingInventories } = useGetInventoriesByBuildingQuery(buildingId!, {
-    skip: !buildingId
-  });
+  const { data: inventories = [], isLoading: isLoadingInventories } =
+    useGetInventoriesByBuildingQuery(buildingId!, {
+      skip: !buildingId,
+    });
 
   // API mutation for creating expense
   const [createExpense] = useCreateExpenseMutation();
 
-  const handleInputChange = (field: keyof OneTimeExpenseFormData, value: string | number) => {
+  const handleInputChange = (
+    field: keyof OneTimeExpenseFormData,
+    value: string | number
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Validation
     if (formData.amount <= 0) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля въведете валидна сума.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля въведете валидна сума.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (!formData.sourceInventory) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля изберете източник на средства.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля изберете източник на средства.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     // Check if source inventory has sufficient funds
-    const sourceInventory = inventories.find(inv => inv.id === formData.sourceInventory);
+    const sourceInventory = inventories.find(
+      inv => inv.id === formData.sourceInventory
+    );
     if (sourceInventory && formData.amount > sourceInventory.amount) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: `Недостатъчни средства в ${sourceInventory.name}. Налични: ${sourceInventory.amount.toFixed(2)} лв.`,
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: `Недостатъчни средства в ${sourceInventory.name}. Налични: ${sourceInventory.amount.toFixed(2)} лв.`,
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -100,33 +118,45 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
         amount: formData.amount,
         description: formData.note || 'One-time expense',
       }).unwrap();
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно създаване!',
-        message: `Еднократният разход от ${formData.amount.toFixed(2)} лв. беше създаден успешно.`,
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно създаване!',
+          message: `Еднократният разход от ${formData.amount.toFixed(2)} лв. беше създаден успешно.`,
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error creating one-time expense:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при създаването на разхода. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при създаването на разхода. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при създаване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при създаване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +171,9 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
     return (
       <div className="text-center py-8">
         <p className="text-red-600">Липсва информация за сградата.</p>
-        <Button onClick={onClose} className="mt-4">Затвори</Button>
+        <Button onClick={onClose} className="mt-4">
+          Затвори
+        </Button>
       </div>
     );
   }
@@ -170,7 +202,9 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
               step="0.01"
               min="0"
               value={formData.amount || ''}
-              onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+              onChange={e =>
+                handleInputChange('amount', parseFloat(e.target.value) || 0)
+              }
               placeholder="Въведете сума"
               disabled={isSubmitting}
             />
@@ -186,7 +220,7 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
           <Select
             id="sourceInventory"
             value={formData.sourceInventory}
-            onChange={(e) => handleInputChange('sourceInventory', e.target.value)}
+            onChange={e => handleInputChange('sourceInventory', e.target.value)}
             disabled={isSubmitting || isLoadingInventories}
           >
             <option value="">Изберете касова наличност</option>
@@ -204,7 +238,7 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
           <Select
             id="paymentMethod"
             value={formData.paymentMethod}
-            onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
+            onChange={e => handleInputChange('paymentMethod', e.target.value)}
             disabled={isSubmitting || isLoadingPaymentMethods}
           >
             <option value="">Изберете метод на плащане</option>
@@ -223,7 +257,7 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
             id="note"
             type="text"
             value={formData.note}
-            onChange={(e) => handleInputChange('note', e.target.value)}
+            onChange={e => handleInputChange('note', e.target.value)}
             placeholder="Добавете бележка (по избор)"
             disabled={isSubmitting}
           />
@@ -239,10 +273,7 @@ export function CreateOneTimeExpenseModal({ onClose }: CreateOneTimeExpenseModal
           >
             Отказ
           </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Създаване...' : 'Създай'}
           </Button>
         </div>

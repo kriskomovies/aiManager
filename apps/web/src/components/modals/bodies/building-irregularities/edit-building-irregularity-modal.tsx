@@ -16,10 +16,12 @@ interface EditBuildingIrregularityModalProps {
   onClose: () => void;
 }
 
-export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregularityModalProps) {
+export function EditBuildingIrregularityModal({
+  onClose,
+}: EditBuildingIrregularityModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   const irregularityId = modalData?.irregularityId;
   const buildingId = modalData?.buildingId;
 
@@ -27,7 +29,8 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
   const mockIrregularity = {
     id: irregularityId || '1',
     title: 'Счупена Панта',
-    description: 'Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала.',
+    description:
+      'Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала.',
     buildingName: 'Име на Сграда',
     apartmentNumber: '24',
     date: '10.12.2024',
@@ -45,8 +48,13 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
   // Load initial data when modal opens
   useEffect(() => {
     // TODO: Load real irregularity data based on irregularityId
-    console.log('Loading irregularity:', irregularityId, 'for building:', buildingId);
-    
+    console.log(
+      'Loading irregularity:',
+      irregularityId,
+      'for building:',
+      buildingId
+    );
+
     setFormData({
       status: mockIrregularity.status,
     });
@@ -55,23 +63,25 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
   const handleStatusChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
-      status: value as EditBuildingIrregularityFormData['status']
+      status: value as EditBuildingIrregularityFormData['status'],
     }));
-    
+
     // Enable save button when status changes from initial value
     setHasStatusChanged(value !== mockIrregularity.status);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!irregularityId) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Няма избрана нередност за редактиране.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Няма избрана нередност за редактиране.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -79,37 +89,54 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
 
     try {
       // TODO: Implement actual update API call
-      console.log('Updating irregularity status:', irregularityId, 'to:', formData.status);
-      
+      console.log(
+        'Updating irregularity status:',
+        irregularityId,
+        'to:',
+        formData.status
+      );
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно обновяване!',
-        message: 'Статусът на нередността беше обновен успешно.',
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно обновяване!',
+          message: 'Статусът на нередността беше обновен успешно.',
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error updating irregularity status:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при обновяването на статуса. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при обновяването на статуса. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при обновяване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при обновяване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -131,9 +158,7 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
     <div className="w-full max-w-lg">
       {/* Header */}
       <div className="text-left mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Нередност
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Нередност</h3>
         <div className="text-right text-sm text-gray-500">
           {mockIrregularity.date}
         </div>
@@ -197,7 +222,7 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
             <Select
               id="status"
               value={formData.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
+              onChange={e => handleStatusChange(e.target.value)}
               disabled={isSubmitting}
               required
             >
@@ -222,9 +247,10 @@ export function EditBuildingIrregularityModal({ onClose }: EditBuildingIrregular
             <Button
               type="submit"
               disabled={isSubmitting || !hasStatusChanged}
-              className={hasStatusChanged && !isSubmitting 
-                ? "" 
-                : "bg-gray-400 text-gray-600 cursor-not-allowed"
+              className={
+                hasStatusChanged && !isSubmitting
+                  ? ''
+                  : 'bg-gray-400 text-gray-600 cursor-not-allowed'
               }
             >
               {isSubmitting ? (

@@ -21,7 +21,9 @@ interface InventoryTransfersTableProps {
   };
 }
 
-export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableProps) {
+export function InventoryTransfersTable({
+  dateFilter,
+}: InventoryTransfersTableProps) {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof InventoryTransfer;
@@ -38,7 +40,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'В брой',
       note: '-',
-      amount: 585.00
+      amount: 585.0,
     },
     {
       id: '2',
@@ -48,7 +50,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Банков превод',
       note: 'Прехвърляне',
-      amount: -50.00
+      amount: -50.0,
     },
     {
       id: '3',
@@ -58,7 +60,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Онлайн',
       note: 'Прехвърляне',
-      amount: 200.00
+      amount: 200.0,
     },
     {
       id: '4',
@@ -68,7 +70,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'В брой',
       note: '-',
-      amount: 585.00
+      amount: 585.0,
     },
     {
       id: '5',
@@ -78,7 +80,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Банков превод',
       note: 'Прехвърляне',
-      amount: -50.00
+      amount: -50.0,
     },
     {
       id: '6',
@@ -88,7 +90,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Онлайн',
       note: '-',
-      amount: 200.00
+      amount: 200.0,
     },
     {
       id: '7',
@@ -98,7 +100,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'В брой',
       note: '-',
-      amount: 585.00
+      amount: 585.0,
     },
     {
       id: '8',
@@ -108,7 +110,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Банков превод',
       note: 'Прехвърляне',
-      amount: -50.00
+      amount: -50.0,
     },
     {
       id: '9',
@@ -118,23 +120,26 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       payer: 'Иван Иванов',
       paymentMethod: 'Онлайн',
       note: '-',
-      amount: 200.00
+      amount: 200.0,
     },
   ];
 
   // Filter transfers based on date filter if provided
-  const filteredTransfers = dateFilter?.from || dateFilter?.to
-    ? mockTransfers.filter(transfer => {
-        const transferDate = new Date(transfer.date.split('.').reverse().join('-'));
-        const fromDate = dateFilter.from ? new Date(dateFilter.from) : null;
-        const toDate = dateFilter.to ? new Date(dateFilter.to) : null;
-        
-        if (fromDate && transferDate < fromDate) return false;
-        if (toDate && transferDate > toDate) return false;
-        
-        return true;
-      })
-    : mockTransfers;
+  const filteredTransfers =
+    dateFilter?.from || dateFilter?.to
+      ? mockTransfers.filter(transfer => {
+          const transferDate = new Date(
+            transfer.date.split('.').reverse().join('-')
+          );
+          const fromDate = dateFilter.from ? new Date(dateFilter.from) : null;
+          const toDate = dateFilter.to ? new Date(dateFilter.to) : null;
+
+          if (fromDate && transferDate < fromDate) return false;
+          if (toDate && transferDate > toDate) return false;
+
+          return true;
+        })
+      : mockTransfers;
 
   const columns: Column<InventoryTransfer>[] = [
     {
@@ -157,9 +162,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       width: '100px',
       minWidth: '100px',
       cell: row => (
-        <span className="text-sm font-medium text-gray-900">
-          {row.type}
-        </span>
+        <span className="text-sm font-medium text-gray-900">{row.type}</span>
       ),
     },
     {
@@ -170,9 +173,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       width: '150px',
       minWidth: '150px',
       cell: row => (
-        <span className="text-sm font-medium text-gray-900">
-          {row.payer}
-        </span>
+        <span className="text-sm font-medium text-gray-900">{row.payer}</span>
       ),
     },
     {
@@ -182,9 +183,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       width: '150px',
       minWidth: '150px',
       cell: row => (
-        <span className="text-sm text-gray-700">
-          {row.paymentMethod}
-        </span>
+        <span className="text-sm text-gray-700">{row.paymentMethod}</span>
       ),
     },
     {
@@ -192,11 +191,7 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       accessorKey: 'note',
       width: '120px',
       minWidth: '120px',
-      cell: row => (
-        <span className="text-sm text-gray-700">
-          {row.note}
-        </span>
-      ),
+      cell: row => <span className="text-sm text-gray-700">{row.note}</span>,
     },
     {
       header: 'Сума',
@@ -205,9 +200,9 @@ export function InventoryTransfersTable({ dateFilter }: InventoryTransfersTableP
       width: '120px',
       minWidth: '120px',
       cell: row => (
-        <Badge 
-          value={row.amount} 
-          suffix=" лв." 
+        <Badge
+          value={row.amount}
+          suffix=" лв."
           autoColor
           className="font-medium"
         />

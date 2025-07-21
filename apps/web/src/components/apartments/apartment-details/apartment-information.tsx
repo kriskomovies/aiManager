@@ -27,13 +27,16 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      'OCCUPIED': { label: 'Заето', variant: 'positive' as const },
-      'VACANT': { label: 'Свободно', variant: 'neutral' as const },
-      'MAINTENANCE': { label: 'Поддръжка', variant: 'warning' as const },
-      'RESERVED': { label: 'Резервирано', variant: 'neutral' as const },
+      OCCUPIED: { label: 'Заето', variant: 'positive' as const },
+      VACANT: { label: 'Свободно', variant: 'neutral' as const },
+      MAINTENANCE: { label: 'Поддръжка', variant: 'warning' as const },
+      RESERVED: { label: 'Резервирано', variant: 'neutral' as const },
     };
-    
-    const config = statusMap[status as keyof typeof statusMap] || { label: status, variant: 'neutral' as const };
+
+    const config = statusMap[status as keyof typeof statusMap] || {
+      label: status,
+      variant: 'neutral' as const,
+    };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -46,7 +49,7 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
 
   return (
     <Card className="overflow-hidden">
-      <div 
+      <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -55,7 +58,9 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
             <Home className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Информация за апартамента</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Информация за апартамента
+            </h3>
             <p className="text-sm text-gray-600">Основни данни и живущи</p>
           </div>
         </div>
@@ -84,39 +89,63 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
                     <MapPin className="h-4 w-4 text-gray-500" />
                     Детайли на апартамента
                   </h4>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Собственик</label>
-                      <p className="text-sm text-gray-900">{mainResident ? `${mainResident.name} ${mainResident.surname}` : 'Не е зададен'}</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Собственик
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {mainResident
+                          ? `${mainResident.name} ${mainResident.surname}`
+                          : 'Не е зададен'}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Абонатен Номер</label>
+                      <label className="text-sm font-medium text-gray-500">
+                        Абонатен Номер
+                      </label>
                       <p className="text-sm text-gray-900">123456</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Домашни проблеми</label>
+                      <label className="text-sm font-medium text-gray-500">
+                        Домашни проблеми
+                      </label>
                       <p className="text-sm text-gray-900">1</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Квадратура</label>
-                      <p className="text-sm text-gray-900">{(apartment.quadrature || 0).toFixed(2)} кв.м.</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Квадратура
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {(apartment.quadrature || 0).toFixed(2)} кв.м.
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Обща части</label>
+                      <label className="text-sm font-medium text-gray-500">
+                        Обща части
+                      </label>
                       <p className="text-sm text-gray-900">80 кв.м.</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Обща части</label>
+                      <label className="text-sm font-medium text-gray-500">
+                        Обща части
+                      </label>
                       <p className="text-sm text-gray-900">80 кв.м.</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Телефон</label>
+                      <label className="text-sm font-medium text-gray-500">
+                        Телефон
+                      </label>
                       <p className="text-sm text-gray-900">0883363963</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Имейл</label>
-                      <p className="text-sm text-gray-900">alialial@gmail.com</p>
+                      <label className="text-sm font-medium text-gray-500">
+                        Имейл
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        alialial@gmail.com
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -127,18 +156,25 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
                     <User className="h-4 w-4 text-gray-500" />
                     Живущи ({apartment.residents.length})
                   </h4>
-                  
+
                   <div className="space-y-3">
                     {apartment.residents.map((resident, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
                             <User className="h-4 w-4 text-gray-600" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{resident.name} {resident.surname}</p>
+                            <p className="font-medium text-gray-900">
+                              {resident.name} {resident.surname}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {resident.isMainContact ? 'Основен контакт' : 'Живущ'}
+                              {resident.isMainContact
+                                ? 'Основен контакт'
+                                : 'Живущ'}
                             </p>
                           </div>
                         </div>
@@ -155,18 +191,26 @@ export function ApartmentInformation({ apartment }: ApartmentInformationProps) {
               {/* Status and Financial Info */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-4 border-t border-gray-100">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Статус</label>
-                  <div className="mt-1">
-                    {getStatusBadge(apartment.status)}
-                  </div>
+                  <label className="text-sm font-medium text-gray-500">
+                    Статус
+                  </label>
+                  <div className="mt-1">{getStatusBadge(apartment.status)}</div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Месечна наемна цена</label>
-                  <p className="text-sm font-semibold text-gray-900">{(apartment.monthlyRent || 0).toFixed(2)} лв.</p>
+                  <label className="text-sm font-medium text-gray-500">
+                    Месечна наемна цена
+                  </label>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {(apartment.monthlyRent || 0).toFixed(2)} лв.
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Такса поддръжка</label>
-                  <p className="text-sm font-semibold text-gray-900">{(apartment.maintenanceFee || 0).toFixed(2)} лв.</p>
+                  <label className="text-sm font-medium text-gray-500">
+                    Такса поддръжка
+                  </label>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {(apartment.maintenanceFee || 0).toFixed(2)} лв.
+                  </p>
                 </div>
               </div>
             </div>

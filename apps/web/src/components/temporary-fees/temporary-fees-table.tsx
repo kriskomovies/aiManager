@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Eye, 
-  Edit, 
-  Trash2
-} from 'lucide-react';
+import { Eye, Edit, Trash2 } from 'lucide-react';
 
 interface TemporaryFeeData {
   id: string;
@@ -32,7 +28,7 @@ export function TemporaryFeesTable() {
       id: '1',
       name: 'Ремонт Покрив',
       progress: 75,
-      remainingObligations: 1250.00,
+      remainingObligations: 1250.0,
       includedApartments: '10/12',
       paymentBase: 'Квадратура',
       startDate: '01.01.2024',
@@ -42,7 +38,7 @@ export function TemporaryFeesTable() {
       id: '2',
       name: 'Обновяване Фасада',
       progress: 45,
-      remainingObligations: 3200.50,
+      remainingObligations: 3200.5,
       includedApartments: '12/12',
       paymentBase: 'Апартамент',
       startDate: '15.03.2024',
@@ -52,7 +48,7 @@ export function TemporaryFeesTable() {
       id: '3',
       name: 'Смяна Асансьор',
       progress: 20,
-      remainingObligations: 8500.00,
+      remainingObligations: 8500.0,
       includedApartments: '8/12',
       paymentBase: 'Живещ',
       startDate: '10.06.2024',
@@ -76,14 +72,17 @@ export function TemporaryFeesTable() {
     let variant: 'positive' | 'warning' | 'negative' = 'negative';
     if (progress >= 75) variant = 'positive';
     else if (progress >= 50) variant = 'warning';
-    
+
     return (
       <div className="flex items-center gap-2">
         <div className="w-16 bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             className={`h-2 rounded-full ${
-              variant === 'positive' ? 'bg-green-500' :
-              variant === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+              variant === 'positive'
+                ? 'bg-green-500'
+                : variant === 'warning'
+                  ? 'bg-yellow-500'
+                  : 'bg-red-500'
             }`}
             style={{ width: `${progress}%` }}
           />
@@ -94,17 +93,18 @@ export function TemporaryFeesTable() {
   };
 
   const getPaymentBaseBadge = (paymentBase: string) => {
-    const colorMap: Record<string, 'positive' | 'neutral' | 'warning' | 'negative'> = {
-      'Квадратура': 'warning',
-      'Апартамент': 'neutral', 
-      'Живещ': 'positive',
+    const colorMap: Record<
+      string,
+      'positive' | 'neutral' | 'warning' | 'negative'
+    > = {
+      Квадратура: 'warning',
+      Апартамент: 'neutral',
+      Живещ: 'positive',
       'Общи Части': 'positive',
     };
-    
+
     return (
-      <Badge variant={colorMap[paymentBase] || 'neutral'}>
-        {paymentBase}
-      </Badge>
+      <Badge variant={colorMap[paymentBase] || 'neutral'}>{paymentBase}</Badge>
     );
   };
 
@@ -164,9 +164,7 @@ export function TemporaryFeesTable() {
       sortable: true,
       width: '120px',
       minWidth: '120px',
-      cell: row => (
-        <span className="text-gray-700">{row.startDate}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.startDate}</span>,
     },
     {
       header: 'Месеци',
@@ -174,9 +172,7 @@ export function TemporaryFeesTable() {
       sortable: true,
       width: '80px',
       minWidth: '80px',
-      cell: row => (
-        <span className="text-gray-700">{row.months}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.months}</span>,
     },
     {
       header: 'Действия',
@@ -194,7 +190,7 @@ export function TemporaryFeesTable() {
           >
             <Eye className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -204,7 +200,7 @@ export function TemporaryFeesTable() {
           >
             <Edit className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"

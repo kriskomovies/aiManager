@@ -66,17 +66,18 @@ export function ArchiveTemporaryFeesTable() {
   };
 
   const getPaymentBaseBadge = (paymentBase: string) => {
-    const colorMap: Record<string, 'positive' | 'neutral' | 'warning' | 'negative'> = {
-      'Квадратура': 'warning',
-      'Апартамент': 'neutral', 
-      'Живещ': 'positive',
+    const colorMap: Record<
+      string,
+      'positive' | 'neutral' | 'warning' | 'negative'
+    > = {
+      Квадратура: 'warning',
+      Апартамент: 'neutral',
+      Живещ: 'positive',
       'Общи Части': 'positive',
     };
-    
+
     return (
-      <Badge variant={colorMap[paymentBase] || 'neutral'}>
-        {paymentBase}
-      </Badge>
+      <Badge variant={colorMap[paymentBase] || 'neutral'}>{paymentBase}</Badge>
     );
   };
 
@@ -116,9 +117,7 @@ export function ArchiveTemporaryFeesTable() {
       sortable: true,
       width: '120px',
       minWidth: '120px',
-      cell: row => (
-        <span className="text-gray-700">{row.startDate}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.startDate}</span>,
     },
     {
       header: 'Крайна Дата',
@@ -126,9 +125,7 @@ export function ArchiveTemporaryFeesTable() {
       sortable: true,
       width: '120px',
       minWidth: '120px',
-      cell: row => (
-        <span className="text-gray-700">{row.endDate}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.endDate}</span>,
     },
     {
       header: 'Месеци',
@@ -136,9 +133,7 @@ export function ArchiveTemporaryFeesTable() {
       sortable: true,
       width: '80px',
       minWidth: '80px',
-      cell: row => (
-        <span className="text-gray-700">{row.months}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.months}</span>,
     },
     {
       header: 'Действия',

@@ -1,2 +1,2 @@
 export * from './payment.dto';
-export * from './payment.enums'; 
+export * from './payment.enums';

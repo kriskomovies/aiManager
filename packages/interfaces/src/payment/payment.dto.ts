@@ -1,4 +1,8 @@
-import { TenantPaymentMethod, UserPaymentMethod, PaymentMethodStatus } from './payment.enums';
+import {
+  TenantPaymentMethod,
+  UserPaymentMethod,
+  PaymentMethodStatus,
+} from './payment.enums';
 
 // Base Tenant Payment Method interface
 export interface ITenantPaymentMethod {
@@ -60,4 +64,4 @@ export interface IUpdateUserPaymentMethodRequest {
 
 // Payment Method Response for API
 export interface ITenantPaymentMethodResponse extends ITenantPaymentMethod {}
-export interface IUserPaymentMethodResponse extends IUserPaymentMethod {} 
+export interface IUserPaymentMethodResponse extends IUserPaymentMethod {}

@@ -30,4 +30,4 @@ export interface IBackendPaginatedResponse<T> {
   };
   statusCode: number;
   timestamp: string;
-} 
+}

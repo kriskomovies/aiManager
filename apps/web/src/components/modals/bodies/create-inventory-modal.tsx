@@ -9,12 +9,15 @@ import { Plus, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
-import { 
-  useCreateInventoryMutation, 
+import {
+  useCreateInventoryMutation,
   useTransferMoneyMutation,
-  useGetInventoriesByBuildingQuery 
+  useGetInventoriesByBuildingQuery,
 } from '@/redux/services/inventory.service';
-import { ICreateInventoryRequest, IInventoryTransferRequest } from '@repo/interfaces';
+import {
+  ICreateInventoryRequest,
+  IInventoryTransferRequest,
+} from '@repo/interfaces';
 
 interface CreateInventoryFormData {
   name: string;
@@ -35,16 +38,19 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const buildingId = modalData?.buildingId;
-  
+
   // Get inventories for the building to populate transfer options
-  const { data: inventories = [] } = useGetInventoriesByBuildingQuery(buildingId!, {
-    skip: !buildingId
-  });
-  
+  const { data: inventories = [] } = useGetInventoriesByBuildingQuery(
+    buildingId!,
+    {
+      skip: !buildingId,
+    }
+  );
+
   // API mutations
   const [createInventory] = useCreateInventoryMutation();
   const [transferMoney] = useTransferMoneyMutation();
-  
+
   const [formData, setFormData] = useState<CreateInventoryFormData>({
     name: '',
     description: '',
@@ -61,13 +67,16 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
   // Convert inventories to select options
   const inventoryOptions = inventories.map(inventory => ({
     value: inventory.id,
-    label: `${inventory.name} (${inventory.amount.toFixed(2)} лв.)`
+    label: `${inventory.name} (${inventory.amount.toFixed(2)} лв.)`,
   }));
 
-  const handleInputChange = (field: keyof CreateInventoryFormData, value: string | number | boolean) => {
+  const handleInputChange = (
+    field: keyof CreateInventoryFormData,
+    value: string | number | boolean
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -80,7 +89,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
   const isTransferAmountValid = () => {
     if (!formData.fromInventory || !formData.transferAmount) return true;
     const sourceInventory = getSelectedInventory();
-    return !sourceInventory || formData.transferAmount <= sourceInventory.amount;
+    return (
+      !sourceInventory || formData.transferAmount <= sourceInventory.amount
+    );
   };
 
   const handleAmountTypeChange = (value: string) => {
@@ -97,50 +108,69 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля въведете име на касата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля въведете име на касата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (!buildingId) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Липсва информация за сградата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Липсва информация за сградата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     // Validate transfer amount if needed
-    if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
-        (!formData.fromInventory || !formData.transferAmount || formData.transferAmount <= 0)) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля въведете валидна каса и сума за прехвърляне.',
-        duration: 5000
-      }));
+    if (
+      (formData.amountType === 'transfer-from-inventory' ||
+        formData.amountType === 'combined') &&
+      (!formData.fromInventory ||
+        !formData.transferAmount ||
+        formData.transferAmount <= 0)
+    ) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля въведете валидна каса и сума за прехвърляне.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     // Validate that transfer amount doesn't exceed available balance
-    if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
-        formData.fromInventory && formData.transferAmount) {
-      const sourceInventory = inventories.find(inv => inv.id === formData.fromInventory);
+    if (
+      (formData.amountType === 'transfer-from-inventory' ||
+        formData.amountType === 'combined') &&
+      formData.fromInventory &&
+      formData.transferAmount
+    ) {
+      const sourceInventory = inventories.find(
+        inv => inv.id === formData.fromInventory
+      );
       if (sourceInventory && formData.transferAmount > sourceInventory.amount) {
-        dispatch(addAlert({
-          type: 'error',
-          title: 'Недостатъчна наличност',
-          message: `Касата "${sourceInventory.name}" има само ${sourceInventory.amount.toFixed(2)} лв. Не можете да прехвърлите ${formData.transferAmount.toFixed(2)} лв.`,
-          duration: 5000
-        }));
+        dispatch(
+          addAlert({
+            type: 'error',
+            title: 'Недостатъчна наличност',
+            message: `Касата "${sourceInventory.name}" има само ${sourceInventory.amount.toFixed(2)} лв. Не можете да прехвърлите ${formData.transferAmount.toFixed(2)} лв.`,
+            duration: 5000,
+          })
+        );
         return;
       }
     }
@@ -149,8 +179,12 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
 
     try {
       // Prepare inventory creation data
-      const initialAmount = formData.amountType === 'add-new' ? (formData.amount || 0) :
-                           formData.amountType === 'combined' ? (formData.amount || 0) : 0;
+      const initialAmount =
+        formData.amountType === 'add-new'
+          ? formData.amount || 0
+          : formData.amountType === 'combined'
+            ? formData.amount || 0
+            : 0;
 
       const createInventoryData: ICreateInventoryRequest = {
         buildingId,
@@ -158,47 +192,58 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
         title: formData.name.trim(),
         description: formData.description.trim() || undefined,
         visibleInApp: formData.visibleInApp,
-        initialAmount
+        initialAmount,
       };
 
       // Create the inventory
       const newInventory = await createInventory(createInventoryData).unwrap();
 
       // If we need to transfer money from another inventory
-      if ((formData.amountType === 'transfer-from-inventory' || formData.amountType === 'combined') && 
-          formData.fromInventory && formData.transferAmount && formData.transferAmount > 0) {
-        
+      if (
+        (formData.amountType === 'transfer-from-inventory' ||
+          formData.amountType === 'combined') &&
+        formData.fromInventory &&
+        formData.transferAmount &&
+        formData.transferAmount > 0
+      ) {
         const transferData: IInventoryTransferRequest = {
           fromInventoryId: formData.fromInventory,
           toInventoryId: newInventory.id,
           amount: formData.transferAmount,
-          description: formData.description.trim() || `Прехвърляне към ${formData.name}`
+          description:
+            formData.description.trim() || `Прехвърляне към ${formData.name}`,
         };
 
         await transferMoney(transferData).unwrap();
       }
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно създаване!',
-        message: `Касата "${formData.name}" беше създадена успешно.`,
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно създаване!',
+          message: `Касата "${formData.name}" беше създадена успешно.`,
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error creating inventory:', error);
-      
-      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || 
-                          (error as { message?: string })?.message || 
-                          'Възникна грешка при създаването на касата. Моля опитайте отново.';
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при създаване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        'Възникна грешка при създаването на касата. Моля опитайте отново.';
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при създаване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -219,7 +264,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 id="amount"
                 type="number"
                 value={formData.amount || ''}
-                onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                onChange={e =>
+                  handleInputChange('amount', parseFloat(e.target.value) || 0)
+                }
                 placeholder="Сума за внасяне в касата"
                 disabled={isSubmitting}
                 min="0"
@@ -241,7 +288,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 <Select
                   id="fromInventory"
                   value={formData.fromInventory || ''}
-                  onChange={(e) => handleInputChange('fromInventory', e.target.value)}
+                  onChange={e =>
+                    handleInputChange('fromInventory', e.target.value)
+                  }
                   disabled={isSubmitting}
                 >
                   <option value="">Избери каса</option>
@@ -259,12 +308,21 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                     id="transferAmount"
                     type="number"
                     value={formData.transferAmount || ''}
-                    onChange={(e) => handleInputChange('transferAmount', parseFloat(e.target.value) || 0)}
+                    onChange={e =>
+                      handleInputChange(
+                        'transferAmount',
+                        parseFloat(e.target.value) || 0
+                      )
+                    }
                     placeholder="Сума за прехвърляне"
                     disabled={isSubmitting}
                     min="0"
                     step="0.01"
-                    className={!isTransferAmountValid() ? 'border-red-500 focus:border-red-500' : ''}
+                    className={
+                      !isTransferAmountValid()
+                        ? 'border-red-500 focus:border-red-500'
+                        : ''
+                    }
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
                     лв.
@@ -272,7 +330,8 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 </div>
                 {!isTransferAmountValid() && (
                   <p className="text-xs text-red-600 mt-1">
-                    Недостатъчна наличност! Максимум: {getSelectedInventory()?.amount.toFixed(2)} лв.
+                    Недостатъчна наличност! Максимум:{' '}
+                    {getSelectedInventory()?.amount.toFixed(2)} лв.
                   </p>
                 )}
               </div>
@@ -282,7 +341,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
               <Input
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={e => handleInputChange('description', e.target.value)}
                 placeholder="Описание на прехвърлянето"
                 disabled={isSubmitting}
               />
@@ -299,7 +358,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 <Input
                   type="number"
                   value={formData.amount || ''}
-                  onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                  onChange={e =>
+                    handleInputChange('amount', parseFloat(e.target.value) || 0)
+                  }
                   placeholder="Сума за внасяне в касата"
                   disabled={isSubmitting}
                   min="0"
@@ -310,9 +371,11 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 </span>
               </div>
             </div>
-            
+
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-800 mb-3">Прехвърляне от Сума от Каса</h4>
+              <h4 className="font-medium text-gray-800 mb-3">
+                Прехвърляне от Сума от Каса
+              </h4>
               <div className="space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -320,7 +383,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                     <Select
                       id="fromInventory"
                       value={formData.fromInventory || ''}
-                      onChange={(e) => handleInputChange('fromInventory', e.target.value)}
+                      onChange={e =>
+                        handleInputChange('fromInventory', e.target.value)
+                      }
                       disabled={isSubmitting}
                     >
                       <option value="">Избери каса</option>
@@ -338,12 +403,21 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                         id="transferAmount"
                         type="number"
                         value={formData.transferAmount || ''}
-                        onChange={(e) => handleInputChange('transferAmount', parseFloat(e.target.value) || 0)}
+                        onChange={e =>
+                          handleInputChange(
+                            'transferAmount',
+                            parseFloat(e.target.value) || 0
+                          )
+                        }
                         placeholder="Сума за прехвърляне"
                         disabled={isSubmitting}
                         min="0"
                         step="0.01"
-                        className={!isTransferAmountValid() ? 'border-red-500 focus:border-red-500' : ''}
+                        className={
+                          !isTransferAmountValid()
+                            ? 'border-red-500 focus:border-red-500'
+                            : ''
+                        }
                       />
                       <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
                         лв.
@@ -351,7 +425,8 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                     </div>
                     {!isTransferAmountValid() && (
                       <p className="text-xs text-red-600 mt-1">
-                        Недостатъчна наличност! Максимум: {getSelectedInventory()?.amount.toFixed(2)} лв.
+                        Недостатъчна наличност! Максимум:{' '}
+                        {getSelectedInventory()?.amount.toFixed(2)} лв.
                       </p>
                     )}
                   </div>
@@ -361,7 +436,9 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                   <Input
                     id="description"
                     value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    onChange={e =>
+                      handleInputChange('description', e.target.value)
+                    }
                     placeholder="Описание на прехвърлянето"
                     disabled={isSubmitting}
                   />
@@ -372,7 +449,10 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
             <div className="p-4 bg-blue-50 rounded-lg">
               <h4 className="font-medium text-blue-800 mb-2">Обща Сума</h4>
               <div className="text-2xl font-bold text-blue-600">
-                {((formData.amount || 0) + (formData.transferAmount || 0)).toFixed(2)} лв.
+                {(
+                  (formData.amount || 0) + (formData.transferAmount || 0)
+                ).toFixed(2)}{' '}
+                лв.
               </div>
             </div>
           </div>
@@ -391,14 +471,10 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        Нова Каса
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">Нова Каса</h3>
 
       {/* Subtitle */}
-      <p className="text-sm text-gray-600 mb-6">
-        Начално описание, ако има
-      </p>
+      <p className="text-sm text-gray-600 mb-6">Начално описание, ако има</p>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 text-left">
@@ -407,7 +483,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={e => handleInputChange('name', e.target.value)}
             placeholder="Въведете име на касата"
             disabled={isSubmitting}
             required
@@ -419,7 +495,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
           <Input
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Описание на касата"
             disabled={isSubmitting}
           />
@@ -429,7 +505,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
           <Checkbox
             id="visibleInApp"
             checked={formData.visibleInApp}
-            onChange={(e) => handleInputChange('visibleInApp', e.target.checked)}
+            onChange={e => handleInputChange('visibleInApp', e.target.checked)}
             disabled={isSubmitting}
           />
           <Label htmlFor="visibleInApp" className="text-sm">
@@ -447,7 +523,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 name="amountType"
                 value="add-new"
                 checked={formData.amountType === 'add-new'}
-                onChange={(e) => handleAmountTypeChange(e.target.value)}
+                onChange={e => handleAmountTypeChange(e.target.value)}
                 disabled={isSubmitting}
                 className="text-blue-600"
               />
@@ -462,7 +538,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 name="amountType"
                 value="transfer-from-inventory"
                 checked={formData.amountType === 'transfer-from-inventory'}
-                onChange={(e) => handleAmountTypeChange(e.target.value)}
+                onChange={e => handleAmountTypeChange(e.target.value)}
                 disabled={isSubmitting}
                 className="text-blue-600"
               />
@@ -477,7 +553,7 @@ export function CreateInventoryModal({ onClose }: CreateInventoryModalProps) {
                 name="amountType"
                 value="combined"
                 checked={formData.amountType === 'combined'}
-                onChange={(e) => handleAmountTypeChange(e.target.value)}
+                onChange={e => handleAmountTypeChange(e.target.value)}
                 disabled={isSubmitting}
                 className="text-blue-600"
               />

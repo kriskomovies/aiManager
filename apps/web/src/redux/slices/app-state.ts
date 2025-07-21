@@ -20,18 +20,24 @@ export const appStateSlice = createSlice({
     setPageSubtitle: (state, action: PayloadAction<string | undefined>) => {
       state.currentPageSubtitle = action.payload;
     },
-    setPageInfo: (state, action: PayloadAction<{ title: string; subtitle?: string }>) => {
+    setPageInfo: (
+      state,
+      action: PayloadAction<{ title: string; subtitle?: string }>
+    ) => {
       state.currentPageTitle = action.payload.title;
       state.currentPageSubtitle = action.payload.subtitle;
     },
   },
 });
 
-export const { setPageTitle, setPageSubtitle, setPageInfo } = appStateSlice.actions;
+export const { setPageTitle, setPageSubtitle, setPageInfo } =
+  appStateSlice.actions;
 
 // Selectors - will be typed properly when used with useAppSelector
-export const selectCurrentPageTitle = (state: { appState: AppState }) => state.appState.currentPageTitle;
-export const selectCurrentPageSubtitle = (state: { appState: AppState }) => state.appState.currentPageSubtitle;
+export const selectCurrentPageTitle = (state: { appState: AppState }) =>
+  state.appState.currentPageTitle;
+export const selectCurrentPageSubtitle = (state: { appState: AppState }) =>
+  state.appState.currentPageSubtitle;
 export const selectPageInfo = (state: { appState: AppState }) => ({
   title: state.appState.currentPageTitle,
   subtitle: state.appState.currentPageSubtitle,

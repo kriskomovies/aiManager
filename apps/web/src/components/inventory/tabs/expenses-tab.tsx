@@ -10,7 +10,7 @@ export function ExpensesTab({ buildingId }: ExpensesTabProps) {
     <div className="space-y-8">
       {/* Temporary/Recurring Expenses Section */}
       <TemporaryExpensesSection />
-      
+
       {/* One-time Expenses Section */}
       <OneTimeExpensesSection buildingId={buildingId} />
     </div>

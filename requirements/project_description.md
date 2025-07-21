@@ -23,19 +23,18 @@ Livo affects the following business areas:
 
 ## 🔧 Platform Functionalities
 
-| Category                | Functionality Description                                                |
-|-------------------------|---------------------------------------------------------------------------|
-| 💰 **Payment Automation** | Digital collection of rent, taxes, and other fees via bank card or wallet |
-| 🛠️ **Maintenance Management** | Residents submit service requests; managers assign, track, and close tickets |
-| 📈 **Operational Insights** | Dashboards and reports for arrears, occupancy, and building performance |
-| 📝 **Offer Management**    | Multiple tenant offers on listings (LivoSecure), boosting rental income |
-| 👥 **Tenant & Owner Portals** | Secure login environments for transparency, updates, and collaboration |
-| 🔐 **Visitor Access Control** | Digital logging of guests and deliveries for security and tracking       |
-| 📬 **Notifications & Reminders** | Automated alerts for payments, maintenance, and building notices       |
+| Category                         | Functionality Description                                                    |
+| -------------------------------- | ---------------------------------------------------------------------------- |
+| 💰 **Payment Automation**        | Digital collection of rent, taxes, and other fees via bank card or wallet    |
+| 🛠️ **Maintenance Management**    | Residents submit service requests; managers assign, track, and close tickets |
+| 📈 **Operational Insights**      | Dashboards and reports for arrears, occupancy, and building performance      |
+| 📝 **Offer Management**          | Multiple tenant offers on listings (LivoSecure), boosting rental income      |
+| 👥 **Tenant & Owner Portals**    | Secure login environments for transparency, updates, and collaboration       |
+| 🔐 **Visitor Access Control**    | Digital logging of guests and deliveries for security and tracking           |
+| 📬 **Notifications & Reminders** | Automated alerts for payments, maintenance, and building notices             |
 
 ---
 
 ## 📌 Summary
 
 Livo digitizes and unifies property management processes across payments, maintenance, communication, and leasing. By eliminating manual workflows, it increases efficiency, improves tenant satisfaction, and maximizes rental income for property owners and administrators.
-

@@ -72,7 +72,9 @@ export function ExpandableDataTable<T, C = T>({
   renderExpandedContent,
   className,
 }: ExpandableDataTableProps<T, C>) {
-  const [expandedRows, setExpandedRows] = useState<Set<string | number>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<string | number>>(
+    new Set()
+  );
 
   const handleSort = (field: keyof T) => {
     if (!onSortingChange) return;
@@ -89,13 +91,13 @@ export function ExpandableDataTable<T, C = T>({
   const toggleRowExpansion = (rowId: string | number) => {
     const newExpandedRows = new Set(expandedRows);
     const isCurrentlyExpanded = expandedRows.has(rowId);
-    
+
     if (isCurrentlyExpanded) {
       newExpandedRows.delete(rowId);
     } else {
       newExpandedRows.add(rowId);
     }
-    
+
     setExpandedRows(newExpandedRows);
     onRowExpand?.(rowId, !isCurrentlyExpanded);
   };
@@ -109,19 +111,17 @@ export function ExpandableDataTable<T, C = T>({
   }
 
   return (
-    <div className={cn("space-y-4 w-full max-w-full", className)}>
+    <div className={cn('space-y-4 w-full max-w-full', className)}>
       {/* Table Container with Full Width */}
       <div className="relative w-full max-w-full overflow-hidden">
         <div className="rounded-xl border bg-white shadow-sm w-full max-w-full">
           {/* Scroll Container */}
-          <div 
-            className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-          >
-            <Table 
+          <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <Table
               className="w-full table-fixed"
-              style={{ 
+              style={{
                 minWidth: '700px',
-                width: '100%'
+                width: '100%',
               }}
             >
               <TableHeader>
@@ -135,7 +135,8 @@ export function ExpandableDataTable<T, C = T>({
                       key={`header-${columnIndex}-${String(column.accessorKey)}`}
                       className={cn(
                         'font-medium text-gray-700 whitespace-nowrap',
-                        column.sortable && 'cursor-pointer select-none hover:bg-gray-100',
+                        column.sortable &&
+                          'cursor-pointer select-none hover:bg-gray-100',
                         'px-2 sm:px-4 py-3'
                       )}
                       style={{
@@ -147,12 +148,15 @@ export function ExpandableDataTable<T, C = T>({
                       }
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-sm truncate">{column.header}</span>
-                        {column.sortable && sorting?.field === column.accessorKey && (
-                          <span className="text-xs flex-shrink-0">
-                            {sorting.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
+                        <span className="text-xs sm:text-sm truncate">
+                          {column.header}
+                        </span>
+                        {column.sortable &&
+                          sorting?.field === column.accessorKey && (
+                            <span className="text-xs flex-shrink-0">
+                              {sorting.direction === 'asc' ? '↑' : '↓'}
+                            </span>
+                          )}
                       </div>
                     </TableHead>
                   ))}
@@ -178,15 +182,18 @@ export function ExpandableDataTable<T, C = T>({
                       className="h-[400px] text-center"
                     >
                       <div className="text-gray-500">
-                        <div className="text-sm sm:text-base">No records found.</div>
+                        <div className="text-sm sm:text-base">
+                          No records found.
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : (
                   data.map((rowData, rowIndex) => {
                     const isExpanded = expandedRows.has(rowData.id);
-                    const hasChildren = rowData.children && rowData.children.length > 0;
-                    
+                    const hasChildren =
+                      rowData.children && rowData.children.length > 0;
+
                     return (
                       <React.Fragment key={`row-${rowIndex}-${rowData.id}`}>
                         {/* Main Row */}
@@ -204,65 +211,76 @@ export function ExpandableDataTable<T, C = T>({
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 w-6 p-0"
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   toggleRowExpansion(rowData.id);
                                 }}
                               >
                                 <motion.div
                                   animate={{ rotate: isExpanded ? 180 : 0 }}
-                                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                                  transition={{
+                                    duration: 0.2,
+                                    ease: 'easeInOut',
+                                  }}
                                 >
                                   <ChevronDown className="h-4 w-4" />
                                 </motion.div>
                               </Button>
                             )}
                           </TableCell>
-                          
+
                           {/* Data Columns */}
                           {columns.map((column, columnIndex) => (
-                            <TableCell 
+                            <TableCell
                               key={`cell-${rowIndex}-${columnIndex}-${String(column.accessorKey)}`}
                               className="px-2 sm:px-4 py-3"
                               style={{
-                                width: column.width || `${100 / columns.length}%`,
+                                width:
+                                  column.width || `${100 / columns.length}%`,
                                 minWidth: column.minWidth || '80px',
                               }}
                             >
                               <div className="text-xs sm:text-sm truncate">
                                 {column.cell
                                   ? column.cell(rowData.data)
-                                  : (rowData.data[column.accessorKey] as React.ReactNode)}
+                                  : (rowData.data[
+                                      column.accessorKey
+                                    ] as React.ReactNode)}
                               </div>
                             </TableCell>
                           ))}
                         </TableRow>
-                        
+
                         {/* Expanded Content */}
                         <AnimatePresence>
                           {isExpanded && hasChildren && (
                             <TableRow>
-                              <TableCell colSpan={columns.length + 1} className="p-0">
-                                <motion.div 
+                              <TableCell
+                                colSpan={columns.length + 1}
+                                className="p-0"
+                              >
+                                <motion.div
                                   className="bg-gray-50 border-t border-gray-200 overflow-hidden"
                                   initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
                                   exit={{ height: 0, opacity: 0 }}
-                                  transition={{ 
+                                  transition={{
                                     duration: 0.3,
-                                    ease: "easeInOut"
+                                    ease: 'easeInOut',
                                   }}
                                 >
-                                  {renderExpandedContent 
-                                    ? renderExpandedContent(rowData.data, rowData.children!)
-                                    : (
-                                      <div className="p-4">
-                                        <div className="text-sm text-gray-600">
-                                          {rowData.children!.length} child records
-                                        </div>
-                                      </div>
+                                  {renderExpandedContent ? (
+                                    renderExpandedContent(
+                                      rowData.data,
+                                      rowData.children!
                                     )
-                                  }
+                                  ) : (
+                                    <div className="p-4">
+                                      <div className="text-sm text-gray-600">
+                                        {rowData.children!.length} child records
+                                      </div>
+                                    </div>
+                                  )}
                                 </motion.div>
                               </TableCell>
                             </TableRow>
@@ -305,7 +323,7 @@ export function ExpandableDataTable<T, C = T>({
             >
               <ChevronsLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Previous Page Button */}
             <Button
               variant="outline"
@@ -316,14 +334,14 @@ export function ExpandableDataTable<T, C = T>({
             >
               <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Page Numbers - Show current page on mobile */}
             <div className="flex items-center gap-1 sm:gap-2">
               {/* Mobile: Show only current page */}
               <div className="sm:hidden px-2 py-1 text-xs font-medium bg-gray-100 rounded">
                 {page}
               </div>
-              
+
               {/* Desktop: Show page range */}
               <div className="hidden sm:flex items-center gap-1">
                 {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
@@ -337,11 +355,11 @@ export function ExpandableDataTable<T, C = T>({
                   } else {
                     pageNum = page - 2 + i;
                   }
-                  
+
                   return (
                     <Button
                       key={pageNum}
-                      variant={page === pageNum ? "default" : "outline"}
+                      variant={page === pageNum ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => onPageChange?.(pageNum)}
                       disabled={isLoading}
@@ -353,7 +371,7 @@ export function ExpandableDataTable<T, C = T>({
                 })}
               </div>
             </div>
-            
+
             {/* Next Page Button */}
             <Button
               variant="outline"
@@ -364,7 +382,7 @@ export function ExpandableDataTable<T, C = T>({
             >
               <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Last Page Button - Hidden on mobile */}
             <Button
               variant="outline"

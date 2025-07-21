@@ -9,7 +9,7 @@ export enum TenantPaymentMethod {
   APP_PAYMENT = 'app_payment',
 }
 
-// User Payment Methods Enum  
+// User Payment Methods Enum
 export enum UserPaymentMethod {
   BANK_ACCOUNT = 'bank_account',
   CASH = 'cash',
@@ -21,4 +21,4 @@ export enum UserPaymentMethod {
 export enum PaymentMethodStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
-} 
+}

@@ -23,7 +23,9 @@ interface ResidentWithApartment {
   apartmentId: string;
 }
 
-export function BuildingResidentsTable({ buildingId }: BuildingResidentsTableProps) {
+export function BuildingResidentsTable({
+  buildingId,
+}: BuildingResidentsTableProps) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
@@ -32,14 +34,14 @@ export function BuildingResidentsTable({ buildingId }: BuildingResidentsTablePro
   } | null>(null);
 
   // Fetch apartments with residents for the building
-  const { 
-    data: apartments = [], 
-    isLoading, 
-    error 
+  const {
+    data: apartments = [],
+    isLoading,
+    error,
   } = useGetApartmentsByBuildingQuery(buildingId);
 
   // Transform apartments data to flat residents list
-  const residents: ResidentWithApartment[] = apartments.flatMap(apartment => 
+  const residents: ResidentWithApartment[] = apartments.flatMap(apartment =>
     (apartment.residents || []).map(resident => ({
       id: resident.id,
       apartmentNumber: apartment.number,
@@ -54,30 +56,40 @@ export function BuildingResidentsTable({ buildingId }: BuildingResidentsTablePro
   );
 
   const handleEdit = (residentId: string, apartmentId: string) => {
-    dispatch(openModal({
-      type: 'edit-apartment-irregularity', // TODO: Create edit-resident modal type
-      data: { residentId, apartmentId }
-    }));
+    dispatch(
+      openModal({
+        type: 'edit-apartment-irregularity', // TODO: Create edit-resident modal type
+        data: { residentId, apartmentId },
+      })
+    );
   };
 
   const handleDelete = (residentId: string, residentName: string) => {
-    dispatch(openModal({
-      type: 'delete-apartment-irregularity', // TODO: Create delete-resident modal type
-      data: { 
-        residentId,
-        residentName
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-apartment-irregularity', // TODO: Create delete-resident modal type
+        data: {
+          residentId,
+          residentName,
+        },
+      })
+    );
   };
 
   const getRoleBadge = (role: ResidentRole) => {
     const roleMap = {
-      [ResidentRole.OWNER]: { label: 'Собственик', variant: 'positive' as const },
+      [ResidentRole.OWNER]: {
+        label: 'Собственик',
+        variant: 'positive' as const,
+      },
       [ResidentRole.TENANT]: { label: 'Наемател', variant: 'neutral' as const },
       [ResidentRole.GUEST]: { label: 'Гост', variant: 'warning' as const },
     };
-    
-    const config = roleMap[role] || { label: role, variant: 'neutral' as const };
+
+    const config = roleMap[role] || {
+      label: role,
+      variant: 'neutral' as const,
+    };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -143,15 +155,18 @@ export function BuildingResidentsTable({ buildingId }: BuildingResidentsTablePro
       minWidth: '100px',
       cell: row => {
         return (
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
-            <button 
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex items-center gap-1"
+          >
+            <button
               onClick={() => handleEdit(row.id, row.apartmentId)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Редактирай"
             >
               <Edit className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handleDelete(row.id, row.fullName)}
               className="p-2 text-gray-500 hover:text-red-700 transition-colors rounded-md hover:bg-red-50 active:bg-red-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Изтрий"
@@ -182,14 +197,12 @@ export function BuildingResidentsTable({ buildingId }: BuildingResidentsTablePro
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium text-gray-900">
-          Жители на сградата
-        </h4>
+        <h4 className="font-medium text-gray-900">Жители на сградата</h4>
         <Badge variant="neutral" className="text-xs">
           {residents.length} жители
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

@@ -31,7 +31,7 @@ export function ApartmentPayments({ apartmentId }: ApartmentPaymentsProps) {
 
   return (
     <Card className="overflow-hidden">
-      <div 
+      <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -66,12 +66,12 @@ export function ApartmentPayments({ apartmentId }: ApartmentPaymentsProps) {
                 <Tabs
                   tabs={paymentTabs}
                   activeTab={activeTab}
-                  onTabChange={(tabId) => setActiveTab(tabId as PaymentTabType)}
+                  onTabChange={tabId => setActiveTab(tabId as PaymentTabType)}
                   variant="underline"
                   className="mb-4"
                 />
               </div>
-              
+
               <div className="px-4 pb-4">
                 <motion.div
                   key={activeTab}
@@ -79,8 +79,12 @@ export function ApartmentPayments({ apartmentId }: ApartmentPaymentsProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {activeTab === 'taxes' && <ApartmentTaxesTable apartmentId={apartmentId} />}
-                  {activeTab === 'repairs' && <ApartmentRepairsTable apartmentId={apartmentId} />}
+                  {activeTab === 'taxes' && (
+                    <ApartmentTaxesTable apartmentId={apartmentId} />
+                  )}
+                  {activeTab === 'repairs' && (
+                    <ApartmentRepairsTable apartmentId={apartmentId} />
+                  )}
                 </motion.div>
               </div>
             </div>

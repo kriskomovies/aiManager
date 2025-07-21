@@ -1,10 +1,14 @@
-import { ApartmentType, ApartmentStatus, ResidentRole } from './apartment.enums';
+import {
+  ApartmentType,
+  ApartmentStatus,
+  ResidentRole,
+} from './apartment.enums';
 
 // Base Apartment interface
 export interface IApartment {
   id: string;
   buildingId: string;
-  
+
   // Basic Information
   type: ApartmentType;
   number: string;
@@ -12,22 +16,22 @@ export interface IApartment {
   quadrature: number;
   commonParts?: number;
   idealParts?: number;
-  
+
   // Residents Information
   residentsCount: number;
   pets: number;
-  
+
   // Status and Settings
   status: ApartmentStatus;
   invoiceEnabled: boolean;
   blockForPayment: boolean;
   cashierNote?: string;
-  
+
   // Financial Information
   monthlyRent?: number;
   maintenanceFee?: number;
   debt?: number;
-  
+
   // Metadata
   createdAt: string;
   updatedAt: string;
@@ -52,7 +56,7 @@ export interface IResident {
 // Create Apartment DTO
 export interface ICreateApartmentRequest {
   buildingId: string;
-  
+
   // Basic Information
   type: ApartmentType;
   number: string;
@@ -60,20 +64,20 @@ export interface ICreateApartmentRequest {
   quadrature: number;
   commonParts?: number;
   idealParts?: number;
-  
+
   // Residents Information
   residentsCount: number;
   pets: number;
-  
+
   // Settings
   invoiceEnabled: boolean;
   blockForPayment: boolean;
   cashierNote?: string;
-  
+
   // Financial Information
   monthlyRent?: number;
   maintenanceFee?: number;
-  
+
   // Residents data
   residents: Array<{
     name: string;
@@ -241,4 +245,4 @@ export interface IBackendApartmentQueryParams {
   hasDebt?: boolean;
   minQuadrature?: number;
   maxQuadrature?: number;
-} 
+}

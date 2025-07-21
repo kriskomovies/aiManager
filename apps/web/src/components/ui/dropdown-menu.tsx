@@ -17,21 +17,30 @@ export interface DropdownMenuProps {
   align?: 'left' | 'right';
 }
 
-export function DropdownMenu({ trigger, items, className, align = 'right' }: DropdownMenuProps) {
+export function DropdownMenu({
+  trigger,
+  items,
+  className,
+  align = 'right',
+}: DropdownMenuProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [position, setPosition] = React.useState({ 
-    top: 0, 
-    left: 0, 
-    right: 0, 
-    openUpward: false 
+  const [position, setPosition] = React.useState({
+    top: 0,
+    left: 0,
+    right: 0,
+    openUpward: false,
   });
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
-          triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -48,29 +57,29 @@ export function DropdownMenu({ trigger, items, className, align = 'right' }: Dro
   const handleToggle = (event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     if (!isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const windowWidth = window.innerWidth;
       const scrollY = window.scrollY;
       const scrollX = window.scrollX;
-      
+
       // Calculate dropdown dimensions
       const dropdownHeight = items.length * 44 + 8; // 44px per item + padding
       const dropdownWidth = 280; // Increased width for Bulgarian text
-      
+
       // Determine optimal positioning
       let top: number;
       let left: number;
       let right: number;
       let openUpward = false;
-      
+
       // Vertical positioning logic
       const spaceBelow = windowHeight - rect.bottom;
       const spaceAbove = rect.top;
       const isMobile = windowWidth < 768;
-      
+
       if (spaceBelow >= dropdownHeight) {
         // Enough space below - position below trigger (closer)
         top = rect.bottom + scrollY - 4;
@@ -101,14 +110,14 @@ export function DropdownMenu({ trigger, items, className, align = 'right' }: Dro
           openUpward = true;
         }
       }
-      
+
       // Horizontal positioning logic
       if (align === 'right') {
         // Right align - dropdown's right edge aligns with trigger's right edge
         const idealLeft = rect.right + scrollX - dropdownWidth;
         const minLeft = 8; // Minimum margin from left edge
         const maxLeft = windowWidth - dropdownWidth - 8; // Maximum position
-        
+
         left = Math.max(minLeft, Math.min(idealLeft, maxLeft));
         right = 0;
       } else {
@@ -116,15 +125,15 @@ export function DropdownMenu({ trigger, items, className, align = 'right' }: Dro
         const idealLeft = rect.left + scrollX;
         const minLeft = 8;
         const maxLeft = windowWidth - dropdownWidth - 8;
-        
+
         left = Math.max(minLeft, Math.min(idealLeft, maxLeft));
         right = 0;
       }
-      
+
       // Final boundary check to ensure dropdown is fully visible
       const topMargin = isMobile ? 16 : 8;
       const bottomMargin = isMobile ? 190 : 8;
-      
+
       if (top < scrollY + topMargin) {
         top = scrollY + topMargin;
       } else if (top + dropdownHeight > scrollY + windowHeight - bottomMargin) {
@@ -134,12 +143,12 @@ export function DropdownMenu({ trigger, items, className, align = 'right' }: Dro
           top = scrollY + windowHeight - dropdownHeight - 20;
         }
       }
-      
+
       setPosition({
         top,
         left,
         right,
-        openUpward
+        openUpward,
       });
     }
     setIsOpen(!isOpen);
@@ -216,7 +225,8 @@ export function DropdownMenu({ trigger, items, className, align = 'right' }: Dro
         {trigger}
       </div>
 
-      {typeof document !== 'undefined' && createPortal(dropdownContent, document.body)}
+      {typeof document !== 'undefined' &&
+        createPortal(dropdownContent, document.body)}
     </div>
   );
-} 
+}

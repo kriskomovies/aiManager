@@ -24,13 +24,15 @@ const irregularityTabs: TabConfig[] = [
   },
 ];
 
-export function ApartmentIrregularities({ apartmentId }: ApartmentIrregularitiesProps) {
+export function ApartmentIrregularities({
+  apartmentId,
+}: ApartmentIrregularitiesProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState<IrregularityTabType>('active');
 
   return (
     <Card className="overflow-hidden">
-      <div 
+      <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -40,7 +42,9 @@ export function ApartmentIrregularities({ apartmentId }: ApartmentIrregularities
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Нередности</h3>
-            <p className="text-sm text-gray-600">Активни и архивирани нередности</p>
+            <p className="text-sm text-gray-600">
+              Активни и архивирани нередности
+            </p>
           </div>
         </div>
         <motion.div
@@ -65,12 +69,14 @@ export function ApartmentIrregularities({ apartmentId }: ApartmentIrregularities
                 <Tabs
                   tabs={irregularityTabs}
                   activeTab={activeTab}
-                  onTabChange={(tabId) => setActiveTab(tabId as IrregularityTabType)}
+                  onTabChange={tabId =>
+                    setActiveTab(tabId as IrregularityTabType)
+                  }
                   variant="underline"
                   className="mb-4"
                 />
               </div>
-              
+
               <div className="px-4 pb-4">
                 <motion.div
                   key={activeTab}
@@ -78,9 +84,9 @@ export function ApartmentIrregularities({ apartmentId }: ApartmentIrregularities
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ApartmentIrregularitiesTable 
-                    apartmentId={apartmentId} 
-                    isArchive={activeTab === 'archive'} 
+                  <ApartmentIrregularitiesTable
+                    apartmentId={apartmentId}
+                    isArchive={activeTab === 'archive'}
                   />
                 </motion.div>
               </div>

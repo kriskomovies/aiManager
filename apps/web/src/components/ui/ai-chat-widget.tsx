@@ -37,20 +37,34 @@ export function AIChatWidget({ className }: AIChatWidgetProps) {
   // Mock AI response function
   const generateAIResponse = async (userMessage: string): Promise<string> => {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-    
+    await new Promise(resolve =>
+      setTimeout(resolve, 1000 + Math.random() * 2000)
+    );
+
     // Mock responses based on user input
     const lowerMessage = userMessage.toLowerCase();
-    
+
     if (lowerMessage.includes('сграда') || lowerMessage.includes('building')) {
       return 'В момента имате 24 сгради в системата. 3 от тях имат неплатени задължения. Искате ли да видите детайлите?';
-    } else if (lowerMessage.includes('плащане') || lowerMessage.includes('payment')) {
+    } else if (
+      lowerMessage.includes('плащане') ||
+      lowerMessage.includes('payment')
+    ) {
       return 'Общо са получени 45,230 лв. през този месец. Има 8 неплатени сметки на обща стойност 3,450 лв. Мога да генерирам пълен отчет ако желаете.';
-    } else if (lowerMessage.includes('поддръжка') || lowerMessage.includes('maintenance')) {
+    } else if (
+      lowerMessage.includes('поддръжка') ||
+      lowerMessage.includes('maintenance')
+    ) {
       return 'Има 12 активни заявки за поддръжка. 3 са с висок приоритет и чакат одобрение. Искате ли да прегледате най-спешните?';
-    } else if (lowerMessage.includes('отчет') || lowerMessage.includes('report')) {
+    } else if (
+      lowerMessage.includes('отчет') ||
+      lowerMessage.includes('report')
+    ) {
       return 'Мога да генерирам различни отчети: месечни приходи, статус на плащанията, заявки за поддръжка, заетост на апартаментите. Кой тип отчет ви интересува?';
-    } else if (lowerMessage.includes('помощ') || lowerMessage.includes('help')) {
+    } else if (
+      lowerMessage.includes('помощ') ||
+      lowerMessage.includes('help')
+    ) {
       return 'Ето някои неща, с които мога да помогна:\n\n• Проверка на финансово състояние\n• Управление на сгради и апартаменти\n• Следене на заявки за поддръжка\n• Генериране на отчети\n• Информация за наематели\n\nПросто ме попитайте!';
     } else {
       return 'Разбирам вашата заявка. В момента анализирам данните от базата ви. Мога да предоставя информация за сгради, плащания, поддръжка и отчети. Можете ли да бъдете по-конкретни за това, което търсите?';
@@ -73,7 +87,7 @@ export function AIChatWidget({ className }: AIChatWidgetProps) {
 
     try {
       const aiResponse = await generateAIResponse(inputValue);
-      
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: aiResponse,
@@ -143,7 +157,7 @@ export function AIChatWidget({ className }: AIChatWidgetProps) {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((message) => (
+              {messages.map(message => (
                 <MessageBubble key={message.id} message={message} />
               ))}
               {isTyping && (
@@ -182,9 +196,9 @@ export function AIChatWidget({ className }: AIChatWidgetProps) {
               <div className="flex gap-2">
                 <Input
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={e => setInputValue(e.target.value)}
                   placeholder="Напишете вашето съобщение..."
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                   className="flex-1"
                 />
                 <Button
@@ -214,4 +228,4 @@ export function AIChatWidget({ className }: AIChatWidgetProps) {
       </AnimatePresence>
     </div>
   );
-} 
+}

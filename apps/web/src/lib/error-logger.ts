@@ -21,7 +21,7 @@ class ErrorLogger {
     };
 
     this.errors.push(errorEntry);
-    
+
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error logged:', errorEntry);
@@ -42,7 +42,7 @@ class ErrorLogger {
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify(errorEntry),
       // });
-      
+
       console.warn('Error tracking not configured:', errorEntry);
     } catch (sendError) {
       console.error('Failed to send error to tracking service:', sendError);
@@ -61,7 +61,7 @@ class ErrorLogger {
 export const errorLogger = new ErrorLogger();
 
 // Global error handler for unhandled errors
-window.addEventListener('error', (event) => {
+window.addEventListener('error', event => {
   errorLogger.logError(new Error(event.message), {
     filename: event.filename,
     lineno: event.lineno,
@@ -70,11 +70,11 @@ window.addEventListener('error', (event) => {
 });
 
 // Global handler for unhandled promise rejections
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', event => {
   errorLogger.logError(
     new Error(`Unhandled promise rejection: ${event.reason}`),
     { type: 'unhandledrejection' }
   );
 });
 
-export default errorLogger; 
+export default errorLogger;

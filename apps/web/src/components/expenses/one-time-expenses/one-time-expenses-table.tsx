@@ -23,14 +23,14 @@ export function OneTimeExpensesTable() {
       name: 'Никакъв Еднократен',
       contractor: 'Име на фирма',
       paymentDate: '12.12.2024',
-      amount: 585.00,
+      amount: 585.0,
     },
     {
       id: '2',
       name: 'Никакъв Еднократен',
       contractor: 'Име на фирма',
       paymentDate: '12.12.2024',
-      amount: 50.00,
+      amount: 50.0,
     },
   ];
 

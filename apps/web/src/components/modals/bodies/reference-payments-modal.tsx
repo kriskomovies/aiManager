@@ -42,10 +42,7 @@ export function ReferencePaymentsModal() {
 
       {/* Footer */}
       <div className="p-4 border-t bg-gray-50 flex justify-end items-center">
-        <Button
-          onClick={handleClose}
-          variant="outline"
-        >
+        <Button onClick={handleClose} variant="outline">
           Затвори
         </Button>
       </div>

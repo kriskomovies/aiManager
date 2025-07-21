@@ -24,10 +24,12 @@ interface CreateBuildingIrregularityModalProps {
   onClose: () => void;
 }
 
-export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrregularityModalProps) {
+export function CreateBuildingIrregularityModal({
+  onClose,
+}: CreateBuildingIrregularityModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   // Get the building ID from modal data (passed from the irregularities tab)
   const preselectedBuildingId = modalData?.buildingId;
 
@@ -36,8 +38,6 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
     page: 1,
     pageSize: 100, // Get enough buildings for dropdown
   });
-
-
 
   const [formData, setFormData] = useState<BuildingIrregularityFormData>({
     buildingId: preselectedBuildingId || '',
@@ -56,15 +56,18 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
     if (preselectedBuildingId) {
       setFormData(prev => ({
         ...prev,
-        buildingId: preselectedBuildingId
+        buildingId: preselectedBuildingId,
       }));
     }
   }, [preselectedBuildingId]);
 
-  const handleInputChange = (field: keyof BuildingIrregularityFormData, value: string) => {
+  const handleInputChange = (
+    field: keyof BuildingIrregularityFormData,
+    value: string
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -72,20 +75,26 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
     const file = event.target.files?.[0] || null;
     setFormData(prev => ({
       ...prev,
-      attachedFile: file
+      attachedFile: file,
     }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.buildingId || !formData.title.trim() || !formData.description.trim()) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля попълнете всички задължителни полета.',
-        duration: 5000
-      }));
+
+    if (
+      !formData.buildingId ||
+      !formData.title.trim() ||
+      !formData.description.trim()
+    ) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля попълнете всички задължителни полета.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -94,36 +103,48 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
     try {
       // TODO: Implement actual create API call
       console.log('Creating building irregularity with data:', formData);
-      
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно създаване!',
-        message: 'Нередността беше създадена успешно.',
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно създаване!',
+          message: 'Нередността беше създадена успешно.',
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error creating building irregularity:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при създаването на нередността. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при създаването на нередността. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при създаване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при създаване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -141,20 +162,23 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
     { value: 'отказана', label: 'Отказана' },
   ];
 
-  const buildingOptions = buildingsResponse?.items?.map(building => ({
-    value: building.id,
-    label: building.name
-  })) || [];
+  const buildingOptions =
+    buildingsResponse?.items?.map(building => ({
+      value: building.id,
+      label: building.name,
+    })) || [];
 
   // Mock apartment options for the selected building
-  const apartmentOptions = formData.buildingId ? [
-    { value: '', label: 'Избери' },
-    { value: 'apt1', label: 'Апартамент 1' },
-    { value: 'apt2', label: 'Апартамент 2' },
-    { value: 'apt3', label: 'Апартамент 3' },
-    { value: 'apt4', label: 'Апартамент 4' },
-    { value: 'apt5', label: 'Апартамент 5' },
-  ] : [{ value: '', label: 'Избери' }];
+  const apartmentOptions = formData.buildingId
+    ? [
+        { value: '', label: 'Избери' },
+        { value: 'apt1', label: 'Апартамент 1' },
+        { value: 'apt2', label: 'Апартамент 2' },
+        { value: 'apt3', label: 'Апартамент 3' },
+        { value: 'apt4', label: 'Апартамент 4' },
+        { value: 'apt5', label: 'Апартамент 5' },
+      ]
+    : [{ value: '', label: 'Избери' }];
 
   return (
     <div className="text-center">
@@ -177,7 +201,7 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
             <Select
               id="building"
               value={formData.buildingId}
-              onChange={(e) => handleInputChange('buildingId', e.target.value)}
+              onChange={e => handleInputChange('buildingId', e.target.value)}
               disabled={isSubmitting || !!preselectedBuildingId} // Disable if preselected
               required
             >
@@ -196,7 +220,7 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
             <Select
               id="apartment"
               value={formData.apartmentId || ''}
-              onChange={(e) => handleInputChange('apartmentId', e.target.value)}
+              onChange={e => handleInputChange('apartmentId', e.target.value)}
               disabled={isSubmitting || !formData.buildingId}
             >
               {apartmentOptions.map(option => (
@@ -213,7 +237,12 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
             <Select
               id="status"
               value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as BuildingIrregularityFormData['status'])}
+              onChange={e =>
+                handleInputChange(
+                  'status',
+                  e.target.value as BuildingIrregularityFormData['status']
+                )
+              }
               disabled={isSubmitting}
               required
             >
@@ -232,7 +261,7 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
               id="date"
               type="date"
               value={formData.date}
-              onChange={(e) => handleInputChange('date', e.target.value)}
+              onChange={e => handleInputChange('date', e.target.value)}
               disabled={isSubmitting}
               required
             />
@@ -245,7 +274,7 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
           <Input
             id="title"
             value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={e => handleInputChange('title', e.target.value)}
             placeholder="Въведете заглавие на нередността"
             disabled={isSubmitting}
             required
@@ -258,7 +287,7 @@ export function CreateBuildingIrregularityModal({ onClose }: CreateBuildingIrreg
           <textarea
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Въведете описание на нередността"
             disabled={isSubmitting}
             required

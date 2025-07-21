@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Eye, 
-  Edit, 
-  Trash2
-} from 'lucide-react';
+import { Eye, Edit, Trash2 } from 'lucide-react';
 
 interface MonthlyFeeData {
   id: string;
@@ -30,14 +26,14 @@ export function MonthlyFeesTable() {
       name: 'Поддръжка Асансьор',
       apartments: '10/12',
       paymentBase: 'Общи Части',
-      monthlyFee: 25.00,
+      monthlyFee: 25.0,
     },
     {
       id: '2',
       name: 'Почистване Вход',
       apartments: '12/12',
       paymentBase: 'Апартамент',
-      monthlyFee: 50.00,
+      monthlyFee: 50.0,
     },
     {
       id: '3',
@@ -51,7 +47,7 @@ export function MonthlyFeesTable() {
       name: 'Поддръжка Асансьор',
       apartments: '10/12',
       paymentBase: 'Живещ',
-      monthlyFee: 50.00,
+      monthlyFee: 50.0,
     },
     {
       id: '5',
@@ -75,18 +71,19 @@ export function MonthlyFeesTable() {
   };
 
   const getPaymentBaseBadge = (paymentBase: string) => {
-    const colorMap: Record<string, 'positive' | 'neutral' | 'warning' | 'negative'> = {
+    const colorMap: Record<
+      string,
+      'positive' | 'neutral' | 'warning' | 'negative'
+    > = {
       'Общи Части': 'positive',
-      'Апартамент': 'neutral', 
-      'Квадратура': 'warning',
-      'Живещ': 'positive',
+      Апартамент: 'neutral',
+      Квадратура: 'warning',
+      Живещ: 'positive',
       'Домашно Животно': 'negative',
     };
-    
+
     return (
-      <Badge variant={colorMap[paymentBase] || 'neutral'}>
-        {paymentBase}
-      </Badge>
+      <Badge variant={colorMap[paymentBase] || 'neutral'}>{paymentBase}</Badge>
     );
   };
 
@@ -108,9 +105,7 @@ export function MonthlyFeesTable() {
       sortable: true,
       width: '120px',
       minWidth: '120px',
-      cell: row => (
-        <span className="text-gray-700">{row.apartments}</span>
-      ),
+      cell: row => <span className="text-gray-700">{row.apartments}</span>,
     },
     {
       header: 'Плащане на База',
@@ -148,7 +143,7 @@ export function MonthlyFeesTable() {
           >
             <Eye className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -158,7 +153,7 @@ export function MonthlyFeesTable() {
           >
             <Edit className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"

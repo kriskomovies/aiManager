@@ -1,9 +1,9 @@
 import { InformationCard } from '@/components/information-card';
 import { BuildingInventory } from '@/components/inventory/building-inventory';
-import { 
-  Wallet, 
-  TrendingUp, 
-  Calendar, 
+import {
+  Wallet,
+  TrendingUp,
+  Calendar,
   AlertTriangle,
   Building2,
 } from 'lucide-react';
@@ -16,21 +16,21 @@ export function InventoryTab({ buildingId }: InventoryTabProps) {
   // Mock data for the information cards
   const inventoryStats = {
     mainCash: {
-      value: "585.00",
-      change: "+230.00лв сравнено с предходния месец"
+      value: '585.00',
+      change: '+230.00лв сравнено с предходния месец',
     },
     deposit: {
-      value: "200.00", 
-      change: "-10.00лв сравнено с предходния месец"
+      value: '200.00',
+      change: '-10.00лв сравнено с предходния месец',
     },
     monthlyFees: {
-      value: "170.00",
-      change: "Събрано от 6 различни такси"
+      value: '170.00',
+      change: 'Събрано от 6 различни такси',
     },
     debts: {
-      value: "1478.50",
-      change: "+230.00лв сравнено с предходния месец"
-    }
+      value: '1478.50',
+      change: '+230.00лв сравнено с предходния месец',
+    },
   };
 
   return (
@@ -46,7 +46,7 @@ export function InventoryTab({ buildingId }: InventoryTabProps) {
           valueColor="text-green-600"
           subtitle={inventoryStats.mainCash.change}
         />
-        
+
         <InformationCard
           title="Депозит"
           value={`${inventoryStats.deposit.value} лв.`}
@@ -56,7 +56,7 @@ export function InventoryTab({ buildingId }: InventoryTabProps) {
           valueColor="text-blue-600"
           subtitle={inventoryStats.deposit.change}
         />
-        
+
         <InformationCard
           title="Месечна Такса"
           value={`${inventoryStats.monthlyFees.value} лв.`}
@@ -66,7 +66,7 @@ export function InventoryTab({ buildingId }: InventoryTabProps) {
           valueColor="text-purple-600"
           subtitle={inventoryStats.monthlyFees.change}
         />
-        
+
         <InformationCard
           title="Задължения"
           value={`${inventoryStats.debts.value} лв.`}

@@ -5,12 +5,15 @@ interface ApartmentIrregularitiesTableProps {
   isArchive: boolean;
 }
 
-export function ApartmentIrregularitiesTable({ apartmentId, isArchive }: ApartmentIrregularitiesTableProps) {
+export function ApartmentIrregularitiesTable({
+  apartmentId,
+  isArchive,
+}: ApartmentIrregularitiesTableProps) {
   return (
-    <IrregularitiesTable 
+    <IrregularitiesTable
       entityId={apartmentId}
       entityType="apartment"
       isArchive={isArchive}
-      />
+    />
   );
 }

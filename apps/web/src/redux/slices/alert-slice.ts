@@ -22,7 +22,10 @@ export const alertSlice = createSlice({
   name: 'alert',
   initialState,
   reducers: {
-    addAlert: (state, action: PayloadAction<Omit<Alert, 'id' | 'timestamp'>>) => {
+    addAlert: (
+      state,
+      action: PayloadAction<Omit<Alert, 'id' | 'timestamp'>>
+    ) => {
       const alert: Alert = {
         ...action.payload,
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
@@ -33,7 +36,7 @@ export const alertSlice = createSlice({
     removeAlert: (state, action: PayloadAction<string>) => {
       state.alerts = state.alerts.filter(alert => alert.id !== action.payload);
     },
-    clearAllAlerts: (state) => {
+    clearAllAlerts: state => {
       state.alerts = [];
     },
   },

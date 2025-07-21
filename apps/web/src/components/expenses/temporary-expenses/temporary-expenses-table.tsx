@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ExpandableDataTable, ExpandableColumn, ExpandableRowData } from '@/components/ui/expandible-data-table';
+import {
+  ExpandableDataTable,
+  ExpandableColumn,
+  ExpandableRowData,
+} from '@/components/ui/expandible-data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Wallet, 
-  Edit, 
-  Trash2
-} from 'lucide-react';
+import { Wallet, Edit, Trash2 } from 'lucide-react';
 
 interface TemporaryExpenseData {
   id: string;
@@ -35,7 +35,10 @@ export function TemporaryExpensesTable() {
   } | null>(null);
 
   // Mock data for temporary expenses with expandable children
-  const mockExpenses: ExpandableRowData<TemporaryExpenseData, TemporaryExpenseChild>[] = [
+  const mockExpenses: ExpandableRowData<
+    TemporaryExpenseData,
+    TemporaryExpenseChild
+  >[] = [
     {
       id: '1',
       data: {
@@ -46,7 +49,7 @@ export function TemporaryExpensesTable() {
         paymentDate: '12.12.2024',
         paymentMethod: 'Офис',
         reason: 'Такса от 31.09 до 27.10',
-        amount: 585.00,
+        amount: 585.0,
       },
       children: [
         {
@@ -54,14 +57,14 @@ export function TemporaryExpensesTable() {
           date: '15.11.2024',
           contractor: 'Банка',
           reason: 'Такса от 31.08 до 27.09',
-          amount: 580.50,
+          amount: 580.5,
         },
         {
           id: '1-2',
           date: '10.10.2024',
           contractor: 'Банка',
           reason: 'Такса от 31.07 до 27.07',
-          amount: 560.00,
+          amount: 560.0,
         },
       ],
     },
@@ -75,7 +78,7 @@ export function TemporaryExpensesTable() {
         paymentDate: '12.12.2024',
         paymentMethod: 'Офис',
         reason: 'Такса от 31.09 до 27.10',
-        amount: 50.00,
+        amount: 50.0,
       },
       children: [],
     },
@@ -89,7 +92,7 @@ export function TemporaryExpensesTable() {
         paymentDate: '12.12.2024',
         paymentMethod: 'Банка',
         reason: 'Такса от 31.09 до 27.10',
-        amount: 200.00,
+        amount: 200.0,
       },
       children: [],
     },
@@ -126,7 +129,7 @@ export function TemporaryExpensesTable() {
       width: '160px',
       minWidth: '160px',
       cell: row => (
-        <Badge variant={row.linkedToMonthlyFee ? "positive" : "neutral"}>
+        <Badge variant={row.linkedToMonthlyFee ? 'positive' : 'neutral'}>
           {row.linkedToMonthlyFee ? 'Да' : 'Не'}
         </Badge>
       ),
@@ -187,7 +190,7 @@ export function TemporaryExpensesTable() {
           >
             <Wallet className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -197,7 +200,7 @@ export function TemporaryExpensesTable() {
           >
             <Edit className="h-4 w-4" />
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -216,14 +219,19 @@ export function TemporaryExpensesTable() {
     return (
       <div className="p-4">
         <div className="space-y-2">
-          {children.map((child) => (
-            <div key={child.id} className="flex items-center justify-between py-2 px-3 bg-white rounded border border-gray-100">
+          {children.map(child => (
+            <div
+              key={child.id}
+              className="flex items-center justify-between py-2 px-3 bg-white rounded border border-gray-100"
+            >
               <div className="flex items-center gap-4 text-sm">
                 <span className="text-gray-600">{child.date}</span>
                 <span className="text-gray-900">{child.contractor}</span>
                 <span className="text-gray-600">{child.reason}</span>
               </div>
-              <span className="font-medium text-gray-900">{child.amount.toFixed(2)} лв.</span>
+              <span className="font-medium text-gray-900">
+                {child.amount.toFixed(2)} лв.
+              </span>
             </div>
           ))}
         </div>
@@ -232,7 +240,10 @@ export function TemporaryExpensesTable() {
   };
 
   const transformedData = {
-    items: mockExpenses as ExpandableRowData<TemporaryExpenseData, TemporaryExpenseChild>[],
+    items: mockExpenses as ExpandableRowData<
+      TemporaryExpenseData,
+      TemporaryExpenseChild
+    >[],
     meta: {
       pageCount: Math.ceil(mockExpenses.length / 10),
     },

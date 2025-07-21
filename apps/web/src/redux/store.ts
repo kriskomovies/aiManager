@@ -20,13 +20,13 @@ export const store = configureStore({
     [inventoryService.reducerPath]: inventoryService.reducer,
     [paymentMethodService.reducerPath]: paymentMethodService.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(
       companyApi.middleware,
       buildingApi.middleware,
       apartmentService.middleware,
       inventoryService.middleware,
-      paymentMethodService.middleware,
+      paymentMethodService.middleware
     ),
 });
 

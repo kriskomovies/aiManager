@@ -2,7 +2,14 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { InformationCard } from '@/components/information-card';
-import { ArrowLeft, Home, Users, CreditCard, AlertTriangle, Edit } from 'lucide-react';
+import {
+  ArrowLeft,
+  Home,
+  Users,
+  CreditCard,
+  AlertTriangle,
+  Edit,
+} from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
@@ -17,7 +24,11 @@ export function ApartmentDetailsPage() {
   const dispatch = useAppDispatch();
 
   // Fetch apartment data
-  const { data: apartmentData, isLoading, error } = useGetApartmentByIdQuery(id!, {
+  const {
+    data: apartmentData,
+    isLoading,
+    error,
+  } = useGetApartmentByIdQuery(id!, {
     skip: !id,
   });
 
@@ -29,24 +40,26 @@ export function ApartmentDetailsPage() {
     quadrature: Number(apartmentData?.quadrature) || 80.5,
     residents: apartmentData?.residents || [
       { name: 'Захари', surname: 'Марчев', isMainContact: true },
-      { name: 'Мария', surname: 'Марчева', isMainContact: false }
+      { name: 'Мария', surname: 'Марчева', isMainContact: false },
     ],
-    monthlyRent: Number(apartmentData?.monthlyRent) || 585.00,
-    maintenanceFee: Number(apartmentData?.maintenanceFee) || 120.00,
-    debt: Number(apartmentData?.debt) || 1478.50,
+    monthlyRent: Number(apartmentData?.monthlyRent) || 585.0,
+    maintenanceFee: Number(apartmentData?.maintenanceFee) || 120.0,
+    debt: Number(apartmentData?.debt) || 1478.5,
     status: apartmentData?.status || 'OCCUPIED',
     irregularitiesCount: 9, // Mock data - TODO: Add when irregularities system is implemented
-    totalPayments: 2500.00, // Mock data - TODO: Add when financial system is implemented
+    totalPayments: 2500.0, // Mock data - TODO: Add when financial system is implemented
     lastPaymentDate: '2025-01-15', // Mock data - TODO: Add when financial system is implemented
     buildingName: 'Сграда "Изгрев"', // Mock building name - TODO: Replace with actual building data
-    buildingId: apartmentData?.buildingId // Real building ID from API
+    buildingId: apartmentData?.buildingId, // Real building ID from API
   };
 
   useEffect(() => {
-    dispatch(setPageInfo({
-      title: `Детайли на ${mockApartment.number}`,
-      subtitle: 'Управление на информация и плащания'
-    }));
+    dispatch(
+      setPageInfo({
+        title: `Детайли на ${mockApartment.number}`,
+        subtitle: 'Управление на информация и плащания',
+      })
+    );
   }, [dispatch, mockApartment.number]);
 
   const handleBack = () => {
@@ -76,7 +89,9 @@ export function ApartmentDetailsPage() {
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">Грешка при зареждане на данните за апартамента.</p>
+        <p className="text-red-600 mb-4">
+          Грешка при зареждане на данните за апартамента.
+        </p>
         <Button onClick={() => navigate('/buildings')} variant="outline">
           Назад към сгради
         </Button>
@@ -90,37 +105,34 @@ export function ApartmentDetailsPage() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* Header */}
-      <motion.div 
-        className="space-y-4"
-        variants={itemVariants}
-      >
+      <motion.div className="space-y-4" variants={itemVariants}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4 min-w-0">
             <motion.button
@@ -132,7 +144,7 @@ export function ApartmentDetailsPage() {
             >
               <ArrowLeft className="h-5 w-5" />
             </motion.button>
-            
+
             <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <button
@@ -142,21 +154,21 @@ export function ApartmentDetailsPage() {
                   Назад към {mockApartment.buildingName}
                 </button>
               </div>
-              <h1 className="text-xl font-semibold text-gray-900 truncate">{mockApartment.number}</h1>
+              <h1 className="text-xl font-semibold text-gray-900 truncate">
+                {mockApartment.number}
+              </h1>
               <p className="text-sm text-gray-500 truncate">
-                Етаж {mockApartment.floor} • {(mockApartment.quadrature || 0).toFixed(2)} кв.м.
+                Етаж {mockApartment.floor} •{' '}
+                {(mockApartment.quadrature || 0).toFixed(2)} кв.м.
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 flex-shrink-0">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button 
-                variant="outline" 
-                size="sm" 
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                variant="outline"
+                size="sm"
                 className="gap-2"
                 onClick={handleEdit}
               >
@@ -169,7 +181,7 @@ export function ApartmentDetailsPage() {
       </motion.div>
 
       {/* Information Cards */}
-      <motion.div 
+      <motion.div
         variants={itemVariants}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       >
@@ -183,7 +195,7 @@ export function ApartmentDetailsPage() {
           subtitle="Обща сума, внесена като депозит към домоуправителя"
           variants={itemVariants}
         />
-        
+
         <InformationCard
           title="Задължения"
           value={`${(mockApartment.debt || 0).toFixed(2)} лв.`}
@@ -195,7 +207,7 @@ export function ApartmentDetailsPage() {
           priority="high"
           variants={itemVariants}
         />
-        
+
         <InformationCard
           title="Нередности"
           value={mockApartment.irregularitiesCount.toString()}
@@ -206,7 +218,7 @@ export function ApartmentDetailsPage() {
           subtitle="Активни нередности"
           variants={itemVariants}
         />
-        
+
         <InformationCard
           title="Живущи"
           value={mockApartment.residents.length.toString()}
@@ -223,10 +235,10 @@ export function ApartmentDetailsPage() {
       <motion.div variants={itemVariants} className="space-y-6">
         {/* Apartment Information */}
         <ApartmentInformation apartment={mockApartment} />
-        
+
         {/* Apartment Payments */}
         <ApartmentPayments apartmentId={mockApartment.id} />
-        
+
         {/* Apartment Irregularities */}
         <ApartmentIrregularities apartmentId={mockApartment.id} />
       </motion.div>

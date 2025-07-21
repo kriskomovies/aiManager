@@ -179,4 +179,4 @@ export interface IBackendQueryParams {
   fromDate?: string;
   toDate?: string;
   userPaymentMethodId?: string;
-} 
+}

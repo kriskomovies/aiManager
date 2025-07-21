@@ -22,7 +22,11 @@ interface IrregularityRecord {
   status: 'докладвана' | 'планувана' | 'в процес' | 'решена' | 'отказана';
 }
 
-export function IrregularitiesTable({ entityId, entityType, isArchive }: IrregularitiesTableProps) {
+export function IrregularitiesTable({
+  entityId,
+  entityType,
+  isArchive,
+}: IrregularitiesTableProps) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
@@ -31,8 +35,13 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
   } | null>(null);
 
   // Mock data for irregularities - TODO: Replace with actual API call using entityId and entityType
-  console.log(`Loading irregularities for ${entityType}:`, entityId, 'isArchive:', isArchive);
-  
+  console.log(
+    `Loading irregularities for ${entityType}:`,
+    entityId,
+    'isArchive:',
+    isArchive
+  );
+
   const mockActiveIrregularities: IrregularityRecord[] = [
     {
       id: '1',
@@ -41,44 +50,51 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
       date: '28.01.2025',
       attachedFile: 'document1.pdf',
       attachedFileUrl: '#',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'докладвана'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'докладвана',
     },
     {
       id: '2',
       title: 'Неработеща Заглавие',
       responsible: 'Име Фамилия',
       date: '28.01.2025',
-      attachedFile: entityType === 'building' ? 'maintenance_report.pdf' : 'document2.pdf',
+      attachedFile:
+        entityType === 'building' ? 'maintenance_report.pdf' : 'document2.pdf',
       attachedFileUrl: '#',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'докладвана'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'докладвана',
     },
     {
       id: '3',
       title: 'Неработеща Заглавие',
       responsible: 'Име Фамилия',
       date: '28.01.2025',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'планувана'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'планувана',
     },
     {
       id: '4',
       title: 'Неработеща Заглавие',
       responsible: 'Име Фамилия',
       date: '28.01.2025',
-      attachedFile: entityType === 'building' ? 'inspection.pdf' : 'document3.pdf',
+      attachedFile:
+        entityType === 'building' ? 'inspection.pdf' : 'document3.pdf',
       attachedFileUrl: '#',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'в процес'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'в процес',
     },
     {
       id: '5',
       title: 'Неработеща Заглавие',
       responsible: 'Име Фамилия',
       date: '28.01.2025',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: entityType === 'building' ? 'решена' : 'планувана'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: entityType === 'building' ? 'решена' : 'планувана',
     },
   ];
 
@@ -93,7 +109,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
         attachedFile: 'repair_plan.pdf',
         attachedFileUrl: '#',
         reportedBy: 'Име Фамилия; ет. N, ап. N',
-        status: 'планувана'
+        status: 'планувана',
       },
       {
         id: '7',
@@ -101,7 +117,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
         responsible: 'Име Фамилия',
         date: '28.01.2025',
         reportedBy: 'Име Фамилия; ет. N, ап. N',
-        status: 'отказана'
+        status: 'отказана',
       },
       {
         id: '8',
@@ -111,7 +127,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
         attachedFile: 'emergency_report.pdf',
         attachedFileUrl: '#',
         reportedBy: 'Име Фамилия; ет. N, ап. N',
-        status: 'в процес'
+        status: 'в процес',
       },
       {
         id: '9',
@@ -119,7 +135,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
         responsible: 'Име Фамилия',
         date: '28.01.2025',
         reportedBy: 'Име Фамилия; ет. N, ап. N',
-        status: 'отказана'
+        status: 'отказана',
       }
     );
   }
@@ -132,20 +148,24 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
       date: '15.12.2024',
       attachedFile: `resolution_${entityType}1.pdf`,
       attachedFileUrl: '#',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'решена'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'решена',
     },
     {
       id: '11',
       title: `Решена нередност ${entityType === 'building' ? 'сграда' : 'апартамент'} 2`,
       responsible: 'Име Фамилия',
       date: '10.12.2024',
-      reportedBy: entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
-      status: 'решена'
+      reportedBy:
+        entityType === 'building' ? 'Име Фамилия; ет. N, ап. N' : 'Име Фамилия',
+      status: 'решена',
     },
   ];
 
-  const mockData = isArchive ? mockArchivedIrregularities : mockActiveIrregularities;
+  const mockData = isArchive
+    ? mockArchivedIrregularities
+    : mockActiveIrregularities;
 
   const handleFileClick = (url?: string) => {
     if (url && url !== '#') {
@@ -154,37 +174,47 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
   };
 
   const handleEdit = (irregularityId: string) => {
-    dispatch(openModal({
-      type: entityType === 'building' ? 'edit-building-irregularity' : 'edit-apartment-irregularity',
-      data: { 
-        irregularityId, 
-        [entityType === 'building' ? 'buildingId' : 'apartmentId']: entityId 
-      }
-    }));
+    dispatch(
+      openModal({
+        type:
+          entityType === 'building'
+            ? 'edit-building-irregularity'
+            : 'edit-apartment-irregularity',
+        data: {
+          irregularityId,
+          [entityType === 'building' ? 'buildingId' : 'apartmentId']: entityId,
+        },
+      })
+    );
   };
 
   const handleDelete = (irregularityId: string) => {
     const irregularity = mockData.find(item => item.id === irregularityId);
-    dispatch(openModal({
-      type: 'delete-apartment-irregularity',
-      data: { 
-        irregularityId, 
-        [entityType === 'building' ? 'buildingId' : 'apartmentId']: entityId,
-        irregularityTitle: irregularity?.title || 'Неизвестна нередност'
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-apartment-irregularity',
+        data: {
+          irregularityId,
+          [entityType === 'building' ? 'buildingId' : 'apartmentId']: entityId,
+          irregularityTitle: irregularity?.title || 'Неизвестна нередност',
+        },
+      })
+    );
   };
 
   const getStatusBadge = (status: IrregularityRecord['status']) => {
     const statusMap = {
-      'докладвана': { label: 'Докладвана', variant: 'negative' as const },
-      'планувана': { label: 'Планувана', variant: 'warning' as const },
+      докладвана: { label: 'Докладвана', variant: 'negative' as const },
+      планувана: { label: 'Планувана', variant: 'warning' as const },
       'в процес': { label: 'В Процес', variant: 'warning' as const },
-      'решена': { label: 'Решена', variant: 'positive' as const },
-      'отказана': { label: 'Отказана', variant: 'neutral' as const },
+      решена: { label: 'Решена', variant: 'positive' as const },
+      отказана: { label: 'Отказана', variant: 'neutral' as const },
     };
-    
-    const config = statusMap[status] || { label: status, variant: 'neutral' as const };
+
+    const config = statusMap[status] || {
+      label: status,
+      variant: 'neutral' as const,
+    };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -216,7 +246,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
       accessorKey: 'attachedFile',
       width: '120px',
       minWidth: '120px',
-      cell: row => (
+      cell: row =>
         row.attachedFile ? (
           <button
             onClick={() => handleFileClick(row.attachedFileUrl)}
@@ -227,8 +257,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
           </button>
         ) : (
           <span className="text-gray-400 text-sm">-</span>
-        )
-      ),
+        ),
     },
     {
       header: 'Докладвана от',
@@ -252,15 +281,18 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
       minWidth: '100px',
       cell: row => {
         return (
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
-            <button 
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex items-center gap-1"
+          >
+            <button
               onClick={() => handleEdit(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Редактирай"
             >
               <Edit className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handleDelete(row.id)}
               className="p-2 text-gray-500 hover:text-red-700 transition-colors rounded-md hover:bg-red-50 active:bg-red-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Изтрий"
@@ -290,7 +322,7 @@ export function IrregularitiesTable({ entityId, entityType, isArchive }: Irregul
           {mockData.length} записа
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

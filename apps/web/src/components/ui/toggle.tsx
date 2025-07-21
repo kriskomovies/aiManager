@@ -11,7 +11,18 @@ export interface ToggleProps {
 }
 
 const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
-  ({ className, pressed = false, onPressedChange, disabled = false, label, id, ...props }, ref) => {
+  (
+    {
+      className,
+      pressed = false,
+      onPressedChange,
+      disabled = false,
+      label,
+      id,
+      ...props
+    },
+    ref
+  ) => {
     const handleClick = () => {
       if (!disabled && onPressedChange) {
         onPressedChange(!pressed);
@@ -46,7 +57,10 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     if (label) {
       return (
         <div className="flex items-center space-x-3">
-          <label htmlFor={id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+          <label
+            htmlFor={id}
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+          >
             {label}
           </label>
           {toggleElement}
@@ -59,4 +73,4 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
 );
 Toggle.displayName = 'Toggle';
 
-export { Toggle }; 
+export { Toggle };

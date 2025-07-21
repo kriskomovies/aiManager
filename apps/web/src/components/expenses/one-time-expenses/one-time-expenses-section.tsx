@@ -8,20 +8,26 @@ interface OneTimeExpensesSectionProps {
   buildingId: string;
 }
 
-export function OneTimeExpensesSection({ buildingId }: OneTimeExpensesSectionProps) {
+export function OneTimeExpensesSection({
+  buildingId,
+}: OneTimeExpensesSectionProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateExpense = () => {
-    dispatch(openModal({
-      type: 'create-one-time-expense',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'create-one-time-expense',
+        data: { buildingId },
+      })
+    );
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Еднократни Разходи</h2>
+        <h2 className="text-lg font-semibold text-gray-900">
+          Еднократни Разходи
+        </h2>
         <Button
           className="flex items-center gap-2"
           onClick={handleCreateExpense}

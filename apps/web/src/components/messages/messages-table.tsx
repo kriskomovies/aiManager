@@ -29,7 +29,7 @@ export function MessagesTable({ buildingId }: MessagesTableProps) {
 
   // Mock data for messages - TODO: Replace with actual API call using buildingId
   console.log('Loading messages for building:', buildingId);
-  
+
   const mockMessages: MessageRecord[] = [
     {
       id: '1',
@@ -124,40 +124,49 @@ export function MessagesTable({ buildingId }: MessagesTableProps) {
   ];
 
   const handleView = (messageId: string) => {
-    dispatch(openModal({
-      type: 'view-message',
-      data: { messageId, buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'view-message',
+        data: { messageId, buildingId },
+      })
+    );
   };
 
   const handleEdit = (messageId: string) => {
-    dispatch(openModal({
-      type: 'edit-message',
-      data: { messageId, buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'edit-message',
+        data: { messageId, buildingId },
+      })
+    );
   };
 
   const handleDelete = (messageId: string) => {
     const message = mockMessages.find(item => item.id === messageId);
-    dispatch(openModal({
-      type: 'delete-message',
-      data: { 
-        messageId, 
-        buildingId,
-        messageTitle: message?.title || 'Неизвестно съобщение'
-      }
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-message',
+        data: {
+          messageId,
+          buildingId,
+          messageTitle: message?.title || 'Неизвестно съобщение',
+        },
+      })
+    );
   };
 
   const getDeliveryMethodBadge = (method: MessageRecord['deliveryMethod']) => {
     const methodMap = {
-      'SMS': { label: 'SMS', variant: 'positive' as const },
-      'EMAIL': { label: 'Email', variant: 'neutral' as const },
-      'PUSH': { label: 'Push', variant: 'warning' as const },
-      'IN_APP': { label: 'В Приложението', variant: 'default' as const },
+      SMS: { label: 'SMS', variant: 'positive' as const },
+      EMAIL: { label: 'Email', variant: 'neutral' as const },
+      PUSH: { label: 'Push', variant: 'warning' as const },
+      IN_APP: { label: 'В Приложението', variant: 'default' as const },
     };
-    
-    const config = methodMap[method] || { label: method, variant: 'neutral' as const };
+
+    const config = methodMap[method] || {
+      label: method,
+      variant: 'neutral' as const,
+    };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -199,22 +208,25 @@ export function MessagesTable({ buildingId }: MessagesTableProps) {
       minWidth: '120px',
       cell: row => {
         return (
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
-            <button 
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex items-center gap-1"
+          >
+            <button
               onClick={() => handleView(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Прегледай"
             >
               <Eye className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handleEdit(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Редактирай"
             >
               <Edit className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handleDelete(row.id)}
               className="p-2 text-gray-500 hover:text-red-700 transition-colors rounded-md hover:bg-red-50 active:bg-red-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Изтрий"
@@ -237,14 +249,12 @@ export function MessagesTable({ buildingId }: MessagesTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium text-gray-900">
-          Съобщения към жители
-        </h4>
+        <h4 className="font-medium text-gray-900">Съобщения към жители</h4>
         <Badge variant="neutral" className="text-xs">
           {mockMessages.length} съобщения
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

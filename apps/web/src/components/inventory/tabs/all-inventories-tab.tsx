@@ -2,10 +2,7 @@ import { Button } from '@/components/ui/button';
 import { InventoriesTable } from '../inventories-table';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
-import { 
-  ArrowRightLeft,
-  Plus
-} from 'lucide-react';
+import { ArrowRightLeft, Plus } from 'lucide-react';
 
 interface AllInventoriesTabProps {
   buildingId: string;
@@ -15,17 +12,21 @@ export function AllInventoriesTab({ buildingId }: AllInventoriesTabProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateInventory = () => {
-    dispatch(openModal({
-      type: 'create-inventory',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'create-inventory',
+        data: { buildingId },
+      })
+    );
   };
 
   const handleTransferMoney = () => {
-    dispatch(openModal({
-      type: 'transfer-inventory-money',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'transfer-inventory-money',
+        data: { buildingId },
+      })
+    );
   };
 
   return (

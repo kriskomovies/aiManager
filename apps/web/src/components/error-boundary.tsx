@@ -15,7 +15,7 @@ interface State {
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -26,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
   }
 
@@ -53,18 +53,21 @@ export class ErrorBoundary extends Component<Props, State> {
                   <AlertTriangle className="h-8 w-8 text-red-500" />
                 </div>
               </div>
-              
+
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Нещо се обърка
               </h1>
-              
+
               <p className="text-gray-600 mb-6">
-                Възникна неочаквана грешка. Моля, опитайте отново или се върнете на началната страница.
+                Възникна неочаквана грешка. Моля, опитайте отново или се върнете
+                на началната страница.
               </p>
 
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="bg-gray-100 p-4 rounded-lg mb-6 text-left">
-                  <h3 className="font-semibold text-gray-900 mb-2">Техническа информация:</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Техническа информация:
+                  </h3>
                   <p className="text-sm text-gray-700 font-mono break-all">
                     {this.state.error.message}
                   </p>
@@ -89,7 +92,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <RefreshCw className="h-4 w-4" />
                   Опитай отново
                 </Button>
-                
+
                 <Button
                   onClick={this.handleGoHome}
                   className="flex items-center gap-2"
@@ -106,4 +109,4 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children;
   }
-} 
+}

@@ -21,4 +21,4 @@ export enum ResidentRole {
   OWNER = 'owner',
   TENANT = 'tenant',
   GUEST = 'guest',
-} 
+}

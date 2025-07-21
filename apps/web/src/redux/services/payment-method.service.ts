@@ -19,12 +19,15 @@ export const paymentMethodService = createApi({
   reducerPath: 'paymentMethodService',
   baseQuery: baseQueryWithOnQueryStarted,
   tagTypes: ['UserPaymentMethod'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Get all active user payment methods (simplified for dropdowns)
-    getActiveUserPaymentMethods: builder.query<IActiveUserPaymentMethod[], void>({
+    getActiveUserPaymentMethods: builder.query<
+      IActiveUserPaymentMethod[],
+      void
+    >({
       query: () => 'user-payment-methods/active',
       transformResponse: (response: { data: IUserPaymentMethodResponse[] }) => {
-        return response.data.map((method) => ({
+        return response.data.map(method => ({
           id: method.id,
           displayName: method.displayName,
           method: method.method,
@@ -35,8 +38,11 @@ export const paymentMethodService = createApi({
     }),
 
     // Get all user payment methods with pagination
-    getUserPaymentMethods: builder.query<IPaginatedResponse<IUserPaymentMethodResponse>, any>({
-      query: (params) => ({
+    getUserPaymentMethods: builder.query<
+      IPaginatedResponse<IUserPaymentMethodResponse>,
+      any
+    >({
+      query: params => ({
         url: 'user-payment-methods',
         params,
       }),
@@ -44,14 +50,21 @@ export const paymentMethodService = createApi({
     }),
 
     // Get user payment method by ID
-    getUserPaymentMethodById: builder.query<IUserPaymentMethodResponse, string>({
-      query: (id) => `user-payment-methods/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'UserPaymentMethod', id }],
-    }),
+    getUserPaymentMethodById: builder.query<IUserPaymentMethodResponse, string>(
+      {
+        query: id => `user-payment-methods/${id}`,
+        providesTags: (_result, _error, id) => [
+          { type: 'UserPaymentMethod', id },
+        ],
+      }
+    ),
 
     // Create user payment method
-    createUserPaymentMethod: builder.mutation<IUserPaymentMethodResponse, ICreateUserPaymentMethodRequest>({
-      query: (paymentMethod) => ({
+    createUserPaymentMethod: builder.mutation<
+      IUserPaymentMethodResponse,
+      ICreateUserPaymentMethodRequest
+    >({
+      query: paymentMethod => ({
         url: 'user-payment-methods',
         method: 'POST',
         body: paymentMethod,
@@ -60,7 +73,10 @@ export const paymentMethodService = createApi({
     }),
 
     // Update user payment method
-    updateUserPaymentMethod: builder.mutation<IUserPaymentMethodResponse, { id: string; updates: IUpdateUserPaymentMethodRequest }>({
+    updateUserPaymentMethod: builder.mutation<
+      IUserPaymentMethodResponse,
+      { id: string; updates: IUpdateUserPaymentMethodRequest }
+    >({
       query: ({ id, updates }) => ({
         url: `user-payment-methods/${id}`,
         method: 'PATCH',
@@ -74,7 +90,7 @@ export const paymentMethodService = createApi({
 
     // Delete user payment method
     deleteUserPaymentMethod: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `user-payment-methods/${id}`,
         method: 'DELETE',
       }),
@@ -93,4 +109,4 @@ export const {
   useCreateUserPaymentMethodMutation,
   useUpdateUserPaymentMethodMutation,
   useDeleteUserPaymentMethodMutation,
-} = paymentMethodService; 
+} = paymentMethodService;

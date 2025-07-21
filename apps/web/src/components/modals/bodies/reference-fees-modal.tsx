@@ -42,11 +42,7 @@ export function ReferenceFeesModal() {
 
       {/* Footer */}
       <div className="p-6 border-t border-gray-200 flex justify-end items-center bg-gray-50">
-        <Button
-          onClick={handleClose}
-          variant="outline"
-          className="px-8"
-        >
+        <Button onClick={handleClose} variant="outline" className="px-8">
           Затвори
         </Button>
       </div>

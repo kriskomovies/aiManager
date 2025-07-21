@@ -15,11 +15,13 @@ import {
   IBackendApiResponse,
   IBackendQueryParams,
   IBackendPaginatedResponse,
-  IBackendInventoryResponse
+  IBackendInventoryResponse,
 } from '@repo/interfaces';
 
 // Transform backend response to frontend format
-const transformPaginatedResponse = <T>(response: IBackendPaginatedResponse<T>): IPaginatedResponse<T> => ({
+const transformPaginatedResponse = <T>(
+  response: IBackendPaginatedResponse<T>
+): IPaginatedResponse<T> => ({
   items: response.data.data,
   meta: {
     page: response.data.page,
@@ -33,11 +35,13 @@ export const inventoryService = createApi({
   reducerPath: 'inventoryService',
   baseQuery: baseQueryWithOnQueryStarted,
   tagTypes: ['Inventory', 'InventoryTransaction', 'InventoryStats'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Get inventories by building ID
     getInventoriesByBuilding: builder.query<IInventoryResponse[], string>({
-      query: (buildingId) => `inventories/building/${buildingId}`,
-      transformResponse: (response: IBackendApiResponse<IBackendInventoryResponse[]>) => {
+      query: buildingId => `inventories/building/${buildingId}`,
+      transformResponse: (
+        response: IBackendApiResponse<IBackendInventoryResponse[]>
+      ) => {
         return response.data.map((inventory: IBackendInventoryResponse) => ({
           ...inventory,
           amount: parseFloat(inventory.amount.toString()),
@@ -47,8 +51,11 @@ export const inventoryService = createApi({
     }),
 
     // Get all inventories with pagination
-    getInventories: builder.query<IPaginatedResponse<IInventoryResponse>, IInventoryQueryParams>({
-      query: (params) => {
+    getInventories: builder.query<
+      IPaginatedResponse<IInventoryResponse>,
+      IInventoryQueryParams
+    >({
+      query: params => {
         const backendParams: IBackendQueryParams = {
           page: params.page,
           limit: params.pageSize,
@@ -66,8 +73,10 @@ export const inventoryService = createApi({
         }
 
         // Remove undefined values
-        Object.keys(backendParams).forEach(key => 
-          backendParams[key as keyof IBackendQueryParams] === undefined && delete backendParams[key as keyof IBackendQueryParams]
+        Object.keys(backendParams).forEach(
+          key =>
+            backendParams[key as keyof IBackendQueryParams] === undefined &&
+            delete backendParams[key as keyof IBackendQueryParams]
         );
 
         return {
@@ -75,15 +84,19 @@ export const inventoryService = createApi({
           params: backendParams,
         };
       },
-      transformResponse: (response: IBackendPaginatedResponse<IBackendInventoryResponse>) => {
+      transformResponse: (
+        response: IBackendPaginatedResponse<IBackendInventoryResponse>
+      ) => {
         const transformed = transformPaginatedResponse(response);
-        
+
         // Transform each inventory
-        const inventories: IInventoryResponse[] = (transformed.items as IBackendInventoryResponse[]).map((inventory: IBackendInventoryResponse) => ({
+        const inventories: IInventoryResponse[] = (
+          transformed.items as IBackendInventoryResponse[]
+        ).map((inventory: IBackendInventoryResponse) => ({
           ...inventory,
           amount: parseFloat(inventory.amount.toString()),
         }));
-        
+
         return {
           ...transformed,
           items: inventories,
@@ -94,8 +107,10 @@ export const inventoryService = createApi({
 
     // Get inventory by ID
     getInventoryById: builder.query<IInventoryResponse, string>({
-      query: (id) => `inventories/${id}`,
-      transformResponse: (response: IBackendApiResponse<IBackendInventoryResponse>) => {
+      query: id => `inventories/${id}`,
+      transformResponse: (
+        response: IBackendApiResponse<IBackendInventoryResponse>
+      ) => {
         const inventory = response.data;
         return {
           ...inventory,
@@ -106,13 +121,18 @@ export const inventoryService = createApi({
     }),
 
     // Create inventory
-    createInventory: builder.mutation<IInventoryResponse, ICreateInventoryRequest>({
-      query: (inventory) => ({
+    createInventory: builder.mutation<
+      IInventoryResponse,
+      ICreateInventoryRequest
+    >({
+      query: inventory => ({
         url: 'inventories',
         method: 'POST',
         body: inventory,
       }),
-      transformResponse: (response: IBackendApiResponse<IBackendInventoryResponse>) => {
+      transformResponse: (
+        response: IBackendApiResponse<IBackendInventoryResponse>
+      ) => {
         const inventory = response.data;
         return {
           ...inventory,
@@ -123,13 +143,18 @@ export const inventoryService = createApi({
     }),
 
     // Update inventory
-    updateInventory: builder.mutation<IInventoryResponse, { id: string; updates: IUpdateInventoryRequest }>({
+    updateInventory: builder.mutation<
+      IInventoryResponse,
+      { id: string; updates: IUpdateInventoryRequest }
+    >({
       query: ({ id, updates }) => ({
         url: `inventories/${id}`,
         method: 'PATCH',
         body: updates,
       }),
-      transformResponse: (response: IBackendApiResponse<IBackendInventoryResponse>) => {
+      transformResponse: (
+        response: IBackendApiResponse<IBackendInventoryResponse>
+      ) => {
         const inventory = response.data;
         return {
           ...inventory,
@@ -145,7 +170,7 @@ export const inventoryService = createApi({
 
     // Delete inventory
     deleteInventory: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `inventories/${id}`,
         method: 'DELETE',
       }),
@@ -157,13 +182,18 @@ export const inventoryService = createApi({
     }),
 
     // Transfer money between inventories
-    transferMoney: builder.mutation<IInventoryTransaction, IInventoryTransferRequest>({
-      query: (transfer) => ({
+    transferMoney: builder.mutation<
+      IInventoryTransaction,
+      IInventoryTransferRequest
+    >({
+      query: transfer => ({
         url: 'inventories/transfer',
         method: 'POST',
         body: transfer,
       }),
-      transformResponse: (response: IBackendApiResponse<IBackendTransactionResponse>) => {
+      transformResponse: (
+        response: IBackendApiResponse<IBackendTransactionResponse>
+      ) => {
         const transaction = response.data;
         return {
           ...transaction,
@@ -176,21 +206,28 @@ export const inventoryService = createApi({
 
     // Get inventory statistics
     getInventoryStats: builder.query<IInventoryStats, string>({
-      query: (buildingId) => `inventories/building/${buildingId}/stats`,
-      transformResponse: (response: IBackendApiResponse<IBackendStatsResponse>) => {
+      query: buildingId => `inventories/building/${buildingId}/stats`,
+      transformResponse: (
+        response: IBackendApiResponse<IBackendStatsResponse>
+      ) => {
         const stats = response.data;
         return {
           ...stats,
           totalAmount: parseFloat(stats.totalAmount.toString()),
           mainCashAmount: parseFloat(stats.mainCashAmount.toString()),
-          customInventoriesTotal: parseFloat(stats.customInventoriesTotal.toString()),
+          customInventoriesTotal: parseFloat(
+            stats.customInventoriesTotal.toString()
+          ),
         };
       },
       providesTags: ['InventoryStats'],
     }),
 
     // Get inventory transactions
-    getInventoryTransactions: builder.query<IPaginatedResponse<IInventoryTransaction>, { inventoryId: string; params?: IInventoryTransactionQueryParams }>({
+    getInventoryTransactions: builder.query<
+      IPaginatedResponse<IInventoryTransaction>,
+      { inventoryId: string; params?: IInventoryTransactionQueryParams }
+    >({
       query: ({ inventoryId, params }) => {
         const backendParams: IBackendQueryParams = {
           page: params?.page,
@@ -208,8 +245,10 @@ export const inventoryService = createApi({
         }
 
         // Remove undefined values
-        Object.keys(backendParams).forEach(key => 
-          backendParams[key as keyof IBackendQueryParams] === undefined && delete backendParams[key as keyof IBackendQueryParams]
+        Object.keys(backendParams).forEach(
+          key =>
+            backendParams[key as keyof IBackendQueryParams] === undefined &&
+            delete backendParams[key as keyof IBackendQueryParams]
         );
 
         return {
@@ -217,16 +256,20 @@ export const inventoryService = createApi({
           params: backendParams,
         };
       },
-      transformResponse: (response: IBackendPaginatedResponse<IBackendTransactionResponse>) => {
+      transformResponse: (
+        response: IBackendPaginatedResponse<IBackendTransactionResponse>
+      ) => {
         const transformed = transformPaginatedResponse(response);
-        
+
         // Transform each transaction
-        const transactions: IInventoryTransaction[] = (transformed.items as IBackendTransactionResponse[]).map((transaction: IBackendTransactionResponse) => ({
+        const transactions: IInventoryTransaction[] = (
+          transformed.items as IBackendTransactionResponse[]
+        ).map((transaction: IBackendTransactionResponse) => ({
           ...transaction,
           amount: parseFloat(transaction.amount.toString()),
           type: transaction.type as IInventoryTransaction['type'],
         }));
-        
+
         return {
           ...transformed,
           items: transactions,
@@ -236,8 +279,21 @@ export const inventoryService = createApi({
     }),
 
     // Create expense transaction
-    createExpense: builder.mutation<IInventoryTransaction, { sourceInventoryId: string; userPaymentMethodId: string; amount: number; description?: string }>({
-      query: ({ sourceInventoryId, userPaymentMethodId, amount, description }) => ({
+    createExpense: builder.mutation<
+      IInventoryTransaction,
+      {
+        sourceInventoryId: string;
+        userPaymentMethodId: string;
+        amount: number;
+        description?: string;
+      }
+    >({
+      query: ({
+        sourceInventoryId,
+        userPaymentMethodId,
+        amount,
+        description,
+      }) => ({
         url: 'inventories/expense',
         method: 'POST',
         body: {
@@ -247,7 +303,9 @@ export const inventoryService = createApi({
           description,
         },
       }),
-      transformResponse: (response: IBackendApiResponse<IBackendTransactionResponse>) => {
+      transformResponse: (
+        response: IBackendApiResponse<IBackendTransactionResponse>
+      ) => {
         const transaction = response.data;
         return {
           ...transaction,
@@ -271,4 +329,4 @@ export const {
   useGetInventoryStatsQuery,
   useGetInventoryTransactionsQuery,
   useCreateExpenseMutation,
-} = inventoryService; 
+} = inventoryService;

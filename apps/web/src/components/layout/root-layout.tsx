@@ -3,7 +3,10 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './sidebar';
 import { Search, Menu, X } from 'lucide-react';
 import { useAppSelector } from '@/redux/hooks';
-import { selectCurrentPageTitle, selectCurrentPageSubtitle } from '@/redux/slices/app-state';
+import {
+  selectCurrentPageTitle,
+  selectCurrentPageSubtitle,
+} from '@/redux/slices/app-state';
 import { AlertContainer } from '@/components/ui/alert';
 import { ModalContainer } from '@/components/modals/modal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,10 +23,10 @@ export function RootLayout() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -58,12 +61,12 @@ export function RootLayout() {
     <div className="flex min-h-screen bg-gray-50 w-full max-w-full overflow-x-hidden">
       {/* Desktop Sidebar */}
       {!isMobile && (
-        <div 
+        <div
           className="fixed h-full z-20"
           onMouseEnter={handleSidebarMouseEnter}
           onMouseLeave={handleSidebarMouseLeave}
         >
-          <Sidebar 
+          <Sidebar
             isCollapsed={sidebarCollapsed}
             isMobile={false}
             onNavigate={closeMobileMenu}
@@ -83,7 +86,7 @@ export function RootLayout() {
               exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
             />
-            
+
             {/* Mobile Sidebar */}
             <motion.div
               className="fixed left-0 top-0 h-full z-50 md:hidden"
@@ -92,7 +95,7 @@ export function RootLayout() {
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
             >
-              <Sidebar 
+              <Sidebar
                 isCollapsed={false}
                 isMobile={true}
                 onNavigate={closeMobileMenu}
@@ -103,15 +106,19 @@ export function RootLayout() {
       </AnimatePresence>
 
       {/* Main content */}
-      <motion.div 
+      <motion.div
         className="flex-1 min-h-screen flex flex-col max-w-full overflow-x-hidden"
-        animate={{ 
-          marginLeft: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px')
+        animate={{
+          marginLeft: isMobile ? '0px' : sidebarCollapsed ? '64px' : '256px',
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         style={{
-          width: isMobile ? '100vw' : `calc(100vw - ${sidebarCollapsed ? '64px' : '256px'})`,
-          maxWidth: isMobile ? '100vw' : `calc(100vw - ${sidebarCollapsed ? '64px' : '256px'})`
+          width: isMobile
+            ? '100vw'
+            : `calc(100vw - ${sidebarCollapsed ? '64px' : '256px'})`,
+          maxWidth: isMobile
+            ? '100vw'
+            : `calc(100vw - ${sidebarCollapsed ? '64px' : '256px'})`,
         }}
       >
         <div className="flex h-14 items-center justify-between bg-red-500 text-white px-4 md:px-8 sticky top-0 z-10">
@@ -130,15 +137,17 @@ export function RootLayout() {
                 )}
               </button>
             )}
-            
+
             <div className="flex flex-col">
               <h1 className="text-lg font-semibold">{pageTitle}</h1>
               {pageSubtitle && (
-                <p className="text-sm text-red-100 hidden sm:block">{pageSubtitle}</p>
+                <p className="text-sm text-red-100 hidden sm:block">
+                  {pageSubtitle}
+                </p>
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-red-400" />
@@ -154,10 +163,10 @@ export function RootLayout() {
           <Outlet />
         </main>
       </motion.div>
-      
+
       {/* Alert Container */}
       <AlertContainer />
-      
+
       {/* Modal Container */}
       <ModalContainer />
     </div>

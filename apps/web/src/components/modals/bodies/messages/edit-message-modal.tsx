@@ -26,14 +26,17 @@ interface EditMessageModalProps {
 export function EditMessageModal({ onClose }: EditMessageModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   const messageId = modalData?.messageId;
   const buildingId = modalData?.buildingId;
 
   // Fetch apartments with residents for the building to populate recipients
-  const { data: apartments = [] } = useGetApartmentsByBuildingQuery(buildingId || '', {
-    skip: !buildingId
-  });
+  const { data: apartments = [] } = useGetApartmentsByBuildingQuery(
+    buildingId || '',
+    {
+      skip: !buildingId,
+    }
+  );
 
   const [formData, setFormData] = useState<EditMessageFormData>({
     title: '',
@@ -57,8 +60,13 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
   // Load existing message data when modal opens
   useEffect(() => {
     // TODO: Load real message data based on messageId
-    console.log('Loading message for editing:', messageId, 'for building:', buildingId);
-    
+    console.log(
+      'Loading message for editing:',
+      messageId,
+      'for building:',
+      buildingId
+    );
+
     // Mock data that matches the design
     const mockMessageData = {
       title: 'Събрание Януари',
@@ -67,27 +75,31 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
       recipients: ['all'], // "Всички (12)" selected
       attachedFile: null,
     };
-    
+
     setFormData(mockMessageData);
     setOriginalData(mockMessageData);
   }, [messageId, buildingId]);
 
   // Check for changes whenever formData updates
   useEffect(() => {
-    const hasFormChanges = 
+    const hasFormChanges =
       formData.title !== originalData.title ||
       formData.description !== originalData.description ||
       formData.deliveryMethod !== originalData.deliveryMethod ||
-      JSON.stringify(formData.recipients.sort()) !== JSON.stringify(originalData.recipients.sort()) ||
+      JSON.stringify(formData.recipients.sort()) !==
+        JSON.stringify(originalData.recipients.sort()) ||
       formData.attachedFile !== originalData.attachedFile;
-    
+
     setHasChanges(hasFormChanges);
   }, [formData, originalData]);
 
-  const handleInputChange = (field: keyof EditMessageFormData, value: string | string[]) => {
+  const handleInputChange = (
+    field: keyof EditMessageFormData,
+    value: string | string[]
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -96,12 +108,12 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
     if (value.includes('all')) {
       setFormData(prev => ({
         ...prev,
-        recipients: ['all']
+        recipients: ['all'],
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        recipients: value
+        recipients: value,
       }));
     }
   };
@@ -110,20 +122,26 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
     const file = event.target.files?.[0] || null;
     setFormData(prev => ({
       ...prev,
-      attachedFile: file
+      attachedFile: file,
     }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.title.trim() || !formData.deliveryMethod || formData.recipients.length === 0) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля попълнете всички задължителни полета.',
-        duration: 5000
-      }));
+
+    if (
+      !formData.title.trim() ||
+      !formData.deliveryMethod ||
+      formData.recipients.length === 0
+    ) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля попълнете всички задължителни полета.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -132,36 +150,48 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
     try {
       // TODO: Implement actual update API call
       console.log('Updating message with data:', { messageId, ...formData });
-      
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно обновяване!',
-        message: 'Съобщението беше обновено успешно.',
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно обновяване!',
+          message: 'Съобщението беше обновено успешно.',
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error updating message:', error);
-      
+
       // Handle different types of errors
-      let errorMessage = 'Възникна грешка при обновяването на съобщението. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+      let errorMessage =
+        'Възникна грешка при обновяването на съобщението. Моля опитайте отново.';
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при обновяване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при обновяване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -181,13 +211,15 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
 
   // Create recipient options from apartments only
   const recipientOptions: MultiSelectOption[] = [];
-  
+
   // Add "All apartments" option
-  const apartmentsWithResidents = apartments.filter(apt => (apt.residents?.length || 0) > 0);
+  const apartmentsWithResidents = apartments.filter(
+    apt => (apt.residents?.length || 0) > 0
+  );
   if (apartmentsWithResidents.length > 0) {
     recipientOptions.push({
       value: 'all',
-      label: `Всички (${apartmentsWithResidents.length + 10})` // Mock +10 for design match
+      label: `Всички (${apartmentsWithResidents.length + 10})`, // Mock +10 for design match
     });
   }
 
@@ -195,7 +227,7 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
   apartmentsWithResidents.forEach(apartment => {
     recipientOptions.push({
       value: `apartment_${apartment.id}`,
-      label: `Апартамент ${apartment.number} (${apartment.residents?.length || 0} жители)`
+      label: `Апартамент ${apartment.number} (${apartment.residents?.length || 0} жители)`,
     });
   });
 
@@ -214,7 +246,7 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
           <Input
             id="title"
             value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={e => handleInputChange('title', e.target.value)}
             placeholder="Въведете заглавие на съобщението"
             disabled={isSubmitting}
             required
@@ -227,7 +259,7 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
           <textarea
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Въведете съдържанието на съобщението"
             disabled={isSubmitting}
             rows={4}
@@ -242,7 +274,9 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
             <Select
               id="deliveryMethod"
               value={formData.deliveryMethod}
-              onChange={(e) => handleInputChange('deliveryMethod', e.target.value)}
+              onChange={e =>
+                handleInputChange('deliveryMethod', e.target.value)
+              }
               disabled={isSubmitting}
               required
             >
@@ -311,9 +345,10 @@ export function EditMessageModal({ onClose }: EditMessageModalProps) {
           <Button
             type="submit"
             disabled={isSubmitting || !hasChanges}
-            className={hasChanges && !isSubmitting
-              ? ""
-              : "bg-gray-400 text-gray-600 cursor-not-allowed"
+            className={
+              hasChanges && !isSubmitting
+                ? ''
+                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
             }
           >
             {isSubmitting ? (

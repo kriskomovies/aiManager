@@ -10,31 +10,30 @@ export function TemporaryFeesTab() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
       {/* Current Temporary Fees Section */}
-      <motion.div 
+      <motion.div
         className="space-y-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         {/* Header with title and button */}
-        <motion.div 
+        <motion.div
           className="flex items-center justify-between"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+          transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
         >
-          <h2 className="text-xl font-semibold text-gray-900">Текущи Временни Такси</h2>
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <h2 className="text-xl font-semibold text-gray-900">
+            Текущи Временни Такси
+          </h2>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               className="flex items-center gap-2"
               onClick={handleCreateTemporaryFee}
@@ -44,19 +43,19 @@ export function TemporaryFeesTab() {
             </Button>
           </motion.div>
         </motion.div>
-        
+
         {/* Current Temporary Fees Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+          transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
         >
           <TemporaryFeesTable />
         </motion.div>
       </motion.div>
 
       {/* Archive Section */}
-      <motion.div 
+      <motion.div
         className="space-y-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -66,16 +65,18 @@ export function TemporaryFeesTab() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.4, delay: 0.3, ease: 'easeOut' }}
         >
-          <h2 className="text-xl font-semibold text-gray-900">Архив Временни Такси</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Архив Временни Такси
+          </h2>
         </motion.div>
-        
+
         {/* Archive Table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
+          transition={{ duration: 0.4, delay: 0.4, ease: 'easeOut' }}
         >
           <ArchiveTemporaryFeesTable />
         </motion.div>

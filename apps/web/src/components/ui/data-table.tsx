@@ -80,19 +80,17 @@ export function DataTable<T>({
   }
 
   return (
-    <div className={cn("space-y-4 w-full max-w-full", className)}>
+    <div className={cn('space-y-4 w-full max-w-full', className)}>
       {/* Table Container with Full Width */}
       <div className="relative w-full max-w-full overflow-hidden">
         <div className="rounded-xl border bg-white shadow-sm w-full max-w-full">
           {/* Scroll Container */}
-          <div 
-            className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-          >
-            <Table 
+          <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <Table
               className="w-full table-fixed"
-              style={{ 
+              style={{
                 minWidth: '700px',
-                width: '100%'
+                width: '100%',
               }}
             >
               <TableHeader>
@@ -102,7 +100,8 @@ export function DataTable<T>({
                       key={`header-${columnIndex}-${String(column.accessorKey)}`}
                       className={cn(
                         'font-medium text-gray-700 whitespace-nowrap',
-                        column.sortable && 'cursor-pointer select-none hover:bg-gray-100',
+                        column.sortable &&
+                          'cursor-pointer select-none hover:bg-gray-100',
                         'px-2 sm:px-4 py-3'
                       )}
                       style={{
@@ -114,12 +113,15 @@ export function DataTable<T>({
                       }
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs sm:text-sm truncate">{column.header}</span>
-                        {column.sortable && sorting?.field === column.accessorKey && (
-                          <span className="text-xs flex-shrink-0">
-                            {sorting.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
+                        <span className="text-xs sm:text-sm truncate">
+                          {column.header}
+                        </span>
+                        {column.sortable &&
+                          sorting?.field === column.accessorKey && (
+                            <span className="text-xs flex-shrink-0">
+                              {sorting.direction === 'asc' ? '↑' : '↓'}
+                            </span>
+                          )}
                       </div>
                     </TableHead>
                   ))}
@@ -145,7 +147,9 @@ export function DataTable<T>({
                       className="h-[400px] text-center"
                     >
                       <div className="text-gray-500">
-                        <div className="text-sm sm:text-base">No records found.</div>
+                        <div className="text-sm sm:text-base">
+                          No records found.
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -160,7 +164,7 @@ export function DataTable<T>({
                       )}
                     >
                       {columns.map((column, columnIndex) => (
-                        <TableCell 
+                        <TableCell
                           key={`cell-${rowIndex}-${columnIndex}-${String(column.accessorKey)}`}
                           className="px-2 sm:px-4 py-3"
                           style={{
@@ -211,7 +215,7 @@ export function DataTable<T>({
             >
               <ChevronsLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Previous Page Button */}
             <Button
               variant="outline"
@@ -222,14 +226,14 @@ export function DataTable<T>({
             >
               <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Page Numbers - Show current page on mobile */}
             <div className="flex items-center gap-1 sm:gap-2">
               {/* Mobile: Show only current page */}
               <div className="sm:hidden px-2 py-1 text-xs font-medium bg-gray-100 rounded">
                 {page}
               </div>
-              
+
               {/* Desktop: Show page range */}
               <div className="hidden sm:flex items-center gap-1">
                 {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
@@ -243,11 +247,11 @@ export function DataTable<T>({
                   } else {
                     pageNum = page - 2 + i;
                   }
-                  
+
                   return (
                     <Button
                       key={pageNum}
-                      variant={page === pageNum ? "default" : "outline"}
+                      variant={page === pageNum ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => onPageChange?.(pageNum)}
                       disabled={isLoading}
@@ -259,7 +263,7 @@ export function DataTable<T>({
                 })}
               </div>
             </div>
-            
+
             {/* Next Page Button */}
             <Button
               variant="outline"
@@ -270,7 +274,7 @@ export function DataTable<T>({
             >
               <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            
+
             {/* Last Page Button - Hidden on mobile */}
             <Button
               variant="outline"

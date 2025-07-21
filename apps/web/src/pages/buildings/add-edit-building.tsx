@@ -8,19 +8,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { Toggle } from '@/components/ui/toggle';
-import { MultiSelect, type MultiSelectOption } from '@/components/ui/multi-select';
+import {
+  MultiSelect,
+  type MultiSelectOption,
+} from '@/components/ui/multi-select';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Plus, Save } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { addAlert } from '@/redux/slices/alert-slice';
-import { 
-  useCreateBuildingMutation, 
+import {
+  useCreateBuildingMutation,
   useUpdateBuildingMutation,
-  useGetBuildingQuery 
+  useGetBuildingQuery,
 } from '@/redux/services/building.service';
 import { BuildingType, TaxGenerationPeriod } from '@repo/interfaces';
-import { addBuildingSchema, type AddBuildingFormData } from './add-edit-building.schema';
+import {
+  addBuildingSchema,
+  type AddBuildingFormData,
+} from './add-edit-building.schema';
 
 export function AddEditBuildingPage() {
   const navigate = useNavigate();
@@ -29,16 +35,18 @@ export function AddEditBuildingPage() {
   const isEditMode = Boolean(id);
 
   // API hooks
-  const [createBuilding, { isLoading: isCreating }] = useCreateBuildingMutation();
-  const [updateBuilding, { isLoading: isUpdating }] = useUpdateBuildingMutation();
-  const { 
-    data: buildingData, 
-    isLoading: isLoadingBuilding, 
-    error: loadingError 
-  } = useGetBuildingQuery(id!, { 
-    skip: !isEditMode 
+  const [createBuilding, { isLoading: isCreating }] =
+    useCreateBuildingMutation();
+  const [updateBuilding, { isLoading: isUpdating }] =
+    useUpdateBuildingMutation();
+  const {
+    data: buildingData,
+    isLoading: isLoadingBuilding,
+    error: loadingError,
+  } = useGetBuildingQuery(id!, {
+    skip: !isEditMode,
   });
-  
+
   const {
     register,
     handleSubmit,
@@ -77,27 +85,32 @@ export function AddEditBuildingPage() {
         basements: buildingData.basements || 0,
         taxGenerationPeriod: buildingData.taxGenerationPeriod,
         taxGenerationDay: buildingData.taxGenerationDay,
-        homebookStartDate: buildingData.homebookStartDate ? 
-          new Date(buildingData.homebookStartDate).toISOString().split('T')[0] : '',
+        homebookStartDate: buildingData.homebookStartDate
+          ? new Date(buildingData.homebookStartDate).toISOString().split('T')[0]
+          : '',
         description: buildingData.description || '',
         invoiceEnabled: buildingData.invoiceEnabled || false,
-        peopleWithAccess: Array.isArray(buildingData.peopleWithAccess) 
-          ? buildingData.peopleWithAccess.map(person => 
+        peopleWithAccess: Array.isArray(buildingData.peopleWithAccess)
+          ? buildingData.peopleWithAccess.map(person =>
               typeof person === 'string' ? person : person.id || String(person)
             )
           : [],
       };
-      
+
       // Reset form with loaded data
       reset(formData);
     }
   }, [buildingData, isLoadingBuilding, isEditMode, reset]);
 
   useEffect(() => {
-    dispatch(setPageInfo({
-      title: isEditMode ? 'Редактирай Сграда' : 'Добави Сграда',
-      subtitle: isEditMode ? 'Редактирайте информацията за сградата' : 'Създайте нова сграда в системата'
-    }));
+    dispatch(
+      setPageInfo({
+        title: isEditMode ? 'Редактирай Сграда' : 'Добави Сграда',
+        subtitle: isEditMode
+          ? 'Редактирайте информацията за сградата'
+          : 'Създайте нова сграда в системата',
+      })
+    );
   }, [dispatch, isEditMode]);
 
   // Show loading spinner while loading building data
@@ -114,7 +127,9 @@ export function AddEditBuildingPage() {
   if (isEditMode && loadingError) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">Грешка при зареждане на данните за сградата.</p>
+        <p className="text-red-600 mb-4">
+          Грешка при зареждане на данните за сградата.
+        </p>
         <Button onClick={() => navigate('/buildings')} variant="outline">
           Назад към сгради
         </Button>
@@ -128,38 +143,38 @@ export function AddEditBuildingPage() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   const formSectionVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 30 
+    hidden: {
+      opacity: 0,
+      y: 30,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.4,
-        staggerChildren: 0.05
-      }
-    }
+        staggerChildren: 0.05,
+      },
+    },
   };
 
   // Mock data for dropdowns
@@ -198,7 +213,7 @@ export function AddEditBuildingPage() {
     { value: 'resident2', label: 'Георги Николов - Жилец' },
   ];
 
-  const onSubmit: SubmitHandler<AddBuildingFormData> = async (data) => {
+  const onSubmit: SubmitHandler<AddBuildingFormData> = async data => {
     try {
       // Data is already properly typed and converted by Zod schema
       const buildingData = {
@@ -208,45 +223,58 @@ export function AddEditBuildingPage() {
       if (isEditMode) {
         // Update existing building
         await updateBuilding({ id: id!, data: buildingData }).unwrap();
-        
-        dispatch(addAlert({
-          type: 'success',
-          title: 'Успешно обновяване!',
-          message: `Сградата "${data.name}" беше обновена успешно.`,
-          duration: 5000
-        }));
+
+        dispatch(
+          addAlert({
+            type: 'success',
+            title: 'Успешно обновяване!',
+            message: `Сградата "${data.name}" беше обновена успешно.`,
+            duration: 5000,
+          })
+        );
       } else {
         // Create new building
         await createBuilding(buildingData).unwrap();
-        
-        dispatch(addAlert({
-          type: 'success',
-          title: 'Успешно създаване!',
-          message: `Сградата "${data.name}" беше създадена успешно.`,
-          duration: 5000
-        }));
+
+        dispatch(
+          addAlert({
+            type: 'success',
+            title: 'Успешно създаване!',
+            message: `Сградата "${data.name}" беше създадена успешно.`,
+            duration: 5000,
+          })
+        );
       }
-      
+
       navigate('/buildings');
     } catch (error) {
       console.error('Failed to save building:', error);
-      
-      let errorMessage = isEditMode 
+
+      let errorMessage = isEditMode
         ? 'Възникна грешка при обновяването на сградата. Моля опитайте отново.'
         : 'Възникна грешка при създаването на сградата. Моля опитайте отново.';
-      
-      if (error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data) {
+
+      if (
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data
+      ) {
         errorMessage = String(error.data.message);
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: isEditMode ? 'Грешка при обновяване' : 'Грешка при създаване',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: isEditMode ? 'Грешка при обновяване' : 'Грешка при създаване',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     }
   };
 
@@ -266,7 +294,7 @@ export function AddEditBuildingPage() {
   const isLoading = isSubmitting || isCreating || isUpdating;
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
@@ -282,10 +310,9 @@ export function AddEditBuildingPage() {
         >
           <ArrowLeft className="h-5 w-5" />
           <span className="text-sm font-medium">
-            {isEditMode && buildingData?.name 
-              ? `Назад към ${buildingData.name}` 
-              : 'Назад към сгради'
-            }
+            {isEditMode && buildingData?.name
+              ? `Назад към ${buildingData.name}`
+              : 'Назад към сгради'}
           </span>
         </motion.button>
       </motion.div>
@@ -298,7 +325,7 @@ export function AddEditBuildingPage() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* General Information Grid */}
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
@@ -310,15 +337,14 @@ export function AddEditBuildingPage() {
                     {...register('name')}
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-600">{errors.name.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.name.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
                   <Label htmlFor="type">Тип *</Label>
-                  <Select
-                    id="type"
-                    {...register('type')}
-                  >
+                  <Select id="type" {...register('type')}>
                     <option value="">Изберете тип</option>
                     {typeOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -327,15 +353,14 @@ export function AddEditBuildingPage() {
                     ))}
                   </Select>
                   {errors.type && (
-                    <p className="text-sm text-red-600">{errors.type.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.type.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
                   <Label htmlFor="city">Град *</Label>
-                  <Select
-                    id="city"
-                    {...register('city')}
-                  >
+                  <Select id="city" {...register('city')}>
                     <option value="">Изберете град</option>
                     {cityOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -344,21 +369,20 @@ export function AddEditBuildingPage() {
                     ))}
                   </Select>
                   {errors.city && (
-                    <p className="text-sm text-red-600">{errors.city.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.city.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
                 <motion.div className="space-y-2" variants={itemVariants}>
                   <Label htmlFor="district">Район *</Label>
-                  <Select
-                    id="district"
-                    {...register('district')}
-                  >
+                  <Select id="district" {...register('district')}>
                     <option value="">Изберете район</option>
                     {districtOptions.map(option => (
                       <option key={option.value} value={option.value}>
@@ -367,7 +391,9 @@ export function AddEditBuildingPage() {
                     ))}
                   </Select>
                   {errors.district && (
-                    <p className="text-sm text-red-600">{errors.district.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.district.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -378,7 +404,9 @@ export function AddEditBuildingPage() {
                     {...register('street')}
                   />
                   {errors.street && (
-                    <p className="text-sm text-red-600">{errors.street.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.street.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -389,12 +417,14 @@ export function AddEditBuildingPage() {
                     {...register('number')}
                   />
                   {errors.number && (
-                    <p className="text-sm text-red-600">{errors.number.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.number.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
@@ -406,7 +436,9 @@ export function AddEditBuildingPage() {
                     {...register('entrance')}
                   />
                   {errors.entrance && (
-                    <p className="text-sm text-red-600">{errors.entrance.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.entrance.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -417,7 +449,9 @@ export function AddEditBuildingPage() {
                     {...register('postalCode')}
                   />
                   {errors.postalCode && (
-                    <p className="text-sm text-red-600">{errors.postalCode.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.postalCode.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -431,12 +465,14 @@ export function AddEditBuildingPage() {
                     {...register('commonPartsArea')}
                   />
                   {errors.commonPartsArea && (
-                    <p className="text-sm text-red-600">{errors.commonPartsArea.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.commonPartsArea.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
@@ -451,7 +487,9 @@ export function AddEditBuildingPage() {
                     {...register('quadrature')}
                   />
                   {errors.quadrature && (
-                    <p className="text-sm text-red-600">{errors.quadrature.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.quadrature.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -464,7 +502,9 @@ export function AddEditBuildingPage() {
                     {...register('parkingSlots')}
                   />
                   {errors.parkingSlots && (
-                    <p className="text-sm text-red-600">{errors.parkingSlots.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.parkingSlots.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -477,17 +517,21 @@ export function AddEditBuildingPage() {
                     {...register('basements')}
                   />
                   {errors.basements && (
-                    <p className="text-sm text-red-600">{errors.basements.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.basements.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-4"
                 variants={formSectionVariants}
               >
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="taxGenerationPeriod">Период за генериране на такси *</Label>
+                  <Label htmlFor="taxGenerationPeriod">
+                    Период за генериране на такси *
+                  </Label>
                   <Select
                     id="taxGenerationPeriod"
                     {...register('taxGenerationPeriod')}
@@ -500,7 +544,9 @@ export function AddEditBuildingPage() {
                     ))}
                   </Select>
                   {errors.taxGenerationPeriod && (
-                    <p className="text-sm text-red-600">{errors.taxGenerationPeriod.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.taxGenerationPeriod.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -514,24 +560,30 @@ export function AddEditBuildingPage() {
                     {...register('taxGenerationDay')}
                   />
                   {errors.taxGenerationDay && (
-                    <p className="text-sm text-red-600">{errors.taxGenerationDay.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.taxGenerationDay.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="homebookStartDate">Начална дата на домовата книга *</Label>
+                  <Label htmlFor="homebookStartDate">
+                    Начална дата на домовата книга *
+                  </Label>
                   <Input
                     id="homebookStartDate"
                     type="date"
                     {...register('homebookStartDate')}
                   />
                   {errors.homebookStartDate && (
-                    <p className="text-sm text-red-600">{errors.homebookStartDate.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.homebookStartDate.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
 
               {/* Description Section */}
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 gap-4 pt-4 border-t"
                 variants={formSectionVariants}
               >
@@ -544,7 +596,9 @@ export function AddEditBuildingPage() {
                     {...register('description')}
                   />
                   {errors.description && (
-                    <p className="text-sm text-red-600">{errors.description.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.description.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -556,11 +610,13 @@ export function AddEditBuildingPage() {
                     id="invoiceToggle"
                     label="Фактура"
                     pressed={watchedInvoiceEnabled}
-                    onPressedChange={(pressed) => setValue('invoiceEnabled', pressed)}
+                    onPressedChange={pressed =>
+                      setValue('invoiceEnabled', pressed)
+                    }
                   />
                 </div>
                 {watchedInvoiceEnabled && (
-                  <motion.div 
+                  <motion.div
                     className="pl-4 border-l-2 border-gray-200"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -568,7 +624,8 @@ export function AddEditBuildingPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <p className="text-sm text-gray-500 italic">
-                      Допълнителни полета за фактуриране ще бъдат добавени тук...
+                      Допълнителни полета за фактуриране ще бъдат добавени
+                      тук...
                     </p>
                   </motion.div>
                 )}
@@ -581,12 +638,14 @@ export function AddEditBuildingPage() {
                   <MultiSelect
                     options={peopleOptions}
                     value={watch('peopleWithAccess') || []}
-                    onChange={(value) => setValue('peopleWithAccess', value)}
+                    onChange={value => setValue('peopleWithAccess', value)}
                     placeholder="Изберете поне един човек с достъп до сградата..."
                     className="w-full"
                   />
                   {errors.peopleWithAccess && (
-                    <p className="text-sm text-red-600">{errors.peopleWithAccess.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.peopleWithAccess.message}
+                    </p>
                   )}
                 </div>
               </motion.div>
@@ -616,8 +675,8 @@ export function AddEditBuildingPage() {
               </motion.div>
 
               {/* Action Buttons */}
-              <motion.div 
-                className="flex justify-end space-x-3 pt-6" 
+              <motion.div
+                className="flex justify-end space-x-3 pt-6"
                 variants={itemVariants}
               >
                 <motion.div
@@ -642,11 +701,18 @@ export function AddEditBuildingPage() {
                     disabled={isLoading}
                     className="bg-red-500 hover:bg-red-600 text-white gap-2"
                   >
-                    {isEditMode ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                    {isLoading 
-                      ? (isEditMode ? 'Обновяване...' : 'Създаване...') 
-                      : (isEditMode ? 'Обнови' : 'Създай')
-                    }
+                    {isEditMode ? (
+                      <Save className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                    {isLoading
+                      ? isEditMode
+                        ? 'Обновяване...'
+                        : 'Създаване...'
+                      : isEditMode
+                        ? 'Обнови'
+                        : 'Създай'}
                   </Button>
                 </motion.div>
               </motion.div>

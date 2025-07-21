@@ -20,7 +20,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '11.2024',
@@ -29,7 +29,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '10.2024',
@@ -38,7 +38,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '09.2024',
@@ -47,7 +47,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 574.00,
+    paid: 574.0,
   },
   {
     month: '08.2024',
@@ -56,7 +56,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '07.2024',
@@ -65,7 +65,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 574.00,
+    paid: 574.0,
   },
   {
     month: '06.2024',
@@ -74,7 +74,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 574.00,
+    paid: 574.0,
   },
   {
     month: '05.2024',
@@ -83,7 +83,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '04.2024',
@@ -92,7 +92,7 @@ const mockPaymentData: PaymentRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    paid: 585.00,
+    paid: 585.0,
   },
 ];
 
@@ -124,9 +124,7 @@ export function ReferencePaymentsTable() {
       header: 'Брой Живущи',
       accessorKey: 'residentsCount',
       sortable: true,
-      cell: row => (
-        <div className="text-center">{row.residentsCount}</div>
-      ),
+      cell: row => <div className="text-center">{row.residentsCount}</div>,
     },
     {
       header: 'Ток Асансьор',
@@ -172,9 +170,7 @@ export function ReferencePaymentsTable() {
       header: 'Платено',
       accessorKey: 'paid',
       sortable: true,
-      cell: row => (
-        <Badge variant="positive" value={row.paid} suffix=" лв." />
-      ),
+      cell: row => <Badge variant="positive" value={row.paid} suffix=" лв." />,
     },
   ];
 

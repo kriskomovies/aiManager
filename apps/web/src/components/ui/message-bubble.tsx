@@ -14,7 +14,10 @@ interface MessageBubbleProps {
   isTyping?: boolean;
 }
 
-export function MessageBubble({ message, isTyping = false }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  isTyping = false,
+}: MessageBubbleProps) {
   const isUser = message.sender === 'user';
 
   return (
@@ -28,29 +31,31 @@ export function MessageBubble({ message, isTyping = false }: MessageBubbleProps)
       transition={{ duration: 0.3 }}
     >
       {/* Avatar */}
-      <div className={cn(
-        'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
-        isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
-      )}>
-        {isUser ? (
-          <User className="w-4 h-4" />
-        ) : (
-          <Bot className="w-4 h-4" />
+      <div
+        className={cn(
+          'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
+          isUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
         )}
+      >
+        {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
       </div>
 
       {/* Message Content */}
-      <div className={cn(
-        'flex flex-col max-w-[80%]',
-        isUser ? 'items-end' : 'items-start'
-      )}>
+      <div
+        className={cn(
+          'flex flex-col max-w-[80%]',
+          isUser ? 'items-end' : 'items-start'
+        )}
+      >
         {/* Message Bubble */}
-        <div className={cn(
-          'px-4 py-2 rounded-lg',
-          isUser 
-            ? 'bg-blue-500 text-white rounded-br-sm' 
-            : 'bg-white border border-gray-200 text-gray-900 rounded-bl-sm'
-        )}>
+        <div
+          className={cn(
+            'px-4 py-2 rounded-lg',
+            isUser
+              ? 'bg-blue-500 text-white rounded-br-sm'
+              : 'bg-white border border-gray-200 text-gray-900 rounded-bl-sm'
+          )}
+        >
           {isTyping ? (
             <div className="flex items-center space-x-1">
               <div className="flex space-x-1">
@@ -79,13 +84,13 @@ export function MessageBubble({ message, isTyping = false }: MessageBubbleProps)
         {/* Timestamp */}
         {!isTyping && (
           <span className="text-xs text-gray-500 mt-1 px-1">
-            {message.timestamp.toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
+            {message.timestamp.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
             })}
           </span>
         )}
       </div>
     </motion.div>
   );
-} 
+}

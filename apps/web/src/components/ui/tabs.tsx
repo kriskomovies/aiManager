@@ -18,12 +18,12 @@ interface TabsProps {
   variant?: 'default' | 'pills' | 'underline';
 }
 
-export function Tabs({ 
-  tabs, 
-  activeTab, 
-  onTabChange, 
+export function Tabs({
+  tabs,
+  activeTab,
+  onTabChange,
   className = '',
-  variant = 'underline'
+  variant = 'underline',
 }: TabsProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showScrollButtons, setShowScrollButtons] = useState(false);
@@ -47,7 +47,10 @@ export function Tabs({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -76,25 +79,26 @@ export function Tabs({
   };
 
   const getTabClasses = (_tab: TabConfig, isActive: boolean) => {
-    const baseClasses = "flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors duration-200";
-    
+    const baseClasses =
+      'flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors duration-200';
+
     switch (variant) {
       case 'pills':
         return `${baseClasses} rounded-full ${
-          isActive 
-            ? 'bg-red-500 text-white' 
+          isActive
+            ? 'bg-red-500 text-white'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
         }`;
       case 'underline':
         return `${baseClasses} rounded-none border-b-2 ${
-          isActive 
-            ? 'text-red-500 border-red-500' 
+          isActive
+            ? 'text-red-500 border-red-500'
             : 'text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-300'
         }`;
       default:
         return `${baseClasses} rounded-md ${
-          isActive 
-            ? 'bg-red-50 text-red-600' 
+          isActive
+            ? 'bg-red-50 text-red-600'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
         }`;
     }
@@ -124,7 +128,7 @@ export function Tabs({
               </button>
             </>
           )}
-          
+
           {/* Scrollable tabs container */}
           <div
             ref={scrollContainerRef}
@@ -133,22 +137,26 @@ export function Tabs({
             } ${showScrollButtons ? 'px-8' : ''}`}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {tabs.map((tab) => {
+            {tabs.map(tab => {
               const IconComponent = tab.icon;
               const isActive = activeTab === tab.id;
-              
+
               return (
                 <motion.button
                   key={tab.id}
                   onClick={() => handleTabClick(tab.id)}
                   disabled={tab.disabled}
                   className={`${getTabClasses(tab, isActive)} ${
-                    tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                    tab.disabled
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'cursor-pointer'
                   } whitespace-nowrap`}
                   whileHover={!tab.disabled ? { scale: 1.02 } : {}}
                   whileTap={!tab.disabled ? { scale: 0.98 } : {}}
                 >
-                  {IconComponent && <IconComponent className="h-4 w-4 flex-shrink-0" />}
+                  {IconComponent && (
+                    <IconComponent className="h-4 w-4 flex-shrink-0" />
+                  )}
                   <span className="flex-shrink-0">{tab.label}</span>
                 </motion.button>
               );
@@ -188,22 +196,22 @@ export function Tabs({
               className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg"
             >
               <div className="py-1">
-                {tabs.map((tab) => {
+                {tabs.map(tab => {
                   const IconComponent = tab.icon;
                   const isActive = activeTab === tab.id;
-                  
+
                   return (
                     <button
                       key={tab.id}
                       onClick={() => handleTabClick(tab.id)}
                       disabled={tab.disabled}
                       className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors ${
-                        isActive 
-                          ? 'bg-red-50 text-red-600' 
+                        isActive
+                          ? 'bg-red-50 text-red-600'
                           : 'text-gray-700 hover:bg-gray-50'
                       } ${
-                        tab.disabled 
-                          ? 'opacity-50 cursor-not-allowed' 
+                        tab.disabled
+                          ? 'opacity-50 cursor-not-allowed'
                           : 'cursor-pointer'
                       }`}
                     >
@@ -226,4 +234,4 @@ export function Tabs({
       </div>
     </div>
   );
-} 
+}

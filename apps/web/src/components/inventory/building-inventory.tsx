@@ -5,12 +5,7 @@ import { AllInventoriesTab } from './tabs/all-inventories-tab';
 import { ExpensesTab } from './tabs/expenses-tab';
 import { MonthlyFeesTab } from './tabs/monthly-fees-tab';
 import { TemporaryFeesTab } from './tabs/temporary-fees-tab';
-import { 
-  Wallet, 
-  TrendingDown, 
-  Calendar, 
-  Clock
-} from 'lucide-react';
+import { Wallet, TrendingDown, Calendar, Clock } from 'lucide-react';
 
 interface BuildingInventoryProps {
   buildingId: string;
@@ -68,7 +63,7 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
             variant="underline"
           />
         </div>
-        
+
         <div className="mt-6">
           <AnimatePresence mode="wait">
             <motion.div
@@ -76,9 +71,9 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ 
+              transition={{
                 duration: 0.3,
-                ease: "easeInOut"
+                ease: 'easeInOut',
               }}
             >
               {renderTabContent()}

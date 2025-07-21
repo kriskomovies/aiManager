@@ -1,11 +1,15 @@
-import { BuildingType, TaxGenerationPeriod, BuildingStatus } from './building.enums';
+import {
+  BuildingType,
+  TaxGenerationPeriod,
+  BuildingStatus,
+} from './building.enums';
 
 // Base Building interface
 export interface IBuilding {
   id: string;
   name: string;
   type: BuildingType;
-  
+
   // Address information
   city: string;
   district: string;
@@ -13,27 +17,27 @@ export interface IBuilding {
   number: string;
   entrance?: string;
   postalCode: string;
-  
+
   // Physical properties
   commonPartsArea?: number;
   quadrature?: number;
   parkingSlots?: number;
   basements?: number;
   apartmentCount: number;
-  
+
   // Financial information
   balance: number;
   monthlyFee: number;
   debt: number;
-  
+
   // Tax settings
   taxGenerationPeriod: TaxGenerationPeriod;
   taxGenerationDay: number;
   homebookStartDate: string;
-  
+
   // Features
   invoiceEnabled: boolean;
-  
+
   // Status and metadata
   status: BuildingStatus;
   description?: string;
@@ -53,24 +57,24 @@ export interface ICreateBuildingRequest {
   number: string;
   entrance?: string;
   postalCode: string;
-  
+
   // Physical properties
   commonPartsArea?: number;
   quadrature?: number;
   parkingSlots?: number;
   basements?: number;
-  
+
   // Tax settings
   taxGenerationPeriod: TaxGenerationPeriod;
   taxGenerationDay: number;
   homebookStartDate: string;
-  
+
   // Features
   invoiceEnabled: boolean;
-  
+
   // Optional
   description?: string;
-  
+
   // People with access (user IDs)
   peopleWithAccess: string[];
 }
@@ -102,7 +106,7 @@ export interface IUpdateBuildingRequest {
 export interface IBuildingResponse extends IBuilding {
   // Computed address field for display
   address: string;
-  
+
   // Additional populated fields
   peopleWithAccess?: Array<{
     id: string;
@@ -207,4 +211,4 @@ export interface IBackendBuildingQueryParams {
   status?: BuildingStatus;
   minOccupancyRate?: number;
   maxOccupancyRate?: number;
-} 
+}

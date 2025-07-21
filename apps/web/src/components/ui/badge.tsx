@@ -16,14 +16,14 @@ const badgeVariants = {
   warning: 'bg-red-100 text-red-800 border-red-200',
 };
 
-export function Badge({ 
-  className, 
-  variant = 'default', 
-  value, 
-  suffix = '', 
-  autoColor = false, 
-  children, 
-  ...props 
+export function Badge({
+  className,
+  variant = 'default',
+  value,
+  suffix = '',
+  autoColor = false,
+  children,
+  ...props
 }: BadgeProps) {
   // Auto-determine variant based on value if autoColor is true
   let finalVariant = variant;
@@ -37,9 +37,8 @@ export function Badge({
     }
   }
 
-  const displayValue = typeof value === 'number' ? 
-    `${value.toFixed(2)}${suffix}` : 
-    children;
+  const displayValue =
+    typeof value === 'number' ? `${value.toFixed(2)}${suffix}` : children;
 
   return (
     <span
@@ -56,14 +55,34 @@ export function Badge({
 }
 
 // Helper components for specific use cases
-export function CashBadge({ value, ...props }: { value: number } & Omit<BadgeProps, 'value' | 'autoColor' | 'suffix'>) {
+export function CashBadge({
+  value,
+  ...props
+}: { value: number } & Omit<BadgeProps, 'value' | 'autoColor' | 'suffix'>) {
   return <Badge value={value} suffix=" лв." autoColor {...props} />;
 }
 
-export function DebtBadge({ value, ...props }: { value: number } & Omit<BadgeProps, 'value' | 'variant' | 'suffix'>) {
-  return <Badge value={value} suffix=" лв." variant={value > 0 ? 'negative' : 'neutral'} {...props} />;
+export function DebtBadge({
+  value,
+  ...props
+}: { value: number } & Omit<BadgeProps, 'value' | 'variant' | 'suffix'>) {
+  return (
+    <Badge
+      value={value}
+      suffix=" лв."
+      variant={value > 0 ? 'negative' : 'neutral'}
+      {...props}
+    />
+  );
 }
 
-export function IrregularitiesBadge({ count, ...props }: { count: number } & Omit<BadgeProps, 'value' | 'variant' | 'autoColor'>) {
-  return <Badge variant={count > 0 ? 'warning' : 'neutral'} {...props}>{count}</Badge>;
+export function IrregularitiesBadge({
+  count,
+  ...props
+}: { count: number } & Omit<BadgeProps, 'value' | 'variant' | 'autoColor'>) {
+  return (
+    <Badge variant={count > 0 ? 'warning' : 'neutral'} {...props}>
+      {count}
+    </Badge>
+  );
 }

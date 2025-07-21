@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { Wallet, Printer, MoreVertical, Receipt, CreditCard } from 'lucide-react';
+import {
+  Wallet,
+  Printer,
+  MoreVertical,
+  Receipt,
+  CreditCard,
+} from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
@@ -35,37 +41,50 @@ export function CashierTable({ buildingId }: CashierTableProps) {
   } | null>(null);
 
   // Fetch apartments for the building
-  const { data: apartments = [], isLoading, isFetching, error } = useGetApartmentsByBuildingQuery(buildingId);
+  const {
+    data: apartments = [],
+    isLoading,
+    isFetching,
+    error,
+  } = useGetApartmentsByBuildingQuery(buildingId);
 
   // Transform apartment data to cashier records
-  const cashierRecords: CashierRecord[] = apartments.map((apartment: IApartmentResponse) => {
-    // Get main resident name
-    const mainResident = apartment.residents?.find(r => r.isMainContact) || apartment.residents?.[0];
-    const residentName = mainResident ? `${mainResident.name} ${mainResident.surname}` : 'Име Фамилия';
-    
-    // Mock calculations for fees (in real app, these would come from actual fee calculations)
-    const elevatorFee = apartment.floor > 1 ? apartment.floor * 3.0 : 0; // 3 лв per floor above ground
-    const elevatorElectricity = apartment.floor > 1 ? apartment.floor * 0.5 : 0; // 0.5 лв per floor for electricity
-    
-    // Mock readings (in real app, these would come from meter readings)
-    const oldReading = Math.floor(Math.random() * 100) + 100; // Random old reading
-    const newReading = oldReading + Math.floor(Math.random() * 50) + 10; // New reading is higher
-    const total = elevatorFee + elevatorElectricity + (newReading - oldReading) * 0.1; // 0.1 лв per unit difference
-    
-    return {
-      id: apartment.id,
-      apartment: apartment.number,
-      floor: apartment.floor,
-      name: residentName,
-      residentsCount: apartment.residentsCount,
-      elevatorFee: elevatorFee,
-      elevatorElectricity: elevatorElectricity,
-      subscriptionNumber: `12345678`, // Mock subscription number
-      new: newReading,
-      old: oldReading,
-      total: total,
-    };
-  });
+  const cashierRecords: CashierRecord[] = apartments.map(
+    (apartment: IApartmentResponse) => {
+      // Get main resident name
+      const mainResident =
+        apartment.residents?.find(r => r.isMainContact) ||
+        apartment.residents?.[0];
+      const residentName = mainResident
+        ? `${mainResident.name} ${mainResident.surname}`
+        : 'Име Фамилия';
+
+      // Mock calculations for fees (in real app, these would come from actual fee calculations)
+      const elevatorFee = apartment.floor > 1 ? apartment.floor * 3.0 : 0; // 3 лв per floor above ground
+      const elevatorElectricity =
+        apartment.floor > 1 ? apartment.floor * 0.5 : 0; // 0.5 лв per floor for electricity
+
+      // Mock readings (in real app, these would come from meter readings)
+      const oldReading = Math.floor(Math.random() * 100) + 100; // Random old reading
+      const newReading = oldReading + Math.floor(Math.random() * 50) + 10; // New reading is higher
+      const total =
+        elevatorFee + elevatorElectricity + (newReading - oldReading) * 0.1; // 0.1 лв per unit difference
+
+      return {
+        id: apartment.id,
+        apartment: apartment.number,
+        floor: apartment.floor,
+        name: residentName,
+        residentsCount: apartment.residentsCount,
+        elevatorFee: elevatorFee,
+        elevatorElectricity: elevatorElectricity,
+        subscriptionNumber: `12345678`, // Mock subscription number
+        new: newReading,
+        old: oldReading,
+        total: total,
+      };
+    }
+  );
 
   const handleWallet = (recordId: string) => {
     // TODO: Implement wallet functionality
@@ -81,25 +100,34 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     // Find the apartment record to get the apartment number
     const apartment = apartments.find(apt => apt.id === recordId);
     const apartmentNumber = apartment?.number || 'Unknown';
-    
-    console.log('Tax inquiries for apartment:', recordId, 'Number:', apartmentNumber);
-    dispatch(openModal({
-      type: 'reference-fees',
-      data: { 
-        apartmentId: recordId, 
-        apartmentNumber: apartmentNumber,
-        buildingId 
-      }
-    }));
+
+    console.log(
+      'Tax inquiries for apartment:',
+      recordId,
+      'Number:',
+      apartmentNumber
+    );
+    dispatch(
+      openModal({
+        type: 'reference-fees',
+        data: {
+          apartmentId: recordId,
+          apartmentNumber: apartmentNumber,
+          buildingId,
+        },
+      })
+    );
   };
 
   const handlePaymentInquiries = (recordId: string) => {
     // TODO: Open payment inquiries modal
     console.log('Payment inquiries for apartment:', recordId);
-    dispatch(openModal({
-      type: 'edit-apartment-irregularity', // TODO: Create payment-inquiries modal type
-      data: { apartmentId: recordId, buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'edit-apartment-irregularity', // TODO: Create payment-inquiries modal type
+        data: { apartmentId: recordId, buildingId },
+      })
+    );
   };
 
   const formatCurrency = (amount: number) => {
@@ -108,7 +136,9 @@ export function CashierTable({ buildingId }: CashierTableProps) {
 
   const getDebtBadge = (amount: number) => {
     if (amount < 0) {
-      return <Badge variant="negative">-{formatCurrency(Math.abs(amount))}</Badge>;
+      return (
+        <Badge variant="negative">-{formatCurrency(Math.abs(amount))}</Badge>
+      );
     } else if (amount > 0) {
       return <Badge variant="positive">{formatCurrency(amount)}</Badge>;
     } else {
@@ -160,7 +190,11 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       sortable: true,
       width: '130px',
       minWidth: '130px',
-      cell: row => <span className="text-gray-900 font-medium">{formatCurrency(row.elevatorFee)}</span>,
+      cell: row => (
+        <span className="text-gray-900 font-medium">
+          {formatCurrency(row.elevatorFee)}
+        </span>
+      ),
     },
     {
       header: 'Ток Асансьор',
@@ -168,7 +202,11 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       sortable: true,
       width: '120px',
       minWidth: '120px',
-      cell: row => <span className="text-gray-900 font-medium">{formatCurrency(row.elevatorElectricity)}</span>,
+      cell: row => (
+        <span className="text-gray-900 font-medium">
+          {formatCurrency(row.elevatorElectricity)}
+        </span>
+      ),
     },
     {
       header: 'Абонаментен Номер',
@@ -188,7 +226,9 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       sortable: true,
       width: '80px',
       minWidth: '80px',
-      cell: row => <span className="text-gray-900 font-medium">{row.new.toFixed(2)}</span>,
+      cell: row => (
+        <span className="text-gray-900 font-medium">{row.new.toFixed(2)}</span>
+      ),
     },
     {
       header: 'Старо',
@@ -226,15 +266,18 @@ export function CashierTable({ buildingId }: CashierTableProps) {
         ];
 
         return (
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1 justify-start">
-            <button 
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex items-center gap-1 justify-start"
+          >
+            <button
               onClick={() => handleWallet(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation flex-shrink-0"
               title="Портфейл"
             >
               <Wallet className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handlePrint(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation flex-shrink-0"
               title="Принтирай"
@@ -243,7 +286,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
             </button>
             <DropdownMenu
               trigger={
-                <button 
+                <button
                   className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation flex-shrink-0"
                   title="Още опции"
                 >
@@ -269,14 +312,12 @@ export function CashierTable({ buildingId }: CashierTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium text-gray-900">
-          Данни за такси и разходи
-        </h4>
+        <h4 className="font-medium text-gray-900">Данни за такси и разходи</h4>
         <Badge variant="neutral" className="text-xs">
           {cashierRecords.length} апартамента
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

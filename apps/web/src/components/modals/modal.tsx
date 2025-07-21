@@ -61,61 +61,61 @@ export function ModalContainer() {
     switch (modal.type) {
       case 'delete-building':
         return <DeleteBuildingModal onClose={handleClose} />;
-      
+
       case 'delete-apartment':
         return <DeleteApartmentModal onClose={handleClose} />;
-      
+
       case 'reference-fees':
         return <ReferenceFeesModal />;
-      
+
       case 'reference-payments':
         return <ReferencePaymentsModal />;
-      
+
       case 'payment':
         return <PaymentModal />;
-      
+
       case 'edit-apartment-irregularity':
         return <EditApartmentIrregularityModal onClose={handleClose} />;
-      
+
       case 'delete-apartment-irregularity':
         return <DeleteApartmentIrregularityModal onClose={handleClose} />;
-      
+
       case 'create-building-irregularity':
         return <CreateBuildingIrregularityModal onClose={handleClose} />;
-      
+
       case 'edit-building-irregularity':
         return <EditBuildingIrregularityModal onClose={handleClose} />;
-      
+
       case 'create-new-message':
         return <CreateNewMessageModal onClose={handleClose} />;
-      
+
       case 'view-message':
         return <ViewMessageModal onClose={handleClose} />;
-      
+
       case 'edit-message':
         return <EditMessageModal onClose={handleClose} />;
-      
+
       case 'delete-message':
         return <DeleteMessageModal onClose={handleClose} />;
-      
+
       case 'create-inventory':
         return <CreateInventoryModal onClose={handleClose} />;
-      
+
       case 'edit-inventory':
         return <EditInventoryModal onClose={handleClose} />;
-      
+
       case 'delete-inventory':
         return <DeleteInventoryModal onClose={handleClose} />;
-      
+
       case 'transfer-inventory-money':
         return <TransferInventoryMoneyModal onClose={handleClose} />;
-      
+
       case 'inventory-transfers':
         return <InventoryTransfersModal onClose={handleClose} />;
-      
+
       case 'create-one-time-expense':
         return <CreateOneTimeExpenseModal onClose={handleClose} />;
-      
+
       default:
         return null;
     }
@@ -134,7 +134,7 @@ export function ModalContainer() {
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          
+
           {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -142,17 +142,21 @@ export function ModalContainer() {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
             className={`relative z-10 ${
-              modal.type === 'reference-fees' || modal.type === 'reference-payments'
-                ? 'w-full max-w-6xl' 
+              modal.type === 'reference-fees' ||
+              modal.type === 'reference-payments'
+                ? 'w-full max-w-6xl'
                 : modal.type === 'payment'
-                ? 'w-full max-w-2xl'
-                : modal.type === 'create-inventory'
-                ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
-                : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+                  ? 'w-full max-w-2xl'
+                  : modal.type === 'create-inventory'
+                    ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
+                    : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
-            {modal.type === 'reference-fees' || modal.type === 'reference-payments' || modal.type === 'payment' || modal.type === 'inventory-transfers' ? (
+            {modal.type === 'reference-fees' ||
+            modal.type === 'reference-payments' ||
+            modal.type === 'payment' ||
+            modal.type === 'inventory-transfers' ? (
               renderModalBody()
             ) : (
               <>
@@ -165,9 +169,7 @@ export function ModalContainer() {
                 </button>
 
                 {/* Modal Body */}
-                <div className="p-6">
-                  {renderModalBody()}
-                </div>
+                <div className="p-6">{renderModalBody()}</div>
               </>
             )}
           </motion.div>

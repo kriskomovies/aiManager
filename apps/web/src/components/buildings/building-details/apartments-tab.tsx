@@ -4,11 +4,7 @@ import { InformationCard } from '@/components/information-card';
 import { ApartmentsTable } from '@/components/apartments/apartments-table';
 import { Button } from '@/components/ui/button';
 import { IBuildingResponse } from '@repo/interfaces';
-import {
-  Home,
-  Bell,
-  BarChart2,
-} from 'lucide-react';
+import { Home, Bell, BarChart2 } from 'lucide-react';
 
 interface ApartmentsTabProps {
   building: IBuildingResponse;
@@ -16,13 +12,15 @@ interface ApartmentsTabProps {
 
 export function ApartmentsTab({ building }: ApartmentsTabProps) {
   const navigate = useNavigate();
-  
+
   if (!building) {
     return (
       <div className="rounded-lg bg-white shadow-sm border border-gray-200 p-8">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Грешка</h2>
-          <p className="text-gray-500">Информацията за сградата не може да бъде заредена.</p>
+          <p className="text-gray-500">
+            Информацията за сградата не може да бъде заредена.
+          </p>
         </div>
       </div>
     );
@@ -48,28 +46,28 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20 
+    hidden: {
+      opacity: 0,
+      y: 20,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
         variants={statsVariants}
         initial="hidden"
@@ -85,7 +83,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           variants={itemVariants}
           priority="high"
         />
-        
+
         <InformationCard
           title="Задължения"
           value={stats.obligations}
@@ -97,7 +95,7 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           variants={itemVariants}
           priority="high"
         />
-        
+
         <InformationCard
           title="Апартаменти"
           value={stats.apartments}
@@ -107,9 +105,11 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
           variants={itemVariants}
           priority="medium"
         >
-          <p className="text-xs sm:text-sm text-red-500">{stats.apartmentsWithDebt}</p>
+          <p className="text-xs sm:text-sm text-red-500">
+            {stats.apartmentsWithDebt}
+          </p>
         </InformationCard>
-        
+
         <InformationCard
           title="Нередности"
           value={stats.debts}
@@ -122,13 +122,14 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
         />
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="rounded-lg bg-white shadow-sm border border-gray-200"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
         whileHover={{
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+          boxShadow:
+            '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b p-4 px-6 gap-4">
@@ -148,8 +149,8 @@ export function ApartmentsTab({ building }: ApartmentsTabProps) {
               whileTap={{ scale: 0.98 }}
               className="w-full sm:w-auto"
             >
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="bg-red-500 hover:bg-red-600 w-full sm:w-auto"
                 onClick={() => navigate(`/apartments/add/${building.id}`)}
               >

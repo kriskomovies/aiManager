@@ -1,5 +1,7 @@
 import { AppDataSource } from '../../config/typeorm.config';
 import { BuildingSeed } from './building.seed';
+import { UserPaymentMethodSeed } from './user-payment-method.seed';
+import { TenantPaymentMethodSeed } from './tenant-payment-method.seed';
 
 async function runSeeds() {
   try {
@@ -8,6 +10,8 @@ async function runSeeds() {
 
     const seeds = [
       new BuildingSeed(),
+      new UserPaymentMethodSeed(),
+      new TenantPaymentMethodSeed(),
       // Add more seeds here as you create new entities
     ];
 

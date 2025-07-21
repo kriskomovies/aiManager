@@ -26,25 +26,28 @@ export function ViewMessageModal({ onClose }: ViewMessageModalProps) {
   const buildingId = modalData?.buildingId;
 
   // Mock message data - TODO: Load real data based on messageId
-  const [messageDetails, setMessageDetails] = useState<MessageDetails | null>(null);
+  const [messageDetails, setMessageDetails] = useState<MessageDetails | null>(
+    null
+  );
 
   useEffect(() => {
     // TODO: Load real message data based on messageId
     console.log('Loading message:', messageId, 'for building:', buildingId);
-    
+
     // Mock data that matches the design
     const mockMessage: MessageDetails = {
       id: String(messageId || '1'),
       title: 'Счупена Панта',
-      description: 'Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала.',
+      description:
+        'Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала. Описание на Нередност ала бала.',
       date: '10.12.2024',
       deliveryMethod: 'SMS',
       recipients: ['apartment_1', 'apartment_2', 'apartment_3', 'apartment_7'],
       recipientDisplay: 'Ап 1, Ап 2, Ап 3, Ап7',
       hasAttachedFile: true,
-      attachedFileName: 'document.pdf'
+      attachedFileName: 'document.pdf',
     };
-    
+
     setMessageDetails(mockMessage);
   }, [messageId, buildingId]);
 
@@ -61,10 +64,10 @@ export function ViewMessageModal({ onClose }: ViewMessageModalProps) {
 
   const getDeliveryMethodLabel = (method: MessageDetails['deliveryMethod']) => {
     const methodMap = {
-      'SMS': 'SMS',
-      'EMAIL': 'Email',
-      'PUSH': 'Push нотификация',
-      'IN_APP': 'В приложението',
+      SMS: 'SMS',
+      EMAIL: 'Email',
+      PUSH: 'Push нотификация',
+      IN_APP: 'В приложението',
     };
     return methodMap[method] || method;
   };
@@ -81,9 +84,7 @@ export function ViewMessageModal({ onClose }: ViewMessageModalProps) {
     <div className="w-full max-w-lg">
       {/* Header */}
       <div className="text-left mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Съобщение
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Съобщение</h3>
         <div className="text-right text-sm text-gray-500">
           {messageDetails.date}
         </div>
@@ -113,7 +114,7 @@ export function ViewMessageModal({ onClose }: ViewMessageModalProps) {
               {getDeliveryMethodLabel(messageDetails.deliveryMethod)}
             </div>
           </div>
-          
+
           <div>
             <span className="text-gray-500 block mb-1">Получатели</span>
             <div className="font-medium text-gray-900">

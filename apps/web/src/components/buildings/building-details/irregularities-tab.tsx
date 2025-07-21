@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle, Clock, XCircle, Plus, Archive } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Plus,
+  Archive,
+} from 'lucide-react';
 import { InformationCard } from '@/components/information-card';
 import { IrregularitiesTable } from '@/components/irregularities/irregularities-table';
 import { Button } from '@/components/ui/button';
@@ -11,7 +18,9 @@ interface IrregularitiesTabProps {
   buildingId: string;
 }
 
-export function IrregularitiesTab({ buildingId = '1' }: IrregularitiesTabProps) {
+export function IrregularitiesTab({
+  buildingId = '1',
+}: IrregularitiesTabProps) {
   const dispatch = useAppDispatch();
   const [showArchive, setShowArchive] = useState(false);
 
@@ -40,16 +49,18 @@ export function IrregularitiesTab({ buildingId = '1' }: IrregularitiesTabProps) 
   };
 
   const handleAddIrregularity = () => {
-    dispatch(openModal({
-      type: 'create-building-irregularity',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'create-building-irregularity',
+        data: { buildingId },
+      })
+    );
   };
 
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         variants={containerAnimation}
         initial="hidden"
@@ -131,9 +142,9 @@ export function IrregularitiesTab({ buildingId = '1' }: IrregularitiesTabProps) 
             </div>
           </div>
         </div>
-        
+
         <div className="p-6">
-          <IrregularitiesTable 
+          <IrregularitiesTable
             entityId={buildingId}
             entityType="building"
             isArchive={showArchive}
@@ -142,4 +153,4 @@ export function IrregularitiesTab({ buildingId = '1' }: IrregularitiesTabProps) 
       </div>
     </div>
   );
-} 
+}

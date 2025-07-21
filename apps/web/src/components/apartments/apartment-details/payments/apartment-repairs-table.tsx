@@ -20,7 +20,9 @@ interface RepairRecord {
   status: 'paid' | 'pending' | 'overdue';
 }
 
-export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProps) {
+export function ApartmentRepairsTable({
+  apartmentId,
+}: ApartmentRepairsTableProps) {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof RepairRecord;
@@ -37,10 +39,10 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
       documentUrl: '#',
       paidBy: 'Захари Марчев',
       cashier: 'Мария Иванова',
-      tax: 50.00,
-      deposit: 100.00,
-      totalAmount: 150.00,
-      status: 'paid'
+      tax: 50.0,
+      deposit: 100.0,
+      totalAmount: 150.0,
+      status: 'paid',
     },
     {
       id: '2',
@@ -49,10 +51,10 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
       documentUrl: '#',
       paidBy: 'Банка',
       cashier: 'Петър Петров',
-      tax: 25.00,
-      deposit: 75.00,
-      totalAmount: 100.00,
-      status: 'paid'
+      tax: 25.0,
+      deposit: 75.0,
+      totalAmount: 100.0,
+      status: 'paid',
     },
     {
       id: '3',
@@ -61,10 +63,10 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
       documentUrl: '#',
       paidBy: 'Касиер',
       cashier: 'Анна Димитрова',
-      tax: 30.00,
-      deposit: 0.00,
-      totalAmount: 30.00,
-      status: 'pending'
+      tax: 30.0,
+      deposit: 0.0,
+      totalAmount: 30.0,
+      status: 'pending',
     },
   ];
 
@@ -73,8 +75,6 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
       window.open(url, '_blank');
     }
   };
-
-
 
   const handleView = (repairId: string) => {
     console.log('View repair:', repairId);
@@ -165,15 +165,18 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
       minWidth: '100px',
       cell: row => {
         return (
-          <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
-            <button 
+          <div
+            onClick={e => e.stopPropagation()}
+            className="flex items-center gap-1"
+          >
+            <button
               onClick={() => handleView(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Преглед"
             >
               <Eye className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => handleBill(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Фактура"
@@ -201,7 +204,7 @@ export function ApartmentRepairsTable({ apartmentId }: ApartmentRepairsTableProp
           {mockRepairs.length} записа
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

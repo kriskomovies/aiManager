@@ -35,10 +35,10 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       document: '200381392',
       documentUrl: '#',
       paidBy: 'Касиер',
-      monthlyTax: 20.00,
-      oldAmount: 0.00,
-      totalAmount: 20.00,
-      status: 'paid'
+      monthlyTax: 20.0,
+      oldAmount: 0.0,
+      totalAmount: 20.0,
+      status: 'paid',
     },
     {
       id: '2',
@@ -46,10 +46,10 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       document: '200381392',
       documentUrl: '#',
       paidBy: 'Банка',
-      monthlyTax: 20.00,
-      oldAmount: 0.00,
-      totalAmount: 20.00,
-      status: 'paid'
+      monthlyTax: 20.0,
+      oldAmount: 0.0,
+      totalAmount: 20.0,
+      status: 'paid',
     },
     {
       id: '3',
@@ -57,10 +57,10 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       document: '200381392',
       documentUrl: '#',
       paidBy: 'И-мей',
-      monthlyTax: 20.00,
-      oldAmount: 0.00,
-      totalAmount: 20.00,
-      status: 'paid'
+      monthlyTax: 20.0,
+      oldAmount: 0.0,
+      totalAmount: 20.0,
+      status: 'paid',
     },
     {
       id: '4',
@@ -68,10 +68,10 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       document: '200381392',
       documentUrl: '#',
       paidBy: 'Захари',
-      monthlyTax: 20.00,
-      oldAmount: 0.00,
-      totalAmount: 20.00,
-      status: 'paid'
+      monthlyTax: 20.0,
+      oldAmount: 0.0,
+      totalAmount: 20.0,
+      status: 'paid',
     },
     {
       id: '5',
@@ -79,10 +79,10 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       document: '200381392',
       documentUrl: '#',
       paidBy: 'Касиер',
-      monthlyTax: 20.00,
-      oldAmount: 0.00,
-      totalAmount: 20.00,
-      status: 'paid'
+      monthlyTax: 20.0,
+      oldAmount: 0.0,
+      totalAmount: 20.0,
+      status: 'paid',
     },
   ];
 
@@ -91,8 +91,6 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       window.open(url, '_blank');
     }
   };
-
-
 
   const handleView = (taxId: string) => {
     console.log('View tax:', taxId);
@@ -172,8 +170,8 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
       minWidth: '70px',
       cell: row => {
         return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <button 
+          <div onClick={e => e.stopPropagation()}>
+            <button
               onClick={() => handleView(row.id)}
               className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
               title="Преглед"
@@ -201,7 +199,7 @@ export function ApartmentTaxesTable({ apartmentId }: ApartmentTaxesTableProps) {
           {mockTaxes.length} записа
         </Badge>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={transformedData.items}

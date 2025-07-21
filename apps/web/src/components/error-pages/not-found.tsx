@@ -22,26 +22,23 @@ export function NotFoundPage() {
               <Search className="h-12 w-12 text-red-500" />
             </div>
           </div>
-          
+
           <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
-          
+
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">
             Страницата не е намерена
           </h2>
-          
+
           <p className="text-gray-600 mb-8">
             Страницата, която търсите, не съществува или е била преместена.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={handleGoHome}
-              className="flex items-center gap-2"
-            >
+            <Button onClick={handleGoHome} className="flex items-center gap-2">
               <Home className="h-4 w-4" />
               Към началото
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={handleGoBack}
@@ -55,4 +52,4 @@ export function NotFoundPage() {
       </div>
     </div>
   );
-} 
+}

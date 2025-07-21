@@ -8,9 +8,9 @@ import { ArrowRightLeft, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
-import { 
+import {
   useTransferMoneyMutation,
-  useGetInventoriesByBuildingQuery 
+  useGetInventoriesByBuildingQuery,
 } from '@/redux/services/inventory.service';
 import { IInventoryTransferRequest } from '@repo/interfaces';
 
@@ -25,21 +25,24 @@ interface TransferInventoryMoneyModalProps {
   onClose: () => void;
 }
 
-export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyModalProps) {
+export function TransferInventoryMoneyModal({
+  onClose,
+}: TransferInventoryMoneyModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   // Get building ID from modal data or current context
   const buildingId = modalData?.buildingId;
-  
+
   // Get inventories for the building
-  const { data: inventories = [], isLoading } = useGetInventoriesByBuildingQuery(buildingId!, {
-    skip: !buildingId
-  });
-  
+  const { data: inventories = [], isLoading } =
+    useGetInventoriesByBuildingQuery(buildingId!, {
+      skip: !buildingId,
+    });
+
   // API mutation
   const [transferMoney] = useTransferMoneyMutation();
-  
+
   const [formData, setFormData] = useState<TransferInventoryFormData>({
     fromInventory: '',
     toInventory: '',
@@ -49,10 +52,13 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: keyof TransferInventoryFormData, value: string | number) => {
+  const handleInputChange = (
+    field: keyof TransferInventoryFormData,
+    value: string | number
+  ) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -74,65 +80,77 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!buildingId) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Липсва информация за сградата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Липсва информация за сградата.',
+          duration: 5000,
+        })
+      );
       return;
     }
-    
+
     if (!formData.fromInventory) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля изберете каса от която да се прехвърли сумата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля изберете каса от която да се прехвърли сумата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (!formData.toInventory) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Моля изберете каса към която да се прехвърли сумата.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля изберете каса към която да се прехвърли сумата.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (formData.fromInventory === formData.toInventory) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Не можете да прехвърлите пари към същата каса.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Не можете да прехвърлите пари към същата каса.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     if (formData.amount <= 0) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка',
-        message: 'Сумата за прехвърляне трябва да бъде по-голяма от 0.',
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Сумата за прехвърляне трябва да бъде по-голяма от 0.',
+          duration: 5000,
+        })
+      );
       return;
     }
 
     const fromInventory = getSelectedFromInventory();
     if (fromInventory && formData.amount > fromInventory.amount) {
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Недостатъчна наличност',
-        message: `Касата "${fromInventory.name}" има само ${fromInventory.amount.toFixed(2)} лв. Не можете да прехвърлите ${formData.amount.toFixed(2)} лв.`,
-        duration: 5000
-      }));
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Недостатъчна наличност',
+          message: `Касата "${fromInventory.name}" има само ${fromInventory.amount.toFixed(2)} лв. Не можете да прехвърлите ${formData.amount.toFixed(2)} лв.`,
+          duration: 5000,
+        })
+      );
       return;
     }
 
@@ -143,35 +161,41 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
         fromInventoryId: formData.fromInventory,
         toInventoryId: formData.toInventory,
         amount: formData.amount,
-        description: formData.description.trim() || undefined
+        description: formData.description.trim() || undefined,
       };
 
       await transferMoney(transferData).unwrap();
-      
+
       const fromInventoryName = getSelectedFromInventory()?.name;
       const toInventoryName = getSelectedToInventory()?.name;
-      
-      dispatch(addAlert({
-        type: 'success',
-        title: 'Успешно прехвърляне!',
-        message: `Сумата от ${formData.amount.toFixed(2)} лв. беше прехвърлена от "${fromInventoryName}" към "${toInventoryName}".`,
-        duration: 5000
-      }));
-      
+
+      dispatch(
+        addAlert({
+          type: 'success',
+          title: 'Успешно прехвърляне!',
+          message: `Сумата от ${formData.amount.toFixed(2)} лв. беше прехвърлена от "${fromInventoryName}" към "${toInventoryName}".`,
+          duration: 5000,
+        })
+      );
+
       onClose();
     } catch (error) {
       console.error('Error transferring money:', error);
-      
-      const errorMessage = (error as { data?: { message?: string }; message?: string })?.data?.message || 
-                          (error as { message?: string })?.message || 
-                          'Възникна грешка при прехвърлянето на парите. Моля опитайте отново.';
-      
-      dispatch(addAlert({
-        type: 'error',
-        title: 'Грешка при прехвърляне',
-        message: errorMessage,
-        duration: 5000
-      }));
+
+      const errorMessage =
+        (error as { data?: { message?: string }; message?: string })?.data
+          ?.message ||
+        (error as { message?: string })?.message ||
+        'Възникна грешка при прехвърлянето на парите. Моля опитайте отново.';
+
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка при прехвърляне',
+          message: errorMessage,
+          duration: 5000,
+        })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -204,7 +228,9 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
     return (
       <div className="text-center py-8">
         <p className="text-red-600">Липсва информация за сградата.</p>
-        <Button onClick={onClose} className="mt-4">Затвори</Button>
+        <Button onClick={onClose} className="mt-4">
+          Затвори
+        </Button>
       </div>
     );
   }
@@ -230,11 +256,11 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
             <Select
               id="fromInventory"
               value={formData.fromInventory}
-              onChange={(e) => handleInputChange('fromInventory', e.target.value)}
+              onChange={e => handleInputChange('fromInventory', e.target.value)}
               disabled={isSubmitting}
             >
               <option value="">Избери каса</option>
-              {getAvailableFromInventories().map((inventory) => (
+              {getAvailableFromInventories().map(inventory => (
                 <option key={inventory.id} value={inventory.id}>
                   {inventory.name} ({inventory.amount.toFixed(2)} лв.)
                 </option>
@@ -249,12 +275,18 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
                 id="amount"
                 type="number"
                 value={formData.amount || ''}
-                onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                onChange={e =>
+                  handleInputChange('amount', parseFloat(e.target.value) || 0)
+                }
                 placeholder="0.00"
                 disabled={isSubmitting}
                 min="0"
                 step="0.01"
-                className={!isTransferAmountValid() ? 'border-red-500 focus:border-red-500' : ''}
+                className={
+                  !isTransferAmountValid()
+                    ? 'border-red-500 focus:border-red-500'
+                    : ''
+                }
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
                 лв.
@@ -262,7 +294,8 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
             </div>
             {!isTransferAmountValid() && (
               <p className="text-xs text-red-600 mt-1">
-                Недостатъчна наличност! Максимум: {getSelectedFromInventory()?.amount.toFixed(2)} лв.
+                Недостатъчна наличност! Максимум:{' '}
+                {getSelectedFromInventory()?.amount.toFixed(2)} лв.
               </p>
             )}
           </div>
@@ -275,11 +308,11 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
             <Select
               id="toInventory"
               value={formData.toInventory}
-              onChange={(e) => handleInputChange('toInventory', e.target.value)}
+              onChange={e => handleInputChange('toInventory', e.target.value)}
               disabled={isSubmitting}
             >
               <option value="">Избери каса</option>
-              {getAvailableToInventories().map((inventory) => (
+              {getAvailableToInventories().map(inventory => (
                 <option key={inventory.id} value={inventory.id}>
                   {inventory.name} ({inventory.amount.toFixed(2)} лв.)
                 </option>
@@ -293,7 +326,11 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
               <Input
                 id="resultAmount"
                 type="text"
-                value={getSelectedToInventory() ? `${(getSelectedToInventory()!.amount + (formData.amount || 0)).toFixed(2)}` : ''}
+                value={
+                  getSelectedToInventory()
+                    ? `${(getSelectedToInventory()!.amount + (formData.amount || 0)).toFixed(2)}`
+                    : ''
+                }
                 placeholder="Резултат след прехвърляне"
                 disabled={true}
                 className="bg-gray-50"
@@ -311,7 +348,7 @@ export function TransferInventoryMoneyModal({ onClose }: TransferInventoryMoneyM
           <Input
             id="description"
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            onChange={e => handleInputChange('description', e.target.value)}
             placeholder="Описание на прехвърлянето"
             disabled={isSubmitting}
           />

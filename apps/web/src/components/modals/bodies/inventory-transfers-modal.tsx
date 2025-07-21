@@ -19,20 +19,22 @@ interface InventoryTransfersModalProps {
   onClose: () => void;
 }
 
-export function InventoryTransfersModal({ onClose }: InventoryTransfersModalProps) {
+export function InventoryTransfersModal({
+  onClose,
+}: InventoryTransfersModalProps) {
   const modalData = useAppSelector(selectModalData);
   const inventoryData = modalData?.inventoryData as InventoryData;
-  
+
   const [filterMode, setFilterMode] = useState<'all' | 'period'>('all');
   const [dateFilter, setDateFilter] = useState({
     from: '',
-    to: ''
+    to: '',
   });
 
   const handleDateFilterChange = (field: 'from' | 'to', value: string) => {
     setDateFilter(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -51,10 +53,14 @@ export function InventoryTransfersModal({ onClose }: InventoryTransfersModalProp
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                {inventoryData?.title || `Движения в ${inventoryData?.name || 'Каса'}`}
+                {inventoryData?.title ||
+                  `Движения в ${inventoryData?.name || 'Каса'}`}
               </h3>
               <p className="text-sm text-gray-600">
-                Наличен Депозит: <span className="font-medium">{inventoryData?.amount?.toFixed(2) || '0.00'} лв.</span>
+                Наличен Депозит:{' '}
+                <span className="font-medium">
+                  {inventoryData?.amount?.toFixed(2) || '0.00'} лв.
+                </span>
               </p>
             </div>
           </div>
@@ -97,7 +103,9 @@ export function InventoryTransfersModal({ onClose }: InventoryTransfersModalProp
                       id="dateFrom"
                       type="date"
                       value={dateFilter.from}
-                      onChange={(e) => handleDateFilterChange('from', e.target.value)}
+                      onChange={e =>
+                        handleDateFilterChange('from', e.target.value)
+                      }
                       className="pl-10"
                     />
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -110,7 +118,9 @@ export function InventoryTransfersModal({ onClose }: InventoryTransfersModalProp
                       id="dateTo"
                       type="date"
                       value={dateFilter.to}
-                      onChange={(e) => handleDateFilterChange('to', e.target.value)}
+                      onChange={e =>
+                        handleDateFilterChange('to', e.target.value)
+                      }
                       className="pl-10"
                     />
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -132,10 +142,7 @@ export function InventoryTransfersModal({ onClose }: InventoryTransfersModalProp
         {/* Footer */}
         <div className="p-6 border-t border-gray-200">
           <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-            >
+            <Button variant="outline" onClick={handleClose}>
               Затвори
             </Button>
           </div>

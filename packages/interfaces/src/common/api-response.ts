@@ -22,4 +22,4 @@ export interface IApiSuccess<T = any> {
   data: T;
   message?: string;
   timestamp: string;
-} 
+}

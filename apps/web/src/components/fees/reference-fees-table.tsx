@@ -22,7 +22,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '11.2024',
@@ -32,7 +32,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '10.2024',
@@ -42,7 +42,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '09.2024',
@@ -51,8 +51,8 @@ const mockFeeData: FeeRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    oldDebts: 11.00,
-    paid: 585.00,
+    oldDebts: 11.0,
+    paid: 585.0,
   },
   {
     month: '08.2024',
@@ -62,7 +62,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '07.2024',
@@ -71,8 +71,8 @@ const mockFeeData: FeeRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    oldDebts: 11.00,
-    paid: 585.00,
+    oldDebts: 11.0,
+    paid: 585.0,
   },
   {
     month: '06.2024',
@@ -81,8 +81,8 @@ const mockFeeData: FeeRecord[] = [
     elevatorFee: 12.99,
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
-    oldDebts: 11.00,
-    paid: 585.00,
+    oldDebts: 11.0,
+    paid: 585.0,
   },
   {
     month: '05.2024',
@@ -92,7 +92,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
   {
     month: '04.2024',
@@ -102,7 +102,7 @@ const mockFeeData: FeeRecord[] = [
     cleaning: 12.99,
     totalMonthlyFees: 38.97,
     oldDebts: 0,
-    paid: 585.00,
+    paid: 585.0,
   },
 ];
 
@@ -224,10 +224,7 @@ export function ReferenceFeesTable() {
       width: '120px',
       minWidth: '120px',
       cell: row => (
-        <Badge 
-          variant="positive" 
-          className="font-medium"
-        >
+        <Badge variant="positive" className="font-medium">
           {formatCurrency(row.paid)}
         </Badge>
       ),

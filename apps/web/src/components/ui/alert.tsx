@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
-import { selectAlerts, removeAlert, type Alert } from '@/redux/slices/alert-slice';
+import {
+  selectAlerts,
+  removeAlert,
+  type Alert,
+} from '@/redux/slices/alert-slice';
 import { cn } from '@/lib/utils';
 
 const alertIcons = {
@@ -55,8 +59,10 @@ function AlertItem({ alert, onRemove }: AlertItemProps) {
         alertStyles[alert.type]
       )}
     >
-      <IconComponent className={cn('w-5 h-5 mt-0.5 flex-shrink-0', iconStyles[alert.type])} />
-      
+      <IconComponent
+        className={cn('w-5 h-5 mt-0.5 flex-shrink-0', iconStyles[alert.type])}
+      />
+
       <div className="flex-1 min-w-0">
         <div className="font-medium text-sm">{alert.title}</div>
         {alert.message && (
@@ -85,7 +91,7 @@ export function AlertContainer() {
   return (
     <div className="fixed bottom-4 right-4 z-50 space-y-2">
       <AnimatePresence>
-        {alerts.map((alert) => (
+        {alerts.map(alert => (
           <AlertItem
             key={alert.id}
             alert={alert}

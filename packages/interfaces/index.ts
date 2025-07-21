@@ -1,2 +1,2 @@
 // Root export
-export * from './src'; 
+export * from './src';
