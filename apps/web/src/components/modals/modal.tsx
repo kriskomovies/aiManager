@@ -12,6 +12,10 @@ import { EditApartmentIrregularityModal } from './bodies/edit-apartment-irregula
 import { DeleteApartmentIrregularityModal } from './bodies/delete-apartment-irregularity';
 import { CreateBuildingIrregularityModal } from './bodies/building-irregularities/create-building-irregularity-modal';
 import { EditBuildingIrregularityModal } from './bodies/building-irregularities/edit-building-irregularity-modal';
+import { CreateNewMessageModal } from './bodies/messages/create-new-message-modal';
+import { ViewMessageModal } from './bodies/messages/view-message-modal';
+import { EditMessageModal } from './bodies/messages/edit-message-modal';
+import { DeleteMessageModal } from './bodies/messages/delete-message-modal';
 import { CreateInventoryModal } from './bodies/create-inventory-modal';
 import { EditInventoryModal } from './bodies/edit-inventory-modal';
 import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
@@ -81,6 +85,18 @@ export function ModalContainer() {
       
       case 'edit-building-irregularity':
         return <EditBuildingIrregularityModal onClose={handleClose} />;
+      
+      case 'create-new-message':
+        return <CreateNewMessageModal onClose={handleClose} />;
+      
+      case 'view-message':
+        return <ViewMessageModal onClose={handleClose} />;
+      
+      case 'edit-message':
+        return <EditMessageModal onClose={handleClose} />;
+      
+      case 'delete-message':
+        return <DeleteMessageModal onClose={handleClose} />;
       
       case 'create-inventory':
         return <CreateInventoryModal onClose={handleClose} />;

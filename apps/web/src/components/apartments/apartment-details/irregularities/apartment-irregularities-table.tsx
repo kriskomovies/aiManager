@@ -11,6 +11,6 @@ export function ApartmentIrregularitiesTable({ apartmentId, isArchive }: Apartme
       entityId={apartmentId}
       entityType="apartment"
       isArchive={isArchive}
-    />
+      />
   );
 }

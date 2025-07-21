@@ -277,7 +277,7 @@ export function BuildingDetailsPage() {
         {activeTab === 'cashier' && <CashierTab />}
         {activeTab === 'irregularities' && <IrregularitiesTab buildingId={id!} />}
         {activeTab === 'users' && <UsersTab buildingId={id!} />}
-        {activeTab === 'messages' && <MessagesTab />}
+        {activeTab === 'messages' && <MessagesTab buildingId={id!} />}
         {activeTab === 'calendar' && <CalendarTab />}
       </motion.div>
     </motion.div>
