@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '@/redux/store';
 
-export type ModalType = 
+export type ModalType =
   | 'delete-building'
   | 'delete-apartment'
   | 'add-building'

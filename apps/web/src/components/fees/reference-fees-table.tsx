@@ -124,27 +124,42 @@ export function ReferenceFeesTable() {
   const isFetching = false;
   const error = null;
 
+  const formatCurrency = (amount: number): string => {
+    return `${amount.toFixed(2)} лв.`;
+  };
+
   const columns: Column<FeeRecord>[] = [
     {
       header: 'Месец',
       accessorKey: 'month',
       sortable: true,
+      width: '100px',
+      minWidth: '100px',
+      cell: row => (
+        <span className="font-medium text-gray-900">{row.month}</span>
+      ),
     },
     {
       header: 'Брой Живущи',
       accessorKey: 'residentsCount',
       sortable: true,
+      width: '110px',
+      minWidth: '110px',
       cell: row => (
-        <div className="text-center">{row.residentsCount}</div>
+        <div className="text-center">
+          <span className="text-gray-700">{row.residentsCount}</span>
+        </div>
       ),
     },
     {
       header: 'Ток Асансьор',
       accessorKey: 'elevatorElectricity',
       sortable: true,
+      width: '120px',
+      minWidth: '120px',
       cell: row => (
-        <span className="text-gray-700 whitespace-nowrap">
-          {row.elevatorElectricity.toFixed(2)} лв.
+        <span className="text-gray-700 font-medium">
+          {formatCurrency(row.elevatorElectricity)}
         </span>
       ),
     },
@@ -152,9 +167,11 @@ export function ReferenceFeesTable() {
       header: 'Такса Асансьор',
       accessorKey: 'elevatorFee',
       sortable: true,
+      width: '130px',
+      minWidth: '130px',
       cell: row => (
-        <span className="text-gray-700 whitespace-nowrap">
-          {row.elevatorFee.toFixed(2)} лв.
+        <span className="text-gray-700 font-medium">
+          {formatCurrency(row.elevatorFee)}
         </span>
       ),
     },
@@ -162,9 +179,11 @@ export function ReferenceFeesTable() {
       header: 'Почистване',
       accessorKey: 'cleaning',
       sortable: true,
+      width: '120px',
+      minWidth: '120px',
       cell: row => (
-        <span className="text-gray-700 whitespace-nowrap">
-          {row.cleaning.toFixed(2)} лв.
+        <span className="text-gray-700 font-medium">
+          {formatCurrency(row.cleaning)}
         </span>
       ),
     },
@@ -172,9 +191,11 @@ export function ReferenceFeesTable() {
       header: 'Общо Такси за Месеца',
       accessorKey: 'totalMonthlyFees',
       sortable: true,
+      width: '160px',
+      minWidth: '160px',
       cell: row => (
-        <span className="text-gray-900 font-medium whitespace-nowrap">
-          {row.totalMonthlyFees.toFixed(2)} лв.
+        <span className="text-gray-900 font-semibold">
+          {formatCurrency(row.totalMonthlyFees)}
         </span>
       ),
     },
@@ -182,12 +203,16 @@ export function ReferenceFeesTable() {
       header: 'Стари Задължения',
       accessorKey: 'oldDebts',
       sortable: true,
+      width: '140px',
+      minWidth: '140px',
       cell: row => (
-        <div>
+        <div className="flex justify-center">
           {row.oldDebts > 0 ? (
-            <Badge variant="negative" value={row.oldDebts} suffix=" лв." />
+            <span className="text-red-600 font-medium">
+              {formatCurrency(row.oldDebts)}
+            </span>
           ) : (
-            <span className="text-gray-500">-</span>
+            <span className="text-gray-400">-</span>
           )}
         </div>
       ),
@@ -196,24 +221,33 @@ export function ReferenceFeesTable() {
       header: 'Платено',
       accessorKey: 'paid',
       sortable: true,
+      width: '120px',
+      minWidth: '120px',
       cell: row => (
-        <Badge variant="positive" value={row.paid} suffix=" лв." />
+        <Badge 
+          variant="positive" 
+          className="font-medium"
+        >
+          {formatCurrency(row.paid)}
+        </Badge>
       ),
     },
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      data={data?.items}
-      isLoading={isLoading}
-      isFetching={isFetching}
-      error={error}
-      page={page}
-      pageCount={data?.meta.pageCount}
-      sorting={sorting}
-      onPageChange={setPage}
-      onSortingChange={setSorting}
-    />
+    <div className="w-full">
+      <DataTable
+        columns={columns}
+        data={data?.items}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        error={error}
+        page={page}
+        pageCount={data?.meta.pageCount}
+        sorting={sorting}
+        onPageChange={setPage}
+        onSortingChange={setSorting}
+      />
+    </div>
   );
 }

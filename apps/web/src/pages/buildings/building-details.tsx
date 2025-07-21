@@ -139,7 +139,7 @@ export function BuildingDetailsPage() {
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-            Сградата не е намерена
+            Сграда не е намерена
           </h2>
           <p className="text-gray-600 mb-4">
             Сградата с ID {id} не съществува или е била изтрита.
@@ -274,7 +274,7 @@ export function BuildingDetailsPage() {
       >
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
         {activeTab === 'inventory' && <InventoryTab buildingId={id!} />}
-        {activeTab === 'cashier' && <CashierTab />}
+        {activeTab === 'cashier' && <CashierTab buildingId={id!} />}
         {activeTab === 'irregularities' && <IrregularitiesTab buildingId={id!} />}
         {activeTab === 'users' && <UsersTab buildingId={id!} />}
         {activeTab === 'messages' && <MessagesTab buildingId={id!} />}
