@@ -7,16 +7,15 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addAlert } from '@/redux/slices/alert-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
-import {
-  useGetInventoriesByBuildingQuery,
-  useCreateExpenseMutation,
-} from '@/redux/services/inventory.service';
+import { useCreateOneTimeExpenseMutation } from '@/redux/services/expense.service';
+import { useGetInventoriesByBuildingQuery } from '@/redux/services/inventory.service';
 
 interface CreateOneTimeExpenseModalProps {
   onClose: () => void;
 }
 
 interface OneTimeExpenseFormData {
+  name: string;
   amount: number;
   paymentMethod: string;
   sourceInventory: string;
@@ -30,6 +29,7 @@ export function CreateOneTimeExpenseModal({
   const modalData = useAppSelector(selectModalData);
 
   const [formData, setFormData] = useState<OneTimeExpenseFormData>({
+    name: '',
     amount: 0,
     paymentMethod: '',
     sourceInventory: '',
@@ -51,8 +51,8 @@ export function CreateOneTimeExpenseModal({
       skip: !buildingId,
     });
 
-  // API mutation for creating expense
-  const [createExpense] = useCreateExpenseMutation();
+  // API mutation for creating one-time expense
+  const [createOneTimeExpense] = useCreateOneTimeExpenseMutation();
 
   const handleInputChange = (
     field: keyof OneTimeExpenseFormData,
@@ -68,6 +68,18 @@ export function CreateOneTimeExpenseModal({
     e.preventDefault();
 
     // Validation
+    if (!formData.name.trim()) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Моля въведете име на разхода.',
+          duration: 5000,
+        })
+      );
+      return;
+    }
+
     if (formData.amount <= 0) {
       dispatch(
         addAlert({
@@ -92,31 +104,17 @@ export function CreateOneTimeExpenseModal({
       return;
     }
 
-    // Check if source inventory has sufficient funds
-    const sourceInventory = inventories.find(
-      inv => inv.id === formData.sourceInventory
-    );
-    if (sourceInventory && formData.amount > sourceInventory.amount) {
-      dispatch(
-        addAlert({
-          type: 'error',
-          title: 'Грешка',
-          message: `Недостатъчни средства в ${sourceInventory.name}. Налични: ${sourceInventory.amount.toFixed(2)} лв.`,
-          duration: 5000,
-        })
-      );
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      // Create the expense transaction
-      await createExpense({
-        sourceInventoryId: formData.sourceInventory,
-        userPaymentMethodId: formData.paymentMethod,
+      // Create the one-time expense
+      await createOneTimeExpense({
+        name: formData.name,
+        expenseDate: new Date().toISOString(),
         amount: formData.amount,
-        description: formData.note || 'One-time expense',
+        inventoryId: formData.sourceInventory,
+        userPaymentMethodId: formData.paymentMethod,
+        note: formData.note || undefined,
       }).unwrap();
 
       dispatch(
@@ -192,6 +190,19 @@ export function CreateOneTimeExpenseModal({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 text-left">
+        {/* Name Field */}
+        <div>
+          <Label htmlFor="name">Име на разхода *</Label>
+          <Input
+            id="name"
+            type="text"
+            value={formData.name}
+            onChange={e => handleInputChange('name', e.target.value)}
+            placeholder="Въведете име на разхода"
+            disabled={isSubmitting}
+          />
+        </div>
+
         {/* Amount Field */}
         <div>
           <Label htmlFor="amount">Сума</Label>

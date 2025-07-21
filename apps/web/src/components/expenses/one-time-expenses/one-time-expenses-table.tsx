@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DataTable, Column } from '@/components/ui/data-table';
+import { useGetOneTimeExpensesQuery } from '@/redux/services/expense.service';
 
 interface OneTimeExpenseData {
   id: string;
@@ -16,23 +17,25 @@ export function OneTimeExpensesTable() {
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Mock data for one-time expenses
-  const mockExpenses: OneTimeExpenseData[] = [
-    {
-      id: '1',
-      name: 'Никакъв Еднократен',
-      contractor: 'Име на фирма',
-      paymentDate: '12.12.2024',
-      amount: 585.0,
-    },
-    {
-      id: '2',
-      name: 'Никакъв Еднократен',
-      contractor: 'Име на фирма',
-      paymentDate: '12.12.2024',
-      amount: 50.0,
-    },
-  ];
+  // Fetch real data from backend
+  const {
+    data: apiData,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetOneTimeExpensesQuery();
+
+  // Transform API data to table data
+  const expenses: OneTimeExpenseData[] = (apiData || []).map(item => ({
+    id: item.id,
+    name: item.name,
+    contractor: item.contragentId || '',
+    paymentDate: item.expenseDate
+      ? new Date(item.expenseDate).toLocaleDateString('bg-BG')
+      : '',
+    amount:
+      typeof item.amount === 'string' ? parseFloat(item.amount) : item.amount,
+  }));
 
   const columns: Column<OneTimeExpenseData>[] = [
     {
@@ -74,22 +77,17 @@ export function OneTimeExpensesTable() {
     },
   ];
 
-  const transformedData = {
-    items: mockExpenses,
-    meta: {
-      pageCount: Math.ceil(mockExpenses.length / 10),
-    },
-  };
+  const pageCount = 1; // TODO: update if backend supports pagination
 
   return (
     <DataTable
       columns={columns}
-      data={transformedData.items}
-      isLoading={false}
-      isFetching={false}
-      error={null}
+      data={expenses}
+      isLoading={isLoading}
+      isFetching={isFetching}
+      error={error}
       page={page}
-      pageCount={transformedData.meta.pageCount}
+      pageCount={pageCount}
       sorting={sorting}
       onPageChange={setPage}
       onSortingChange={setSorting}

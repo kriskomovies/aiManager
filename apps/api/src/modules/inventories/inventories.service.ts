@@ -176,9 +176,7 @@ export class InventoriesService {
       );
     }
 
-    if (fromInventory.amount < transferDto.amount) {
-      throw new BadRequestException('Insufficient funds in source inventory');
-    }
+    // Allow negative balances - removed insufficient funds validation
 
     if (transferDto.amount <= 0) {
       throw new BadRequestException('Transfer amount must be greater than 0');
@@ -266,12 +264,7 @@ export class InventoriesService {
       createExpenseDto.sourceInventoryId,
     );
 
-    // Validate sufficient funds
-    if (sourceInventory.amount < createExpenseDto.amount) {
-      throw new BadRequestException(
-        `Insufficient funds in ${sourceInventory.name}. Available: ${sourceInventory.amount.toFixed(2)}, Required: ${createExpenseDto.amount.toFixed(2)}`,
-      );
-    }
+    // Allow negative balances - no validation for sufficient funds
 
     if (createExpenseDto.amount <= 0) {
       throw new BadRequestException('Expense amount must be greater than 0');

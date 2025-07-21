@@ -91,4 +91,4 @@ export class TenantPaymentMethodSeed extends BaseSeed {
     await tenantPaymentMethodRepository.save(tenantPaymentMethods);
     console.log(`Seeded ${tenantPaymentMethods.length} tenant payment methods`);
   }
-} 
+}

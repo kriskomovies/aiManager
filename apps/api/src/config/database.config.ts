@@ -7,6 +7,7 @@ import { InventoryEntity } from '../database/entities/inventory.entity';
 import { InventoryTransactionEntity } from '../database/entities/inventory-transaction.entity';
 import { TenantPaymentMethodEntity } from '../database/entities/tenant-payment-method.entity';
 import { UserPaymentMethodEntity } from '../database/entities/user-payment-method.entity';
+import { OneTimeExpenseEntity } from '../database/entities/one-time-expense.entity';
 
 export default registerAs(
   'database',
@@ -21,6 +22,7 @@ export default registerAs(
       InventoryTransactionEntity,
       TenantPaymentMethodEntity,
       UserPaymentMethodEntity,
+      OneTimeExpenseEntity,
     ],
     migrations: ['dist/database/migrations/*.js'], // Use compiled JS for runtime
     migrationsTableName: 'migrations',

@@ -40,7 +40,7 @@ export const paymentMethodService = createApi({
     // Get all user payment methods with pagination
     getUserPaymentMethods: builder.query<
       IPaginatedResponse<IUserPaymentMethodResponse>,
-      any
+      Record<string, unknown>
     >({
       query: params => ({
         url: 'user-payment-methods',

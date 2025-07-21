@@ -7,5 +7,6 @@ export * from './inventory/inventory.dto.js';
 export * from './inventory/inventory.enums.js';
 export * from './payment/payment.dto.js';
 export * from './payment/payment.enums.js';
+export * from './expense/expense.dto.js';
 export * from './common/api-response.js';
 export * from './common/pagination.js';
