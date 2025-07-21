@@ -117,4 +117,4 @@ export class UserPaymentMethodsController {
   async remove(@Param('id') id: string): Promise<void> {
     return this.userPaymentMethodsService.deleteUserPaymentMethod(id);
   }
-} 
+}

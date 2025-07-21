@@ -28,9 +28,12 @@ export class UserPaymentMethodsService {
   }
 
   async findById(id: string): Promise<UserPaymentMethodEntity> {
-    const userPaymentMethod = await this.userPaymentMethodRepository.findById(id);
+    const userPaymentMethod =
+      await this.userPaymentMethodRepository.findById(id);
     if (!userPaymentMethod) {
-      throw new NotFoundException(`User payment method with ID ${id} not found`);
+      throw new NotFoundException(
+        `User payment method with ID ${id} not found`,
+      );
     }
     return userPaymentMethod;
   }
@@ -60,9 +63,14 @@ export class UserPaymentMethodsService {
       isDefault: updateUserPaymentMethodDto.isDefault,
     };
 
-    const updated = await this.userPaymentMethodRepository.update(id, updateData);
+    const updated = await this.userPaymentMethodRepository.update(
+      id,
+      updateData,
+    );
     if (!updated) {
-      throw new NotFoundException(`User payment method with ID ${id} not found`);
+      throw new NotFoundException(
+        `User payment method with ID ${id} not found`,
+      );
     }
     return updated;
   }
@@ -70,7 +78,9 @@ export class UserPaymentMethodsService {
   async deleteUserPaymentMethod(id: string): Promise<void> {
     const exists = await this.userPaymentMethodRepository.exists(id);
     if (!exists) {
-      throw new NotFoundException(`User payment method with ID ${id} not found`);
+      throw new NotFoundException(
+        `User payment method with ID ${id} not found`,
+      );
     }
 
     const deleted = await this.userPaymentMethodRepository.delete(id);
@@ -80,4 +90,4 @@ export class UserPaymentMethodsService {
       );
     }
   }
-} 
+}

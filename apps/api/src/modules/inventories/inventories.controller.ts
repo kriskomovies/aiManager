@@ -187,7 +187,10 @@ export class InventoriesController {
     status: 400,
     description: 'Invalid expense data or insufficient funds',
   })
-  @ApiResponse({ status: 404, description: 'Inventory or payment method not found' })
+  @ApiResponse({
+    status: 404,
+    description: 'Inventory or payment method not found',
+  })
   async createExpense(
     @Body() createExpenseDto: CreateExpenseDto,
   ): Promise<InventoryTransactionEntity> {

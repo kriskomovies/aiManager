@@ -13,6 +13,8 @@ export type ModalType =
   | 'payment'
   | 'edit-apartment-irregularity'
   | 'delete-apartment-irregularity'
+  | 'create-building-irregularity'
+  | 'edit-building-irregularity'
   | 'create-inventory'
   | 'edit-inventory'
   | 'delete-inventory'

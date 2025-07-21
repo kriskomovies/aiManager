@@ -32,4 +32,4 @@ export class CreateExpenseDto {
   @IsString()
   @IsOptional()
   description?: string;
-} 
+}

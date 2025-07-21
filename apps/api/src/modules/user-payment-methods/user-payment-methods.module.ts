@@ -11,4 +11,4 @@ import { UserPaymentMethodEntity } from '../../database/entities/user-payment-me
   providers: [UserPaymentMethodsService, UserPaymentMethodRepository],
   exports: [UserPaymentMethodsService, UserPaymentMethodRepository],
 })
-export class UserPaymentMethodsModule {} 
+export class UserPaymentMethodsModule {}

@@ -275,7 +275,7 @@ export function BuildingDetailsPage() {
         {activeTab === 'apartments' && <ApartmentsTab building={building} />}
         {activeTab === 'inventory' && <InventoryTab buildingId={id!} />}
         {activeTab === 'cashier' && <CashierTab />}
-        {activeTab === 'irregularities' && <IrregularitiesTab />}
+        {activeTab === 'irregularities' && <IrregularitiesTab buildingId={id!} />}
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'messages' && <MessagesTab />}
         {activeTab === 'calendar' && <CalendarTab />}

@@ -10,6 +10,8 @@ import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
 import { PaymentModal } from './bodies/payment-modal';
 import { EditApartmentIrregularityModal } from './bodies/edit-apartment-irregularity';
 import { DeleteApartmentIrregularityModal } from './bodies/delete-apartment-irregularity';
+import { CreateBuildingIrregularityModal } from './bodies/building-irregularities/create-building-irregularity-modal';
+import { EditBuildingIrregularityModal } from './bodies/building-irregularities/edit-building-irregularity-modal';
 import { CreateInventoryModal } from './bodies/create-inventory-modal';
 import { EditInventoryModal } from './bodies/edit-inventory-modal';
 import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
@@ -73,6 +75,12 @@ export function ModalContainer() {
       
       case 'delete-apartment-irregularity':
         return <DeleteApartmentIrregularityModal onClose={handleClose} />;
+      
+      case 'create-building-irregularity':
+        return <CreateBuildingIrregularityModal onClose={handleClose} />;
+      
+      case 'edit-building-irregularity':
+        return <EditBuildingIrregularityModal onClose={handleClose} />;
       
       case 'create-inventory':
         return <CreateInventoryModal onClose={handleClose} />;

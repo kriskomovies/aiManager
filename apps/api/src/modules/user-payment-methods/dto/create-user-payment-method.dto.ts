@@ -45,4 +45,4 @@ export class CreateUserPaymentMethodDto {
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;
-} 
+}

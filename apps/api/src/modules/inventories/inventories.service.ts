@@ -280,11 +280,16 @@ export class InventoriesService {
     // Perform expense transaction
     return await this.dataSource.transaction(async (manager) => {
       // Update inventory amount (deduct expense)
-      const newAmount = Number(sourceInventory.amount) - createExpenseDto.amount;
+      const newAmount =
+        Number(sourceInventory.amount) - createExpenseDto.amount;
 
-      await manager.update(InventoryEntity, createExpenseDto.sourceInventoryId, {
-        amount: newAmount,
-      });
+      await manager.update(
+        InventoryEntity,
+        createExpenseDto.sourceInventoryId,
+        {
+          amount: newAmount,
+        },
+      );
 
       // Create transaction record
       const transactionData: Partial<InventoryTransactionEntity> = {
