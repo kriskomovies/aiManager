@@ -5,7 +5,11 @@ import { closeModal, selectModalData } from '@/redux/slices/modal-slice';
 import { useGetMonthlyFeeByIdQuery } from '@/redux/services/monthly-fee.service';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FeePaymentBasis, FeeApplicationMode, IMonthlyFeeApartment } from '@repo/interfaces';
+import {
+  FeePaymentBasis,
+  FeeApplicationMode,
+  IMonthlyFeeApartment,
+} from '@repo/interfaces';
 
 interface ExtendedMonthlyFeeApartment extends IMonthlyFeeApartment {
   apartment?: {
@@ -124,7 +128,8 @@ export function ViewMonthlyFeesModal() {
               Сума
             </label>
             <p className="text-lg font-medium text-gray-900">
-              {(monthlyFee.baseAmount || 0).toFixed(2)} лв {getApplicationModeText(monthlyFee.applicationMode)}
+              {(monthlyFee.baseAmount || 0).toFixed(2)} лв{' '}
+              {getApplicationModeText(monthlyFee.applicationMode)}
             </p>
           </div>
         </div>
@@ -151,10 +156,15 @@ export function ViewMonthlyFeesModal() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {monthlyFee.apartments.map((apartmentFee) => (
-                    <tr key={apartmentFee.apartmentId} className="hover:bg-gray-50">
+                  {monthlyFee.apartments.map(apartmentFee => (
+                    <tr
+                      key={apartmentFee.apartmentId}
+                      className="hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4 font-medium text-gray-900">
-                        {(apartmentFee as ExtendedMonthlyFeeApartment)?.apartment?.number || apartmentFee.apartmentId.slice(-2)}
+                        {(apartmentFee as ExtendedMonthlyFeeApartment)
+                          ?.apartment?.number ||
+                          apartmentFee.apartmentId.slice(-2)}
                       </td>
                       <td className="py-3 px-4 text-gray-600">
                         {apartmentFee.coefficient}
@@ -179,9 +189,13 @@ export function ViewMonthlyFeesModal() {
             Общо събрана сума
           </label>
           <p className="text-xl font-semibold text-gray-900">
-            {(monthlyFee.apartments
-              ?.reduce((total, apt) => total + (apt.amount || 0), 0) || 0)
-              .toFixed(2)} лв.
+            {(
+              monthlyFee.apartments?.reduce(
+                (total, apt) => total + (apt.amount || 0),
+                0
+              ) || 0
+            ).toFixed(2)}{' '}
+            лв.
           </p>
         </div>
       </div>

@@ -26,7 +26,8 @@ export type ModalType =
   | 'inventory-transfers'
   | 'create-one-time-expense'
   | 'create-monthly-fee'
-  | 'view-monthly-fee';
+  | 'view-monthly-fee'
+  | 'edit-monthly-fee';
 
 export interface ModalData {
   buildingId?: string;

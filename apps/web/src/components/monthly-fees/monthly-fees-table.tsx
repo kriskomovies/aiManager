@@ -59,7 +59,14 @@ export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
   };
 
   const handleEditFee = (fee: MonthlyFeeData) => {
-    console.log('Edit monthly fee:', fee.name);
+    dispatch(
+      openModal({
+        type: 'edit-monthly-fee',
+        data: {
+          monthlyFeeId: fee.id,
+        },
+      })
+    );
   };
 
   const handleDeleteFee = async (fee: MonthlyFeeData) => {

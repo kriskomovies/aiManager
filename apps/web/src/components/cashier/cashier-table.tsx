@@ -85,7 +85,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
         total: totalAmount,
       };
 
-      const feeDetails: FeeDetails[] = fees.map((fee) => ({
+      const feeDetails: FeeDetails[] = fees.map(fee => ({
         id: fee.id,
         name: fee.name,
         amount: fee.amount,

@@ -80,10 +80,14 @@ export const monthlyFeeService = createApi({
     }),
     getMonthlyFeeById: builder.query<IMonthlyFeeResponse, string>({
       query: id => `monthly-fees/${id}`,
-      transformResponse: (response: { data: IBackendMonthlyFeeResponse } | IBackendMonthlyFeeResponse): IMonthlyFeeResponse => {
+      transformResponse: (
+        response:
+          | { data: IBackendMonthlyFeeResponse }
+          | IBackendMonthlyFeeResponse
+      ): IMonthlyFeeResponse => {
         // Handle both wrapped and direct responses
         const data = 'data' in response ? response.data : response;
-        
+
         return {
           ...data,
           baseAmount: parseFloat((data.baseAmount || 0).toString()),
@@ -96,6 +100,17 @@ export const monthlyFeeService = createApi({
         };
       },
       providesTags: (_, __, id) => [{ type: 'MonthlyFee', id }],
+    }),
+    updateMonthlyFee: builder.mutation<
+      IMonthlyFeeResponse,
+      { id: string } & Partial<ICreateMonthlyFeeRequest>
+    >({
+      query: ({ id, ...data }) => ({
+        url: `monthly-fees/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['MonthlyFee'],
     }),
     deleteMonthlyFee: builder.mutation<void, string>({
       query: id => ({
@@ -110,9 +125,14 @@ export const monthlyFeeService = createApi({
         { type: 'MonthlyFee', id: `apartment-${apartmentId}` },
       ],
     }),
-    getBuildingApartmentFees: builder.query<IBuildingApartmentFeesResponse[], string>({
+    getBuildingApartmentFees: builder.query<
+      IBuildingApartmentFeesResponse[],
+      string
+    >({
       query: buildingId => `monthly-fees/building/${buildingId}/apartment-fees`,
-      transformResponse: (response: { data: IBuildingApartmentFeesResponse[] }) => {
+      transformResponse: (response: {
+        data: IBuildingApartmentFeesResponse[];
+      }) => {
         // Handle wrapped response - extract the actual data array
         return response.data || [];
       },
@@ -128,6 +148,7 @@ export const {
   useGetMonthlyFeesQuery,
   useGetMonthlyFeesByBuildingQuery,
   useGetMonthlyFeeByIdQuery,
+  useUpdateMonthlyFeeMutation,
   useDeleteMonthlyFeeMutation,
   useGetApartmentPaymentSummaryQuery,
   useGetBuildingApartmentFeesQuery,

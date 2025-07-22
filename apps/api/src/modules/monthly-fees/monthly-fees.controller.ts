@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Param,
   Body,
@@ -83,6 +84,29 @@ export class MonthlyFeesController {
   })
   async findById(@Param('id') id: string): Promise<MonthlyFeeEntity> {
     return await this.monthlyFeesService.findById(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a monthly fee' })
+  @ApiParam({
+    name: 'id',
+    description: 'Monthly fee ID',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Monthly fee updated successfully',
+    type: MonthlyFeeEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Monthly fee not found',
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateData: Partial<CreateMonthlyFeeDto>,
+  ): Promise<MonthlyFeeEntity> {
+    return await this.monthlyFeesService.update(id, updateData);
   }
 
   @Delete(':id')

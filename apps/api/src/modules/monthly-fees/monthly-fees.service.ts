@@ -97,6 +97,73 @@ export class MonthlyFeesService {
     return await this.monthlyFeeRepository.findByBuildingId(buildingId);
   }
 
+  async update(
+    id: string,
+    updateData: Partial<CreateMonthlyFeeDto>,
+  ): Promise<MonthlyFeeEntity> {
+    const existingFee = await this.monthlyFeeRepository.findById(id);
+    if (!existingFee) {
+      throw new NotFoundException(`Monthly fee with ID ${id} not found`);
+    }
+
+    // Update basic fee properties only (exclude relation data)
+    const updateFields: any = {};
+    if (updateData.name !== undefined) updateFields.name = updateData.name;
+    if (updateData.paymentBasis !== undefined)
+      updateFields.paymentBasis = updateData.paymentBasis;
+    if (updateData.applicationMode !== undefined)
+      updateFields.applicationMode = updateData.applicationMode;
+    if (updateData.baseAmount !== undefined)
+      updateFields.baseAmount = updateData.baseAmount;
+    if (updateData.isDistributedEvenly !== undefined)
+      updateFields.isDistributedEvenly = updateData.isDistributedEvenly;
+    if (updateData.targetMonth !== undefined)
+      updateFields.targetMonth = updateData.targetMonth;
+
+    // Update the main entity if there are fields to update
+    if (Object.keys(updateFields).length > 0) {
+      await this.monthlyFeeRepository.update(id, updateFields);
+    }
+
+    // Update apartment fee configurations if provided
+    if (updateData.apartments) {
+      // Remove existing apartment fees
+      await this.monthlyFeeApartmentRepository.delete({ monthlyFeeId: id });
+
+      // Create new apartment fee configurations
+      const apartmentFees: MonthlyFeeApartmentEntity[] = [];
+
+      for (const apartmentConfig of updateData.apartments) {
+        if (apartmentConfig.isSelected) {
+          const calculatedAmount = this.calculateApartmentAmount(
+            updateData.baseAmount || existingFee.baseAmount,
+            updateData.applicationMode || existingFee.applicationMode,
+            apartmentConfig.coefficient,
+            updateData.apartments,
+          );
+
+          const apartmentFee = this.monthlyFeeApartmentRepository.create({
+            monthlyFeeId: id,
+            apartmentId: apartmentConfig.apartmentId,
+            coefficient: apartmentConfig.coefficient,
+            calculatedAmount,
+            description: apartmentConfig.description,
+          });
+
+          apartmentFees.push(apartmentFee);
+        }
+      }
+
+      await this.monthlyFeeApartmentRepository.save(apartmentFees);
+    }
+
+    const result = await this.monthlyFeeRepository.findById(id);
+    if (!result) {
+      throw new Error('Failed to retrieve updated monthly fee');
+    }
+    return result;
+  }
+
   async remove(id: string): Promise<void> {
     const exists = await this.monthlyFeeRepository.exists(id);
     if (!exists) {
