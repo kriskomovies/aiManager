@@ -11,6 +11,7 @@ import { useGetBuildingQuery } from '@/redux/services/building.service';
 import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
 import { useAppDispatch } from '@/redux/hooks';
 import { addAlert } from '@/redux/slices/alert-slice';
+import { openModal } from '@/redux/slices/modal-slice';
 import { FeePaymentBasis } from '@repo/interfaces';
 
 interface MonthlyFeesTableProps {
@@ -47,7 +48,14 @@ export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
   const [deleteMonthlyFee] = useDeleteMonthlyFeeMutation();
 
   const handleViewFee = (fee: MonthlyFeeData) => {
-    console.log('View monthly fee:', fee.name);
+    dispatch(
+      openModal({
+        type: 'view-monthly-fee',
+        data: {
+          monthlyFeeId: fee.id,
+        },
+      })
+    );
   };
 
   const handleEditFee = (fee: MonthlyFeeData) => {

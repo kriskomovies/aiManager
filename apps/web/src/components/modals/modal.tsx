@@ -23,6 +23,7 @@ import { TransferInventoryMoneyModal } from './bodies/transfer-inventory-money-m
 import { InventoryTransfersModal } from './bodies/inventory-transfers-modal';
 import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-modal';
 import { CreateMonthlyFeeModal } from './bodies/monthly-fees/create-monthly-fee';
+import { ViewMonthlyFeesModal } from './bodies/monthly-fees/view-monthly-fees';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -120,6 +121,9 @@ export function ModalContainer() {
       case 'create-monthly-fee':
         return <CreateMonthlyFeeModal />;
 
+      case 'view-monthly-fee':
+        return <ViewMonthlyFeesModal />;
+
       default:
         return null;
     }
@@ -152,10 +156,12 @@ export function ModalContainer() {
                 : modal.type === 'payment'
                   ? 'w-full max-w-2xl'
                   : modal.type === 'create-inventory'
-                    ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
+                                          ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
                     : modal.type === 'create-monthly-fee'
                       ? 'bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto'
-                      : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+                      : modal.type === 'view-monthly-fee'
+                        ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
+                        : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
@@ -163,7 +169,8 @@ export function ModalContainer() {
             modal.type === 'reference-payments' ||
             modal.type === 'payment' ||
             modal.type === 'inventory-transfers' ||
-            modal.type === 'create-monthly-fee' ? (
+            modal.type === 'create-monthly-fee' ||
+            modal.type === 'view-monthly-fee' ? (
               renderModalBody()
             ) : (
               <>

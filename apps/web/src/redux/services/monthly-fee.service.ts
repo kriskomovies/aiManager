@@ -80,6 +80,21 @@ export const monthlyFeeService = createApi({
     }),
     getMonthlyFeeById: builder.query<IMonthlyFeeResponse, string>({
       query: id => `monthly-fees/${id}`,
+      transformResponse: (response: { data: IBackendMonthlyFeeResponse } | IBackendMonthlyFeeResponse): IMonthlyFeeResponse => {
+        // Handle both wrapped and direct responses
+        const data = 'data' in response ? response.data : response;
+        
+        return {
+          ...data,
+          baseAmount: parseFloat((data.baseAmount || 0).toString()),
+          apartments:
+            data.apartments?.map((apt: IBackendMonthlyFeeApartment) => ({
+              ...apt,
+              coefficient: parseFloat((apt.coefficient || 1).toString()),
+              amount: parseFloat((apt.calculatedAmount || 0).toString()),
+            })) || [],
+        };
+      },
       providesTags: (_, __, id) => [{ type: 'MonthlyFee', id }],
     }),
     deleteMonthlyFee: builder.mutation<void, string>({
