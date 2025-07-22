@@ -5,6 +5,7 @@ import {
   IMonthlyFeeResponse,
   IBackendMonthlyFeeResponse,
   IBackendMonthlyFeeApartment,
+  IBuildingApartmentFeesResponse,
 } from '@repo/interfaces';
 
 export const monthlyFeeService = createApi({
@@ -94,9 +95,9 @@ export const monthlyFeeService = createApi({
         { type: 'MonthlyFee', id: `apartment-${apartmentId}` },
       ],
     }),
-    getBuildingApartmentFees: builder.query<any[], string>({
+    getBuildingApartmentFees: builder.query<IBuildingApartmentFeesResponse[], string>({
       query: buildingId => `monthly-fees/building/${buildingId}/apartment-fees`,
-      transformResponse: (response: { data: unknown[] }) => {
+      transformResponse: (response: { data: IBuildingApartmentFeesResponse[] }) => {
         // Handle wrapped response - extract the actual data array
         return response.data || [];
       },

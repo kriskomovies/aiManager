@@ -16,6 +16,7 @@ import {
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 import { useGetBuildingApartmentFeesQuery } from '@/redux/services/monthly-fee.service';
+import { IBuildingApartmentFeesResponse } from '@repo/interfaces';
 
 interface CashierTableProps {
   buildingId: string;
@@ -43,8 +44,6 @@ interface FeeDetails {
   applicationMode: string;
 }
 
-
-
 export function CashierTable({ buildingId }: CashierTableProps) {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
@@ -63,7 +62,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
 
   // Transform apartment fees data to cashier records
   const cashierRecords: ExpandableRowData<CashierRecord, FeeDetails>[] =
-    apartmentFeesData.map((apartmentData: any) => {
+    apartmentFeesData.map((apartmentData: IBuildingApartmentFeesResponse) => {
       const { apartment, resident, fees, summary } = apartmentData;
 
       // Calculate payment amounts based on the description:
@@ -86,12 +85,12 @@ export function CashierTable({ buildingId }: CashierTableProps) {
         total: totalAmount,
       };
 
-      const feeDetails: FeeDetails[] = fees.map((fee: any) => ({
+      const feeDetails: FeeDetails[] = fees.map((fee) => ({
         id: fee.id,
         name: fee.name,
         amount: fee.amount,
         coefficient: fee.coefficient,
-        description: fee.description,
+        description: fee.description ?? undefined,
         paymentBasis: fee.paymentBasis,
         applicationMode: fee.applicationMode,
       }));
@@ -117,9 +116,9 @@ export function CashierTable({ buildingId }: CashierTableProps) {
   const handleTaxInquiries = (recordId: string) => {
     // Find the apartment record to get the apartment number
     const apartmentData = apartmentFeesData.find(
-      (data: unknown) => (data as any)?.apartment?.id === recordId
+      (data: IBuildingApartmentFeesResponse) => data.apartment.id === recordId
     );
-    const apartmentNumber = (apartmentData as any)?.apartment?.number || 'Unknown';
+    const apartmentNumber = apartmentData?.apartment?.number || 'Unknown';
 
     console.log(
       'Tax inquiries for apartment:',
