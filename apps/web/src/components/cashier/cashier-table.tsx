@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { DataTable, Column } from '@/components/ui/data-table';
+import {
+  ExpandableDataTable,
+  ExpandableColumn,
+  ExpandableRowData,
+} from '@/components/ui/expandible-data-table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu } from '@/components/ui/dropdown-menu';
 import {
@@ -11,8 +15,7 @@ import {
 } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
-import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
-import { IApartmentResponse } from '@repo/interfaces';
+import { useGetBuildingApartmentFeesQuery } from '@/redux/services/monthly-fee.service';
 
 interface CashierTableProps {
   buildingId: string;
@@ -24,13 +27,23 @@ interface CashierRecord {
   floor: number;
   name: string;
   residentsCount: number;
-  elevatorFee: number;
-  elevatorElectricity: number;
   subscriptionNumber: string;
   new: number;
   old: number;
   total: number;
 }
+
+interface FeeDetails {
+  id: string;
+  name: string;
+  amount: number;
+  coefficient: number;
+  description?: string;
+  paymentBasis: string;
+  applicationMode: string;
+}
+
+
 
 export function CashierTable({ buildingId }: CashierTableProps) {
   const dispatch = useAppDispatch();
@@ -40,51 +53,56 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Fetch apartments for the building
+  // Fetch apartment fees for the building
   const {
-    data: apartments = [],
+    data: apartmentFeesData = [],
     isLoading,
     isFetching,
     error,
-  } = useGetApartmentsByBuildingQuery(buildingId);
+  } = useGetBuildingApartmentFeesQuery(buildingId);
 
-  // Transform apartment data to cashier records
-  const cashierRecords: CashierRecord[] = apartments.map(
-    (apartment: IApartmentResponse) => {
-      // Get main resident name
-      const mainResident =
-        apartment.residents?.find(r => r.isMainContact) ||
-        apartment.residents?.[0];
-      const residentName = mainResident
-        ? `${mainResident.name} ${mainResident.surname}`
-        : 'Име Фамилия';
+  // Transform apartment fees data to cashier records
+  const cashierRecords: ExpandableRowData<CashierRecord, FeeDetails>[] =
+    apartmentFeesData.map((apartmentData: any) => {
+      const { apartment, resident, fees, summary } = apartmentData;
 
-      // Mock calculations for fees (in real app, these would come from actual fee calculations)
-      const elevatorFee = apartment.floor > 1 ? apartment.floor * 3.0 : 0; // 3 лв per floor above ground
-      const elevatorElectricity =
-        apartment.floor > 1 ? apartment.floor * 0.5 : 0; // 0.5 лв per floor for electricity
+      // Calculate payment amounts based on the description:
+      // Ново = money expected to be paid for this month (current month's fees)
+      // Старо = sum of unpaid money from previous months
+      // Общо = total expected to be paid (Ново + Старо)
+      const newAmount = summary.totalMonthlyAmount || 0; // Current month fees
+      const oldAmount = (summary.totalOwed || 0) - newAmount; // Previous unpaid amounts
+      const totalAmount = summary.totalOwed || 0; // Total amount owed
 
-      // Mock readings (in real app, these would come from meter readings)
-      const oldReading = Math.floor(Math.random() * 100) + 100; // Random old reading
-      const newReading = oldReading + Math.floor(Math.random() * 50) + 10; // New reading is higher
-      const total =
-        elevatorFee + elevatorElectricity + (newReading - oldReading) * 0.1; // 0.1 лв per unit difference
-
-      return {
+      const record: CashierRecord = {
         id: apartment.id,
         apartment: apartment.number,
         floor: apartment.floor,
-        name: residentName,
+        name: resident ? resident.name : 'Име Фамилия',
         residentsCount: apartment.residentsCount,
-        elevatorFee: elevatorFee,
-        elevatorElectricity: elevatorElectricity,
         subscriptionNumber: `12345678`, // Mock subscription number
-        new: newReading,
-        old: oldReading,
-        total: total,
+        new: newAmount,
+        old: Math.max(0, oldAmount), // Ensure it's not negative
+        total: totalAmount,
       };
-    }
-  );
+
+      const feeDetails: FeeDetails[] = fees.map((fee: any) => ({
+        id: fee.id,
+        name: fee.name,
+        amount: fee.amount,
+        coefficient: fee.coefficient,
+        description: fee.description,
+        paymentBasis: fee.paymentBasis,
+        applicationMode: fee.applicationMode,
+      }));
+
+      return {
+        id: apartment.id,
+        data: record,
+        children: feeDetails,
+        isExpanded: false,
+      };
+    });
 
   const handleWallet = (recordId: string) => {
     // TODO: Implement wallet functionality
@@ -98,8 +116,10 @@ export function CashierTable({ buildingId }: CashierTableProps) {
 
   const handleTaxInquiries = (recordId: string) => {
     // Find the apartment record to get the apartment number
-    const apartment = apartments.find(apt => apt.id === recordId);
-    const apartmentNumber = apartment?.number || 'Unknown';
+    const apartmentData = apartmentFeesData.find(
+      (data: unknown) => (data as any)?.apartment?.id === recordId
+    );
+    const apartmentNumber = (apartmentData as any)?.apartment?.number || 'Unknown';
 
     console.log(
       'Tax inquiries for apartment:',
@@ -146,7 +166,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     }
   };
 
-  const columns: Column<CashierRecord>[] = [
+  const columns: ExpandableColumn<CashierRecord>[] = [
     {
       header: 'Апартамент',
       accessorKey: 'apartment',
@@ -183,30 +203,6 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       width: '120px',
       minWidth: '120px',
       cell: row => <span className="text-gray-600">{row.residentsCount}</span>,
-    },
-    {
-      header: 'Такса Асансьор',
-      accessorKey: 'elevatorFee',
-      sortable: true,
-      width: '130px',
-      minWidth: '130px',
-      cell: row => (
-        <span className="text-gray-900 font-medium">
-          {formatCurrency(row.elevatorFee)}
-        </span>
-      ),
-    },
-    {
-      header: 'Ток Асансьор',
-      accessorKey: 'elevatorElectricity',
-      sortable: true,
-      width: '120px',
-      minWidth: '120px',
-      cell: row => (
-        <span className="text-gray-900 font-medium">
-          {formatCurrency(row.elevatorElectricity)}
-        </span>
-      ),
     },
     {
       header: 'Абонаментен Номер',
@@ -302,12 +298,99 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     },
   ];
 
-  const transformedData = {
-    items: cashierRecords,
-    meta: {
-      pageCount: Math.ceil(cashierRecords.length / 10),
-    },
+  const renderExpandedContent = (
+    row: CashierRecord,
+    children: FeeDetails[]
+  ) => {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium text-gray-900">
+            Детайли за такси - Апартамент {row.apartment}
+          </h4>
+          <Badge variant="neutral" className="text-xs">
+            {children.length} такса/такси
+          </Badge>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-3 font-medium text-gray-700">
+                  Такса
+                </th>
+                <th className="text-left py-2 px-3 font-medium text-gray-700">
+                  Основа
+                </th>
+                <th className="text-left py-2 px-3 font-medium text-gray-700">
+                  Коефициент
+                </th>
+                <th className="text-left py-2 px-3 font-medium text-gray-700">
+                  Сума
+                </th>
+                <th className="text-left py-2 px-3 font-medium text-gray-700">
+                  Описание
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {children.map(fee => (
+                <tr key={fee.id} className="border-b border-gray-100">
+                  <td className="py-2 px-3 font-medium">{fee.name}</td>
+                  <td className="py-2 px-3 text-gray-600">
+                    <Badge variant="neutral" className="text-xs">
+                      {fee.paymentBasis}
+                    </Badge>
+                  </td>
+                  <td className="py-2 px-3 text-gray-600">{fee.coefficient}</td>
+                  <td className="py-2 px-3">
+                    <span className="font-medium text-green-600">
+                      {formatCurrency(fee.amount)}
+                    </span>
+                  </td>
+                  <td className="py-2 px-3 text-gray-600">
+                    {fee.description || '-'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {children.length === 0 && (
+          <div className="text-center py-4 text-gray-500">
+            Няма такси за този апартамент
+          </div>
+        )}
+      </div>
+    );
   };
+
+  // Show error details if API call fails
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-8">
+          <p className="text-red-500">Грешка при зареждане на данните</p>
+          <p className="text-sm text-gray-500 mt-2">
+            {JSON.stringify(error, null, 2)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-8">
+          <p className="text-gray-500">Зареждане на данни...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -318,17 +401,18 @@ export function CashierTable({ buildingId }: CashierTableProps) {
         </Badge>
       </div>
 
-      <DataTable
+      <ExpandableDataTable
         columns={columns}
-        data={transformedData.items}
+        data={cashierRecords}
         isLoading={isLoading}
         isFetching={isFetching}
         error={error}
         page={page}
-        pageCount={transformedData.meta.pageCount}
+        pageCount={Math.ceil(cashierRecords.length / 10)}
         sorting={sorting}
         onPageChange={setPage}
         onSortingChange={setSorting}
+        renderExpandedContent={renderExpandedContent}
       />
     </div>
   );

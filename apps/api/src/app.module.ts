@@ -8,6 +8,7 @@ import { ApartmentsModule } from './modules/apartments/apartments.module';
 import { InventoriesModule } from './modules/inventories/inventories.module';
 import { UserPaymentMethodsModule } from './modules/user-payment-methods/user-payment-methods.module';
 import { OneTimeExpensesModule } from './modules/one-time-expenses/one-time-expenses.module';
+import { MonthlyFeesModule } from './modules/monthly-fees/monthly-fees.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -32,6 +33,7 @@ import databaseConfig from './config/database.config';
     InventoriesModule,
     UserPaymentMethodsModule,
     OneTimeExpensesModule,
+    MonthlyFeesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

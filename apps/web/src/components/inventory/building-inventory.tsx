@@ -44,7 +44,7 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
       case 'expenses':
         return <ExpensesTab buildingId={buildingId} />;
       case 'monthly-fees':
-        return <MonthlyFeesTab />;
+        return <MonthlyFeesTab buildingId={buildingId} />;
       case 'temporary-fees':
         return <TemporaryFeesTab />;
       default:

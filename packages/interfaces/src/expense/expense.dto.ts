@@ -32,4 +32,4 @@ export interface IUpdateOneTimeExpenseRequest {
   note?: string;
 }
 
-export interface IOneTimeExpenseResponse extends IOneTimeExpense {} 
+export interface IOneTimeExpenseResponse extends IOneTimeExpense {}

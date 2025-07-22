@@ -14,7 +14,8 @@ export const expenseService = createApi({
     // Get all one-time expenses
     getOneTimeExpenses: builder.query<IOneTimeExpense[], void>({
       query: () => 'one-time-expenses',
-      transformResponse: (response: { data: IOneTimeExpense[] }) => response.data,
+      transformResponse: (response: { data: IOneTimeExpense[] }) =>
+        response.data,
       providesTags: ['OneTimeExpenses'],
     }),
 
@@ -67,4 +68,4 @@ export const {
   useCreateOneTimeExpenseMutation,
   useUpdateOneTimeExpenseMutation,
   useDeleteOneTimeExpenseMutation,
-} = expenseService; 
+} = expenseService;

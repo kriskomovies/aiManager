@@ -22,6 +22,7 @@ import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
 import { TransferInventoryMoneyModal } from './bodies/transfer-inventory-money-modal';
 import { InventoryTransfersModal } from './bodies/inventory-transfers-modal';
 import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-modal';
+import { CreateMonthlyFeeModal } from './bodies/monthly-fees/create-monthly-fee';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -116,6 +117,9 @@ export function ModalContainer() {
       case 'create-one-time-expense':
         return <CreateOneTimeExpenseModal onClose={handleClose} />;
 
+      case 'create-monthly-fee':
+        return <CreateMonthlyFeeModal />;
+
       default:
         return null;
     }
@@ -149,14 +153,17 @@ export function ModalContainer() {
                   ? 'w-full max-w-2xl'
                   : modal.type === 'create-inventory'
                     ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
-                    : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+                    : modal.type === 'create-monthly-fee'
+                      ? 'bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto'
+                      : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
             {modal.type === 'reference-fees' ||
             modal.type === 'reference-payments' ||
             modal.type === 'payment' ||
-            modal.type === 'inventory-transfers' ? (
+            modal.type === 'inventory-transfers' ||
+            modal.type === 'create-monthly-fee' ? (
               renderModalBody()
             ) : (
               <>

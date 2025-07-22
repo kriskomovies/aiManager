@@ -2,10 +2,23 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { MonthlyFeesTable } from '@/components/monthly-fees/monthly-fees-table';
 import { Plus } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
-export function MonthlyFeesTab() {
+interface MonthlyFeesTabProps {
+  buildingId: string;
+}
+
+export function MonthlyFeesTab({ buildingId }: MonthlyFeesTabProps) {
+  const dispatch = useAppDispatch();
+
   const handleCreateMonthlyFee = () => {
-    console.log('Create monthly fee');
+    dispatch(
+      openModal({
+        type: 'create-monthly-fee',
+        data: { buildingId },
+      })
+    );
   };
 
   return (
@@ -40,7 +53,7 @@ export function MonthlyFeesTab() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
       >
-        <MonthlyFeesTable />
+        <MonthlyFeesTable buildingId={buildingId} />
       </motion.div>
     </motion.div>
   );

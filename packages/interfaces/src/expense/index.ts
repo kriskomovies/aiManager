@@ -1,1 +1,1 @@
-export * from './expense.dto'; 
+export * from './expense.dto';

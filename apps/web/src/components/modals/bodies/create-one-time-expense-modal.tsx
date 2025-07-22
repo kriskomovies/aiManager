@@ -8,7 +8,10 @@ import { addAlert } from '@/redux/slices/alert-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
 import { useCreateOneTimeExpenseMutation } from '@/redux/services/expense.service';
-import { useGetInventoriesByBuildingQuery, inventoryService } from '@/redux/services/inventory.service';
+import {
+  useGetInventoriesByBuildingQuery,
+  inventoryService,
+} from '@/redux/services/inventory.service';
 
 interface CreateOneTimeExpenseModalProps {
   onClose: () => void;
@@ -118,7 +121,9 @@ export function CreateOneTimeExpenseModal({
       }).unwrap();
 
       // Manually invalidate inventory cache to update the displayed amounts
-      dispatch(inventoryService.util.invalidateTags(['Inventory', 'InventoryStats']));
+      dispatch(
+        inventoryService.util.invalidateTags(['Inventory', 'InventoryStats'])
+      );
 
       dispatch(
         addAlert({

@@ -3,60 +3,48 @@ import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2 } from 'lucide-react';
+import {
+  useGetMonthlyFeesByBuildingQuery,
+  useDeleteMonthlyFeeMutation,
+} from '@/redux/services/monthly-fee.service';
+import { useGetBuildingQuery } from '@/redux/services/building.service';
+import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
+import { useAppDispatch } from '@/redux/hooks';
+import { addAlert } from '@/redux/slices/alert-slice';
+import { FeePaymentBasis } from '@repo/interfaces';
+
+interface MonthlyFeesTableProps {
+  buildingId: string;
+}
 
 interface MonthlyFeeData {
   id: string;
   name: string;
   apartments: string;
   paymentBase: string;
-  monthlyFee: number;
+  applicationMode: string;
+  baseAmount: number;
+  isActive: boolean;
+  targetMonth?: string;
+  createdAt: string;
 }
 
-export function MonthlyFeesTable() {
+export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof MonthlyFeeData;
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Mock data for monthly fees
-  const mockMonthlyFees: MonthlyFeeData[] = [
-    {
-      id: '1',
-      name: 'Поддръжка Асансьор',
-      apartments: '10/12',
-      paymentBase: 'Общи Части',
-      monthlyFee: 25.0,
-    },
-    {
-      id: '2',
-      name: 'Почистване Вход',
-      apartments: '12/12',
-      paymentBase: 'Апартамент',
-      monthlyFee: 50.0,
-    },
-    {
-      id: '3',
-      name: 'Такса Домоуправител',
-      apartments: '12/12',
-      paymentBase: 'Квадратура',
-      monthlyFee: 31.54,
-    },
-    {
-      id: '4',
-      name: 'Поддръжка Асансьор',
-      apartments: '10/12',
-      paymentBase: 'Живещ',
-      monthlyFee: 50.0,
-    },
-    {
-      id: '5',
-      name: 'Почистване Вход',
-      apartments: '12/12',
-      paymentBase: 'Домашно Животно',
-      monthlyFee: 31.54,
-    },
-  ];
+  // Fetch monthly fees and building data
+  const {
+    data: monthlyFees = [],
+    isLoading,
+    error,
+  } = useGetMonthlyFeesByBuildingQuery(buildingId);
+  const { data: building } = useGetBuildingQuery(buildingId);
+  const [deleteMonthlyFee] = useDeleteMonthlyFeeMutation();
 
   const handleViewFee = (fee: MonthlyFeeData) => {
     console.log('View monthly fee:', fee.name);
@@ -66,9 +54,64 @@ export function MonthlyFeesTable() {
     console.log('Edit monthly fee:', fee.name);
   };
 
-  const handleDeleteFee = (fee: MonthlyFeeData) => {
-    console.log('Delete monthly fee:', fee.name);
+  const handleDeleteFee = async (fee: MonthlyFeeData) => {
+    if (
+      window.confirm(`Сигурни ли сте, че искате да изтриете "${fee.name}"?`)
+    ) {
+      try {
+        await deleteMonthlyFee(fee.id).unwrap();
+        dispatch(
+          addAlert({
+            type: 'success',
+            title: 'Успешно изтриване!',
+            message: `Месечната такса "${fee.name}" беше изтрита успешно.`,
+            duration: 5000,
+          })
+        );
+      } catch {
+        dispatch(
+          addAlert({
+            type: 'error',
+            title: 'Грешка при изтриване',
+            message: 'Възникна грешка при изтриването на месечната такса.',
+            duration: 5000,
+          })
+        );
+      }
+    }
   };
+
+  // Get total apartment count - use actual apartment count from the building's apartments
+  // or fallback to apartmentCount field if apartments query fails
+  const { data: apartments = [] } = useGetApartmentsByBuildingQuery(buildingId);
+  const totalApartments = apartments.length || building?.apartmentCount || 0;
+
+  // Function to get payment basis badge text
+  const getPaymentBaseBadgeText = (paymentBasis: FeePaymentBasis) => {
+    const labelMap: Record<FeePaymentBasis, string> = {
+      [FeePaymentBasis.APARTMENT]: 'Апартамент',
+      [FeePaymentBasis.RESIDENT]: 'Живущ',
+      [FeePaymentBasis.PET]: 'Домашно Животно',
+      [FeePaymentBasis.COMMON_PARTS]: 'Общи Части',
+      [FeePaymentBasis.QUADRATURE]: 'Квадратура',
+    };
+    return labelMap[paymentBasis] || paymentBasis;
+  };
+
+  // Transform API data to table format
+  const transformedMonthlyFees: MonthlyFeeData[] = (monthlyFees || []).map(
+    fee => ({
+      id: fee.id,
+      name: fee.name,
+      apartments: `${fee.apartments?.length || 0}/${totalApartments}`,
+      paymentBase: getPaymentBaseBadgeText(fee.paymentBasis),
+      applicationMode: fee.applicationMode,
+      baseAmount: fee.baseAmount,
+      isActive: fee.isActive ?? true,
+      targetMonth: fee.targetMonth,
+      createdAt: fee.createdAt,
+    })
+  );
 
   const getPaymentBaseBadge = (paymentBase: string) => {
     const colorMap: Record<
@@ -78,7 +121,7 @@ export function MonthlyFeesTable() {
       'Общи Части': 'positive',
       Апартамент: 'neutral',
       Квадратура: 'warning',
-      Живещ: 'positive',
+      Живущ: 'positive',
       'Домашно Животно': 'negative',
     };
 
@@ -116,15 +159,27 @@ export function MonthlyFeesTable() {
       cell: row => getPaymentBaseBadge(row.paymentBase),
     },
     {
-      header: 'Месечна Такса',
-      accessorKey: 'monthlyFee',
+      header: 'Базова Сума',
+      accessorKey: 'baseAmount',
       sortable: true,
       width: '130px',
       minWidth: '130px',
       cell: row => (
         <span className="font-medium text-gray-900">
-          {row.monthlyFee.toFixed(2)} лв.
+          {row.baseAmount.toFixed(2)} лв.
         </span>
+      ),
+    },
+    {
+      header: 'Статус',
+      accessorKey: 'isActive',
+      sortable: true,
+      width: '100px',
+      minWidth: '100px',
+      cell: row => (
+        <Badge variant={row.isActive ? 'positive' : 'negative'}>
+          {row.isActive ? 'Активна' : 'Неактивна'}
+        </Badge>
       ),
     },
     {
@@ -169,19 +224,27 @@ export function MonthlyFeesTable() {
   ];
 
   const transformedData = {
-    items: mockMonthlyFees,
+    items: transformedMonthlyFees,
     meta: {
-      pageCount: Math.ceil(mockMonthlyFees.length / 10),
+      pageCount: Math.ceil(transformedMonthlyFees.length / 10),
     },
   };
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500">Грешка при зареждане на месечните такси</p>
+      </div>
+    );
+  }
 
   return (
     <DataTable
       columns={columns}
       data={transformedData.items}
-      isLoading={false}
+      isLoading={isLoading}
       isFetching={false}
-      error={null}
+      error={error}
       page={page}
       pageCount={transformedData.meta.pageCount}
       sorting={sorting}
