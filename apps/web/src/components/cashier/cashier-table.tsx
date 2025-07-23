@@ -104,8 +104,26 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     });
 
   const handleWallet = (recordId: string) => {
-    // TODO: Implement wallet functionality
-    console.log('Wallet action for apartment:', recordId);
+    // Find the apartment record to get apartment details
+    const apartmentData = apartmentFeesData.find(
+      (data: IBuildingApartmentFeesResponse) => data.apartment.id === recordId
+    );
+    const apartmentNumber = apartmentData?.apartment?.number || 'Unknown';
+    const totalAmount = apartmentData?.summary?.totalOwed || 0;
+
+    console.log('Opening payment modal for apartment:', recordId);
+    dispatch(
+      openModal({
+        type: 'cashier-payment',
+        data: {
+          apartmentId: recordId,
+          apartmentNumber: apartmentNumber,
+          subscriptionNumber: '123456', // Mock subscription number
+          buildingId,
+          totalAmount: totalAmount,
+        },
+      })
+    );
   };
 
   const handlePrint = (recordId: string) => {
@@ -128,7 +146,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     );
     dispatch(
       openModal({
-        type: 'reference-fees',
+        type: 'apartment-fees-reference',
         data: {
           apartmentId: recordId,
           apartmentNumber: apartmentNumber,
@@ -139,12 +157,21 @@ export function CashierTable({ buildingId }: CashierTableProps) {
   };
 
   const handlePaymentInquiries = (recordId: string) => {
-    // TODO: Open payment inquiries modal
-    console.log('Payment inquiries for apartment:', recordId);
+    // Find the apartment record to get the apartment number
+    const apartmentData = apartmentFeesData.find(
+      (data: IBuildingApartmentFeesResponse) => data.apartment.id === recordId
+    );
+    const apartmentNumber = apartmentData?.apartment?.number || 'Unknown';
+
+    console.log('Payment inquiries for apartment:', recordId, 'Number:', apartmentNumber);
     dispatch(
       openModal({
-        type: 'edit-apartment-irregularity', // TODO: Create payment-inquiries modal type
-        data: { apartmentId: recordId, buildingId },
+        type: 'apartment-payments-reference',
+        data: {
+          apartmentId: recordId,
+          apartmentNumber: apartmentNumber,
+          buildingId,
+        },
       })
     );
   };
@@ -192,14 +219,14 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       accessorKey: 'name',
       sortable: true,
       searchable: true,
-      width: '150px',
-      minWidth: '150px',
+      width: '130px',
+      minWidth: '130px',
     },
     {
       header: 'Брой Живущи',
       accessorKey: 'residentsCount',
       sortable: true,
-      width: '120px',
+      width: '100px',
       minWidth: '120px',
       cell: row => <span className="text-gray-600">{row.residentsCount}</span>,
     },
@@ -207,8 +234,8 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       header: 'Абонаментен Номер',
       accessorKey: 'subscriptionNumber',
       sortable: true,
-      width: '150px',
-      minWidth: '150px',
+      width: '130px',
+      minWidth: '130px',
       cell: row => (
         <Badge variant="neutral" className="font-mono text-xs">
           {row.subscriptionNumber}
@@ -216,22 +243,26 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       ),
     },
     {
-      header: 'Ново',
+      header: 'Месечна такса',
       accessorKey: 'new',
       sortable: true,
-      width: '80px',
+      width: '100px',
       minWidth: '80px',
       cell: row => (
-        <span className="text-gray-900 font-medium">{row.new.toFixed(2)}</span>
+        <Badge variant="negative">{formatCurrency(row.new)}</Badge>
       ),
     },
     {
-      header: 'Старо',
+      header: 'Стари задължения',
       accessorKey: 'old',
       sortable: true,
-      width: '80px',
-      minWidth: '80px',
-      cell: row => <span className="text-gray-600">{row.old.toFixed(2)}</span>,
+      width: '120px',
+      minWidth: '120px',
+      cell: row => (
+        <Badge variant={row.old > 0 ? 'warning' : 'neutral'}>
+          {formatCurrency(row.old)}
+        </Badge>
+      ),
     },
     {
       header: 'Общо',

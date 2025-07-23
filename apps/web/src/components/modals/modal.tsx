@@ -31,6 +31,9 @@ import { ViewMonthlyFeesModal } from './bodies/monthly-fees/view-monthly-fees';
 import { EditMonthlyFeesModal } from './bodies/monthly-fees/edit-monthly-fees';
 import { AddCalendarEventModal } from './bodies/calendar/add-calendar-event';
 import { EventDetailsModal } from './bodies/calendar/event-details-modal';
+import { CashierPaymentModal } from './bodies/cashier-payment-modal';
+import { ApartmentFeesReferenceModal } from './bodies/apartment-fees-reference-modal';
+import { ApartmentPaymentsReferenceModal } from './bodies/apartment-payments-reference-modal';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -76,6 +79,12 @@ export function ModalContainer() {
 
       case 'reference-fees':
         return <ReferenceFeesModal />;
+
+      case 'apartment-fees-reference':
+        return <ApartmentFeesReferenceModal />;
+
+      case 'apartment-payments-reference':
+        return <ApartmentPaymentsReferenceModal />;
 
       case 'reference-payments':
         return <ReferencePaymentsModal />;
@@ -152,6 +161,9 @@ export function ModalContainer() {
       case 'event-details':
         return <EventDetailsModal onClose={handleClose} />;
 
+      case 'cashier-payment':
+        return <CashierPaymentModal />;
+
       default:
         return null;
     }
@@ -179,10 +191,14 @@ export function ModalContainer() {
             transition={{ duration: 0.2 }}
             className={`relative z-10 ${
               modal.type === 'reference-fees' ||
+              modal.type === 'apartment-fees-reference' ||
+              modal.type === 'apartment-payments-reference' ||
               modal.type === 'reference-payments'
                 ? 'w-full max-w-6xl'
                 : modal.type === 'payment'
                   ? 'w-full max-w-2xl'
+                  : modal.type === 'cashier-payment'
+                    ? 'w-full max-w-4xl'
                   : modal.type === 'create-inventory'
                     ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
                     : modal.type === 'create-monthly-fee'
@@ -204,6 +220,8 @@ export function ModalContainer() {
           >
             {/* Conditional rendering based on modal type */}
             {modal.type === 'reference-fees' ||
+            modal.type === 'apartment-fees-reference' ||
+            modal.type === 'apartment-payments-reference' ||
             modal.type === 'reference-payments' ||
             modal.type === 'payment' ||
             modal.type === 'inventory-transfers' ||
@@ -213,7 +231,8 @@ export function ModalContainer() {
             modal.type === 'edit-recurring-expense' ||
             modal.type === 'create-temporary-fee' ||
             modal.type === 'add-calendar-event' ||
-            modal.type === 'event-details' ? (
+            modal.type === 'event-details' ||
+            modal.type === 'cashier-payment' ? (
               renderModalBody()
             ) : (
               <>

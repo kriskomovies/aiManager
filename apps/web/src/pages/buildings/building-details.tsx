@@ -56,7 +56,7 @@ const tabs: TabConfig[] = [
   },
   {
     id: 'users',
-    label: 'Потребители',
+    label: 'Живущи',
     icon: Users,
   },
   {
@@ -306,7 +306,7 @@ export function BuildingDetailsPage() {
         )}
         {activeTab === 'users' && <UsersTab buildingId={id!} />}
         {activeTab === 'messages' && <MessagesTab buildingId={id!} />}
-        {activeTab === 'calendar' && <CalendarTab />}
+        {activeTab === 'calendar' && <CalendarTab buildingId={id!} />}
       </motion.div>
     </motion.div>
   );
