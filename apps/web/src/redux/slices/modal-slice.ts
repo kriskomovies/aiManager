@@ -27,7 +27,9 @@ export type ModalType =
   | 'create-one-time-expense'
   | 'create-monthly-fee'
   | 'view-monthly-fee'
-  | 'edit-monthly-fee';
+  | 'edit-monthly-fee'
+  | 'add-calendar-event'
+  | 'event-details';
 
 export interface ModalData {
   buildingId?: string;
@@ -47,6 +49,9 @@ export interface ModalData {
   confirmText?: string;
   cancelText?: string;
   onConfirm?: () => void;
+  selectedStart?: string;
+  selectedEnd?: string;
+  event?: unknown; // Calendar event data for event details modal
   [key: string]: unknown; // Allow additional modal-specific data
 }
 

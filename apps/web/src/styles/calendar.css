@@ -1,0 +1,450 @@
+/* Calendar Component Styling - Matching Home Manager Design Language */
+/* Complete rewrite to fix fundamental layout and scrolling issues */
+
+/* Main calendar container - full height utilization */
+.rbc-calendar {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: none;
+  overflow: hidden;
+  border: 1px solid #E0E0E0;
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom toolbar - seamless with calendar */
+.rbc-toolbar {
+  background-color: #FFFFFF;
+  padding: 8px 16px;
+  margin: 0;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  height: 56px;
+}
+
+/* Month view structure - eliminate whitespace */
+.rbc-month-view {
+  border: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Weekday headers - compact design */
+.rbc-header {
+  background-color: #F9FAFB;
+  color: #1C1C1C;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 6px 4px;
+  height: 28px;
+  border-bottom: 1px solid #E0E0E0;
+  border-right: 1px solid #E0E0E0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rbc-header:last-child {
+  border-right: none;
+}
+
+/* Header row - fixed height, no extra space */
+.rbc-month-view .rbc-row.rbc-header-row {
+  flex: none;
+  height: 28px;
+  min-height: 28px;
+  max-height: 28px;
+  display: flex;
+}
+
+/* Month body - fill remaining space */
+.rbc-month-view .rbc-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Date rows - equal height distribution */
+.rbc-month-view .rbc-body .rbc-row {
+  flex: 1;
+  min-height: 100px;
+  display: flex;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.rbc-month-view .rbc-body .rbc-row:last-child {
+  border-bottom: none;
+}
+
+/* Individual date cells - independent containers */
+.rbc-date-cell {
+  flex: 1;
+  min-height: 100px;
+  padding: 3px;
+  border-right: 1px solid #E0E0E0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  overflow: hidden;
+  transition: background-color 0.15s ease;
+}
+
+.rbc-date-cell:last-child {
+  border-right: none;
+}
+
+/* Date cell hover effects - only on content area */
+.rbc-date-cell {
+  position: relative;
+}
+
+.rbc-date-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1px;
+  right: 1px;
+  bottom: 0;
+  border-radius: 4px;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rbc-date-cell:hover::before {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.rbc-date-cell:hover {
+  cursor: pointer;
+}
+
+/* Off-range hover effects */
+.rbc-date-cell.rbc-off-range-bg:hover::before,
+.rbc-date-cell.rbc-off-range:hover::before {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Ensure content is above hover overlay */
+.rbc-date-cell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Date numbers - compact positioning */
+.rbc-button-link {
+  color: #1C1C1C;
+  font-weight: 500;
+  font-size: 12px;
+  text-decoration: none;
+  padding: 1px 3px;
+  border-radius: 3px;
+  transition: all 150ms ease;
+  display: inline-block;
+  text-align: left;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  height: 16px;
+  line-height: 14px;
+  width: auto;
+}
+
+.rbc-button-link:hover {
+  background-color: rgba(47, 128, 237, 0.1);
+  color: #2F80ED;
+}
+
+/* Today highlighting */
+.rbc-today {
+  background-color: rgba(47, 128, 237, 0.05) !important;
+}
+
+.rbc-date-cell.rbc-today {
+  background-color: rgba(47, 128, 237, 0.05) !important;
+}
+
+.rbc-date-cell.rbc-today::before {
+  background-color: rgba(47, 128, 237, 0.08);
+  border: 1px solid rgba(47, 128, 237, 0.2);
+}
+
+.rbc-date-cell.rbc-today:hover::before {
+  background-color: rgba(47, 128, 237, 0.12);
+  border: 1px solid rgba(47, 128, 237, 0.3);
+}
+
+.rbc-date-cell.rbc-today .rbc-button-link {
+  color: #2F80ED;
+  font-weight: 700;
+  background-color: rgba(47, 128, 237, 0.1);
+  border-radius: 3px;
+}
+
+/* Off-range dates - full width background */
+.rbc-date-cell.rbc-off-range-bg {
+  background-color: #f5f5f5 !important;
+}
+
+.rbc-date-cell.rbc-off-range {
+  background-color: #f5f5f5 !important;
+}
+
+.rbc-off-range {
+  background-color: #f5f5f5 !important;
+}
+
+/* Ensure off-range cells cover full area */
+.rbc-month-view .rbc-date-cell.rbc-off-range-bg,
+.rbc-month-view .rbc-date-cell.rbc-off-range {
+  background-color: #f5f5f5 !important;
+  position: relative;
+}
+
+.rbc-off-range .rbc-button-link {
+  color: #9ca3af;
+}
+
+/* Events container - CRITICAL: Individual cell scrolling */
+.rbc-row-content {
+  flex: 1;
+  overflow: visible;
+  position: relative;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual date cell event area - THIS IS KEY */
+.rbc-date-cell .rbc-row-content {
+  max-height: 78px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  /* Hide scrollbar by default */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rbc-date-cell .rbc-row-content::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+/* Show scrollbar only on cell hover when needed */
+.rbc-date-cell:hover .rbc-row-content::-webkit-scrollbar {
+  width: 2px;
+}
+
+.rbc-date-cell:hover .rbc-row-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rbc-date-cell:hover .rbc-row-content::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 1px;
+}
+
+/* Compact event styling - with proper internal spacing */
+.rbc-event {
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: none;
+  font-size: 10px;
+  font-weight: 500;
+  margin: 1px 0;
+  cursor: pointer;
+  transition: all 100ms ease;
+  box-shadow: none;
+  line-height: 1.2;
+  min-height: 14px;
+  max-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  position: relative;
+}
+
+.rbc-event:hover {
+  transform: none;
+  opacity: 0.9;
+}
+
+/* Event type colors - following design language */
+.rbc-event.event-maintenance {
+  background-color: #EB5757;
+  color: white;
+}
+
+.rbc-event.event-inspection {
+  background-color: #2F80ED;
+  color: white;
+}
+
+.rbc-event.event-payment {
+  background-color: #27AE60;
+  color: white;
+}
+
+.rbc-event.event-meeting {
+  background-color: #9B59B6;
+  color: white;
+}
+
+.rbc-event.event-repair {
+  background-color: #F39C12;
+  color: white;
+}
+
+/* Show more link - compact */
+.rbc-show-more {
+  color: #2F80ED;
+  font-weight: 600;
+  font-size: 9px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: all 150ms ease;
+  margin: 1px 0;
+  text-decoration: underline;
+  line-height: 1.1;
+  height: 12px;
+  display: block;
+}
+
+.rbc-show-more:hover {
+  background-color: rgba(47, 128, 237, 0.1);
+  text-decoration: none;
+}
+
+/* Prevent row-level scrolling issues */
+.rbc-month-row {
+  overflow: visible !important;
+}
+
+/* Event content - no extra spacing */
+.rbc-event-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+  margin: 0;
+}
+
+/* Fix for selection areas */
+.rbc-slot-selection {
+  background-color: rgba(47, 128, 237, 0.2);
+  border: 1px solid #2F80ED;
+}
+
+/* Toolbar styling */
+.rbc-toolbar-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1C1C1C;
+  margin: 0 16px;
+}
+
+/* Navigation buttons */
+.rbc-btn-group {
+  display: flex;
+  gap: 2px;
+}
+
+.rbc-btn-group button {
+  padding: 6px 12px;
+  border: 1px solid #E0E0E0;
+  background-color: #FFFFFF;
+  color: #666666;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.rbc-btn-group button:hover {
+  background-color: #F9FAFB;
+  border-color: #2F80ED;
+  color: #2F80ED;
+}
+
+.rbc-btn-group button.rbc-active {
+  background-color: #2F80ED;
+  border-color: #2F80ED;
+  color: white;
+}
+
+/* Week and agenda views */
+.rbc-time-view .rbc-time-header {
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.rbc-time-view .rbc-time-content {
+  border-top: none;
+}
+
+.rbc-time-slot {
+  border-top: 1px solid #F5F5F5;
+}
+
+.rbc-agenda-view {
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Popover */
+.rbc-overlay {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 6px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 8px;
+    height: auto;
+    padding: 8px;
+  }
+  
+  .rbc-date-cell {
+    min-height: 80px;
+    padding: 2px;
+  }
+  
+  .rbc-event {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}
+
+/* Focus styles for accessibility */
+.rbc-button-link:focus,
+.rbc-btn-group button:focus,
+.rbc-show-more:focus {
+  outline: 2px solid #2F80ED;
+  outline-offset: 1px;
+} 

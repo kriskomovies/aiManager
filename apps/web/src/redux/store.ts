@@ -7,6 +7,7 @@ import { inventoryService } from './services/inventory.service';
 import { paymentMethodService } from './services/payment-method.service';
 import { expenseService } from './services/expense.service';
 import { monthlyFeeService } from './services/monthly-fee.service';
+import { calendarService } from './services/calendar-service';
 import appStateReducer from './slices/app-state';
 import alertReducer from './slices/alert-slice';
 import modalReducer from './slices/modal-slice';
@@ -23,6 +24,7 @@ export const store = configureStore({
     [paymentMethodService.reducerPath]: paymentMethodService.reducer,
     [expenseService.reducerPath]: expenseService.reducer,
     [monthlyFeeService.reducerPath]: monthlyFeeService.reducer,
+    [calendarService.reducerPath]: calendarService.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(
@@ -32,7 +34,8 @@ export const store = configureStore({
       inventoryService.middleware,
       paymentMethodService.middleware,
       expenseService.middleware,
-      monthlyFeeService.middleware
+      monthlyFeeService.middleware,
+      calendarService.middleware
     ),
 });
 

@@ -25,6 +25,8 @@ import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-moda
 import { CreateMonthlyFeeModal } from './bodies/monthly-fees/create-monthly-fee';
 import { ViewMonthlyFeesModal } from './bodies/monthly-fees/view-monthly-fees';
 import { EditMonthlyFeesModal } from './bodies/monthly-fees/edit-monthly-fees';
+import { AddCalendarEventModal } from './bodies/calendar/add-calendar-event';
+import { EventDetailsModal } from './bodies/calendar/event-details-modal';
 
 export function ModalContainer() {
   const modal = useAppSelector(selectModal);
@@ -128,6 +130,12 @@ export function ModalContainer() {
       case 'edit-monthly-fee':
         return <EditMonthlyFeesModal />;
 
+      case 'add-calendar-event':
+        return <AddCalendarEventModal onClose={handleClose} />;
+
+      case 'event-details':
+        return <EventDetailsModal onClose={handleClose} />;
+
       default:
         return null;
     }
@@ -167,7 +175,11 @@ export function ModalContainer() {
                         ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
                         : modal.type === 'edit-monthly-fee'
                           ? 'bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden'
-                          : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+                          : modal.type === 'add-calendar-event'
+                            ? 'bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden'
+                            : modal.type === 'event-details'
+                              ? 'bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden'
+                              : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
@@ -177,7 +189,9 @@ export function ModalContainer() {
             modal.type === 'inventory-transfers' ||
             modal.type === 'create-monthly-fee' ||
             modal.type === 'view-monthly-fee' ||
-            modal.type === 'edit-monthly-fee' ? (
+            modal.type === 'edit-monthly-fee' ||
+            modal.type === 'add-calendar-event' ||
+            modal.type === 'event-details' ? (
               renderModalBody()
             ) : (
               <>

@@ -10,11 +10,14 @@ import { AddEditBuildingPage } from './pages/buildings/add-edit-building';
 import { AddEditApartmentPage } from './pages/apartments/add-edit-apartment';
 import { ApartmentDetailsPage } from './pages/apartments/apartment-details';
 import { HomePage } from './pages/home/home';
+import { CalendarPage } from './pages/calendar/calendar-page';
 import { ErrorBoundary } from './components/error-boundary';
 import { NotFoundPage } from './components/error-pages/not-found';
 import { GeneralErrorPage } from './components/error-pages/general-error';
 import './lib/error-logger'; // Initialize global error handlers
 import './styles/globals.css';
+import './styles/calendar.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const router = createBrowserRouter([
   {
@@ -74,9 +77,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/calendar',
-        element: (
-          <div className="text-gray-500">Calendar page coming soon...</div>
-        ),
+        element: <CalendarPage />,
         errorElement: <GeneralErrorPage />,
       },
     ],
