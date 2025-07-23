@@ -12,7 +12,7 @@ import {
   MessageSquare,
   Pencil,
 } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
@@ -71,11 +71,41 @@ const tabs: TabConfig[] = [
   },
 ];
 
+// Valid tab IDs for validation
+const validTabs = tabs.map(tab => tab.id) as TabType[];
+
 export function BuildingDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [activeTab, setActiveTab] = useState<TabType>('apartments');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get tab from URL or default to 'apartments'
+  const getInitialTab = (): TabType => {
+    const tabFromUrl = searchParams.get('tab') as TabType;
+    return validTabs.includes(tabFromUrl) ? tabFromUrl : 'apartments';
+  };
+
+  const [activeTab, setActiveTab] = useState<TabType>(getInitialTab);
+
+  // Update URL when tab changes
+  const handleTabChange = (tabId: string) => {
+    const newTab = tabId as TabType;
+    setActiveTab(newTab);
+    
+    // Update URL search params
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('tab', newTab);
+    setSearchParams(newSearchParams, { replace: true });
+  };
+
+  // Sync tab state with URL on mount and URL changes
+  useEffect(() => {
+    const tabFromUrl = getInitialTab();
+    if (tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   // API call to get building data
   const {
@@ -254,7 +284,7 @@ export function BuildingDetailsPage() {
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
-          onTabChange={tabId => setActiveTab(tabId as TabType)}
+          onTabChange={handleTabChange}
           variant="underline"
           className="mb-6"
         />

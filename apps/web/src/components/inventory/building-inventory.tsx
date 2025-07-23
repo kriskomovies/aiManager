@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabConfig } from '@/components/ui/tabs';
 import { AllInventoriesTab } from './tabs/all-inventories-tab';
 import { ExpensesTab } from './tabs/expenses-tab';
@@ -11,8 +12,10 @@ interface BuildingInventoryProps {
   buildingId: string;
 }
 
+type InventoryTabType = 'inventories' | 'expenses' | 'monthly-fees' | 'temporary-fees';
+
 export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
-  const [activeTab, setActiveTab] = useState('inventories');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const tabs: TabConfig[] = [
     {
@@ -37,6 +40,36 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
     },
   ];
 
+  // Valid inventory tab IDs for validation
+  const validInventoryTabs = tabs.map(tab => tab.id) as InventoryTabType[];
+
+  // Get inventory tab from URL or default to 'inventories'
+  const getInitialInventoryTab = (): InventoryTabType => {
+    const inventoryTabFromUrl = searchParams.get('inventoryTab') as InventoryTabType;
+    return validInventoryTabs.includes(inventoryTabFromUrl) ? inventoryTabFromUrl : 'inventories';
+  };
+
+  const [activeTab, setActiveTab] = useState<InventoryTabType>(getInitialInventoryTab);
+
+  // Update URL when inventory tab changes
+  const handleTabChange = (tabId: string) => {
+    const newTab = tabId as InventoryTabType;
+    setActiveTab(newTab);
+    
+    // Update URL search params
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('inventoryTab', newTab);
+    setSearchParams(newSearchParams, { replace: true });
+  };
+
+  // Sync inventory tab state with URL on mount and URL changes
+  useEffect(() => {
+    const inventoryTabFromUrl = getInitialInventoryTab();
+    if (inventoryTabFromUrl !== activeTab) {
+      setActiveTab(inventoryTabFromUrl);
+    }
+  }, [searchParams]);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'inventories':
@@ -59,7 +92,7 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
           <Tabs
             tabs={tabs}
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             variant="underline"
           />
         </div>

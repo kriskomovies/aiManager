@@ -216,7 +216,6 @@ export function CalendarTab({ buildingId = 'building-1' }: CalendarTabProps) {
           style={{ 
             height: 'calc(100vh - 160px)', 
             minHeight: '650px',
-            padding: '16px',
           }}
         >
           <Calendar
