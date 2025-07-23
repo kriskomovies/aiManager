@@ -25,6 +25,10 @@ export type ModalType =
   | 'transfer-inventory-money'
   | 'inventory-transfers'
   | 'create-one-time-expense'
+  | 'create-recurring-expense'
+  | 'edit-recurring-expense'
+  | 'delete-recurring-expense'
+  | 'create-temporary-fee'
   | 'create-monthly-fee'
   | 'view-monthly-fee'
   | 'edit-monthly-fee'
@@ -43,6 +47,7 @@ export interface ModalData {
   inventoryId?: string;
   inventoryName?: string;
   inventoryData?: unknown;
+  expenseData?: unknown;
   monthlyFeeId?: string;
   title?: string;
   message?: string;

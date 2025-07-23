@@ -22,6 +22,10 @@ import { DeleteInventoryModal } from './bodies/delete-inventory-modal';
 import { TransferInventoryMoneyModal } from './bodies/transfer-inventory-money-modal';
 import { InventoryTransfersModal } from './bodies/inventory-transfers-modal';
 import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-modal';
+import { CreateRecurringExpenseModal } from './bodies/recurring-expense/create-recurring-expense-modal';
+import { EditRecurringExpenseModal } from './bodies/recurring-expense/edit-recurring-expense-modal';
+import { DeleteRecurringExpenseModal } from './bodies/recurring-expense/delete-recurring-expense-modal';
+import { CreateTemporaryFeeModal } from './bodies/temporary-fees/crete-temporary-fee-modal';
 import { CreateMonthlyFeeModal } from './bodies/monthly-fees/create-monthly-fee';
 import { ViewMonthlyFeesModal } from './bodies/monthly-fees/view-monthly-fees';
 import { EditMonthlyFeesModal } from './bodies/monthly-fees/edit-monthly-fees';
@@ -121,6 +125,18 @@ export function ModalContainer() {
       case 'create-one-time-expense':
         return <CreateOneTimeExpenseModal onClose={handleClose} />;
 
+      case 'create-recurring-expense':
+        return <CreateRecurringExpenseModal onClose={handleClose} />;
+
+      case 'edit-recurring-expense':
+        return <EditRecurringExpenseModal onClose={handleClose} />;
+
+      case 'delete-recurring-expense':
+        return <DeleteRecurringExpenseModal onClose={handleClose} />;
+
+      case 'create-temporary-fee':
+        return <CreateTemporaryFeeModal onClose={handleClose} />;
+
       case 'create-monthly-fee':
         return <CreateMonthlyFeeModal />;
 
@@ -175,11 +191,15 @@ export function ModalContainer() {
                         ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
                         : modal.type === 'edit-monthly-fee'
                           ? 'bg-white rounded-xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden'
-                          : modal.type === 'add-calendar-event'
-                            ? 'bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden'
-                            : modal.type === 'event-details'
-                              ? 'bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden'
-                              : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
+                                            : modal.type === 'add-calendar-event'
+                    ? 'bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden'
+                    : modal.type === 'event-details'
+                      ? 'bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden'
+                      : modal.type === 'edit-recurring-expense'
+                        ? 'bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden'
+                        : modal.type === 'create-temporary-fee'
+                          ? 'bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden'
+                          : 'bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden'
             }`}
           >
             {/* Conditional rendering based on modal type */}
@@ -190,6 +210,8 @@ export function ModalContainer() {
             modal.type === 'create-monthly-fee' ||
             modal.type === 'view-monthly-fee' ||
             modal.type === 'edit-monthly-fee' ||
+            modal.type === 'edit-recurring-expense' ||
+            modal.type === 'create-temporary-fee' ||
             modal.type === 'add-calendar-event' ||
             modal.type === 'event-details' ? (
               renderModalBody()

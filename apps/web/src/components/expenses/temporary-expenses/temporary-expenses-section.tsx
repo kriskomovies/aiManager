@@ -1,10 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { TemporaryExpensesTable } from './temporary-expenses-table';
 import { Plus } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
 export function TemporaryExpensesSection() {
+  const dispatch = useAppDispatch();
+
   const handleCreateExpense = () => {
-    console.log('Create temporary expense');
+    dispatch(openModal({ type: 'create-recurring-expense' }));
   };
 
   return (

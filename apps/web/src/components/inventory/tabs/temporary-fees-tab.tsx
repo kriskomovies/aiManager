@@ -3,10 +3,14 @@ import { Button } from '@/components/ui/button';
 import { TemporaryFeesTable } from '@/components/temporary-fees/temporary-fees-table';
 import { ArchiveTemporaryFeesTable } from '@/components/temporary-fees/archive-temporary-fees-table';
 import { Plus } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
 export function TemporaryFeesTab() {
+  const dispatch = useAppDispatch();
+
   const handleCreateTemporaryFee = () => {
-    console.log('Create temporary fee');
+    dispatch(openModal({ type: 'create-temporary-fee' }));
   };
 
   return (

@@ -7,6 +7,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Wallet, Edit, Trash2 } from 'lucide-react';
+import { useAppDispatch } from '@/redux/hooks';
+import { openModal } from '@/redux/slices/modal-slice';
 
 interface TemporaryExpenseData {
   id: string;
@@ -28,6 +30,7 @@ interface TemporaryExpenseChild {
 }
 
 export function TemporaryExpensesTable() {
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof TemporaryExpenseData;
@@ -103,11 +106,21 @@ export function TemporaryExpensesTable() {
   };
 
   const handleEditExpense = (expense: TemporaryExpenseData) => {
-    console.log('Edit expense:', expense.name);
+    dispatch(openModal({ 
+      type: 'edit-recurring-expense', 
+      data: { 
+        expenseData: expense 
+      } 
+    }));
   };
 
   const handleDeleteExpense = (expense: TemporaryExpenseData) => {
-    console.log('Delete expense:', expense.name);
+    dispatch(openModal({ 
+      type: 'delete-recurring-expense', 
+      data: { 
+        expenseData: expense 
+      } 
+    }));
   };
 
   const columns: ExpandableColumn<TemporaryExpenseData>[] = [
