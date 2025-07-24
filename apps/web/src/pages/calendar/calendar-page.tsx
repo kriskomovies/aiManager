@@ -1,146 +1,83 @@
 import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { CalendarWithFilters, CalendarEventData } from '@/components/calendar-with-filters';
-
-// Mock building data
-const mockBuildings = [
-  { id: 'building-1', name: 'Сграда "Изгрев"', address: 'ул. Витоша 15', apartmentCount: 24 },
-  { id: 'building-2', name: 'Сграда "Слънце"', address: 'бул. Витошки 42', apartmentCount: 18 },
-  { id: 'building-3', name: 'Сграда "Централ"', address: 'ул. Васил Левски 8', apartmentCount: 32 },
-  { id: 'building-4', name: 'Сграда "Парк"', address: 'ул. Боян Магесник 12', apartmentCount: 16 },
-];
-
-// Mock events data for all buildings
-const mockAllEvents: CalendarEventData[] = [
-  // Building 1 events
-  {
-    id: '1',
-    title: 'Събиране на собствениците',
-    start: '2025-01-07T14:00:00',
-    end: '2025-01-07T16:00:00',
-    type: 'meeting',
-    description: 'Месечно събиране на собствениците за обсъждане на актуални въпроси',
-    buildingId: 'building-1',
-    buildingName: 'Сграда "Изгрев"',
-    status: 'scheduled',
-    priority: 'medium',
-    apartmentId: undefined,
-    assignedTo: 'Мария Петрова'
-  },
-  {
-    id: '2',
-    title: 'Ремонт на асансьор',
-    start: '2025-01-07T16:00:00',
-    end: '2025-01-07T18:00:00',
-    type: 'maintenance',
-    description: 'Профилактичен ремонт на асансьор - етаж 1-6',
-    buildingId: 'building-1',
-    buildingName: 'Сграда "Изгрев"',
-    status: 'scheduled',
-    priority: 'high',
-    apartmentId: undefined,
-    assignedTo: 'Иван Георгиев'
-  },
-  // Building 2 events
-  {
-    id: '3',
-    title: 'Инспекция пожарна безопасност',
-    start: '2025-01-09T10:00:00',
-    end: '2025-01-09T12:00:00',
-    type: 'inspection',
-    description: 'Годишна инспекция за пожарна безопасност',
-    buildingId: 'building-2',
-    buildingName: 'Сграда "Слънце"',
-    status: 'scheduled',
-    priority: 'high',
-    apartmentId: undefined,
-    assignedTo: 'Пожарна служба'
-  },
-  {
-    id: '4',
-    title: 'Събиране на такси',
-    start: '2025-01-10T09:00:00',
-    end: '2025-01-10T17:00:00',
-    type: 'payment',
-    description: 'Събиране на месечни такси за януари',
-    buildingId: 'building-2',
-    buildingName: 'Сграда "Слънце"',
-    status: 'in-progress',
-    priority: 'medium',
-    apartmentId: undefined,
-    assignedTo: 'Елена Димитрова'
-  },
-  // Building 3 events
-  {
-    id: '5',
-    title: 'Почистване на покрив',
-    start: '2025-01-12T08:00:00',
-    end: '2025-01-12T12:00:00',
-    type: 'maintenance',
-    description: 'Почистване на покрива от сняг и лед',
-    buildingId: 'building-3',
-    buildingName: 'Сграда "Централ"',
-    status: 'completed',
-    priority: 'urgent',
-    apartmentId: undefined,
-    assignedTo: 'Строителна компания "Алфа"'
-  },
-  {
-    id: '6',
-    title: 'Общо събрание',
-    start: '2025-01-15T19:00:00',
-    end: '2025-01-15T21:00:00',
-    type: 'meeting',
-    description: 'Извънредно общо събрание за промени в устава',
-    buildingId: 'building-3',
-    buildingName: 'Сграда "Централ"',
-    status: 'scheduled',
-    priority: 'high',
-    apartmentId: undefined,
-    assignedTo: 'Анна Стоянова'
-  },
-  // Building 4 events
-  {
-    id: '7',
-    title: 'Ремонт отоплителна система',
-    start: '2025-01-20T08:00:00',
-    end: '2025-01-22T17:00:00',
-    type: 'repair',
-    description: 'Ремонт на отоплителната система - подмяна на тръби',
-    buildingId: 'building-4',
-    buildingName: 'Сграда "Парк"',
-    status: 'scheduled',
-    priority: 'urgent',
-    apartmentId: undefined,
-    assignedTo: 'ВиК "Топлофикация"'
-  },
-];
+import {
+  CalendarWithFilters,
+  CalendarEventData,
+} from '@/components/calendar/calendar-with-filters';
+import { useGetBuildingsQuery } from '@/redux/services/building.service';
+import { useGetCalendarEventsQuery } from '@/redux/services/calendar-service';
+import { CalendarEventType } from '@repo/interfaces';
 
 export function CalendarPage() {
   const [selectedBuilding, setSelectedBuilding] = useState<string>('all');
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [includePastEvents, setIncludePastEvents] = useState<boolean>(true);
+
+  // Fetch buildings from API
+  const {
+    data: buildingsData,
+    isLoading: isBuildingsLoading,
+    error: buildingsError,
+  } = useGetBuildingsQuery({
+    page: 1,
+    pageSize: 100, // Get all buildings for filter dropdown
+  });
+
+  // Fetch calendar events from API
+  const {
+    data: eventsData,
+    isLoading: isEventsLoading,
+    error: eventsError,
+  } = useGetCalendarEventsQuery({
+    page: 1,
+    pageSize: 1000, // Get all events for calendar view
+    buildingId: selectedBuilding !== 'all' ? selectedBuilding : undefined,
+    type:
+      eventTypeFilter !== 'all'
+        ? (eventTypeFilter as CalendarEventType)
+        : undefined,
+    search: undefined, // Removed search term
+  });
+
+  // Transform buildings data for calendar filter
+  const buildings = useMemo(() => {
+    if (!buildingsData?.items) return [];
+    return buildingsData.items.map(building => ({
+      id: building.id,
+      name: building.name,
+      address: building.address,
+      apartmentCount: building.apartmentCount,
+    }));
+  }, [buildingsData]);
+
+  // Transform events data for calendar display
+  const calendarEvents: CalendarEventData[] = useMemo(() => {
+    if (!eventsData?.items) return [];
+
+    return eventsData.items.map(event => ({
+      id: event.id,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      type: event.type,
+      description: event.description,
+      buildingId: event.buildingId,
+      buildingName:
+        buildings.find(b => b.id === event.buildingId)?.name ||
+        'Unknown Building',
+      status: event.status,
+      priority: event.priority,
+      apartmentId: event.apartmentId, // Keep for backward compatibility
+      appliesToAllApartments: event.appliesToAllApartments, // ✅ PRESERVE THIS
+      targetApartmentIds: event.targetApartmentIds, // ✅ PRESERVE THIS
+      assignedTo: event.assignedTo,
+    }));
+  }, [eventsData, buildings]);
 
   // Get event counts by type for the badge
   const eventCounts = useMemo(() => {
-    let events = mockAllEvents;
-
-    if (selectedBuilding !== 'all') {
-      events = events.filter(event => event.buildingId === selectedBuilding);
-    }
-
-    if (eventTypeFilter !== 'all') {
-      events = events.filter(event => event.type === eventTypeFilter);
-    }
-
-    if (searchTerm) {
-      events = events.filter(event => 
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (event.buildingName && event.buildingName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-    }
+    const events = calendarEvents;
 
     return {
       total: events.length,
@@ -150,7 +87,7 @@ export function CalendarPage() {
       meeting: events.filter(e => e.type === 'meeting').length,
       repair: events.filter(e => e.type === 'repair').length,
     };
-  }, [selectedBuilding, eventTypeFilter, searchTerm]);
+  }, [calendarEvents]);
 
   // Format event title to include building name for multi-building view
   const formatEventTitle = (event: CalendarEventData) => {
@@ -177,19 +114,42 @@ export function CalendarPage() {
     </div>
   );
 
+  const isLoading = isBuildingsLoading || isEventsLoading;
+  const hasError = buildingsError || eventsError;
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg bg-white shadow-sm border border-gray-200 p-8">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-gray-500">Зареждане на календара...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="rounded-lg bg-white shadow-sm border border-gray-200 p-8">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-red-600">Грешка при зареждане на календара</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <CalendarWithFilters
-      events={mockAllEvents}
-      buildings={mockBuildings}
+      events={calendarEvents}
+      buildings={buildings}
       selectedBuilding={selectedBuilding}
       onBuildingChange={setSelectedBuilding}
       showBuildingFilter={true}
       eventTypeFilter={eventTypeFilter}
       onEventTypeChange={setEventTypeFilter}
       showEventTypeFilter={true}
-      searchTerm={searchTerm}
-      onSearchChange={setSearchTerm}
-      showSearch={true}
+      includePastEvents={includePastEvents}
+      onIncludePastEventsChange={setIncludePastEvents}
+      showPastEventsFilter={true}
       height="calc(100vh - 50px)"
       minHeight="750px"
       showFilters={true}

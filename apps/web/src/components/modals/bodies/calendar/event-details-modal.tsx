@@ -1,20 +1,19 @@
-
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { closeModal, selectModalData } from '@/redux/slices/modal-slice';
+import { closeModal, selectModalData, openModal } from '@/redux/slices/modal-slice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  User, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  User,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   Pause,
   Edit,
   Trash2,
-  X 
+  X,
 } from 'lucide-react';
 import { CalendarEvent } from '@/redux/services/calendar-service';
 
@@ -33,68 +32,68 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
 
   // Event type configuration
   const eventTypeConfig = {
-    maintenance: { 
-      label: 'Поддръжка', 
-      icon: AlertTriangle, 
+    maintenance: {
+      label: 'Поддръжка',
+      icon: AlertTriangle,
       color: 'bg-red-500',
       textColor: 'text-red-600',
-      bgColor: 'bg-red-50'
+      bgColor: 'bg-red-50',
     },
-    inspection: { 
-      label: 'Проверка', 
-      icon: CheckCircle, 
+    inspection: {
+      label: 'Проверка',
+      icon: CheckCircle,
       color: 'bg-blue-500',
       textColor: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      bgColor: 'bg-blue-50',
     },
-    payment: { 
-      label: 'Плащане/Такси', 
-      icon: MapPin, 
+    payment: {
+      label: 'Плащане/Такси',
+      icon: MapPin,
       color: 'bg-green-500',
       textColor: 'text-green-600',
-      bgColor: 'bg-green-50'
+      bgColor: 'bg-green-50',
     },
-    meeting: { 
-      label: 'Събиране', 
-      icon: User, 
+    meeting: {
+      label: 'Събиране',
+      icon: User,
       color: 'bg-purple-500',
       textColor: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      bgColor: 'bg-purple-50',
     },
-    repair: { 
-      label: 'Ремонт', 
-      icon: AlertTriangle, 
+    repair: {
+      label: 'Ремонт',
+      icon: AlertTriangle,
       color: 'bg-orange-500',
       textColor: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      bgColor: 'bg-orange-50',
     },
   };
 
   // Status configuration
   const statusConfig = {
-    scheduled: { 
-      label: 'Планирано', 
+    scheduled: {
+      label: 'Планирано',
       variant: 'neutral' as const,
       icon: Clock,
-      color: 'text-gray-600'
+      color: 'text-gray-600',
     },
-    'in-progress': { 
-      label: 'В процес', 
+    'in-progress': {
+      label: 'В процес',
       variant: 'warning' as const,
       icon: Pause,
-      color: 'text-yellow-600'
+      color: 'text-yellow-600',
     },
-    completed: { 
-      label: 'Завършено', 
+    completed: {
+      label: 'Завършено',
       variant: 'positive' as const,
       icon: CheckCircle,
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
-    cancelled: { 
-      label: 'Отменено', 
+    cancelled: {
+      label: 'Отменено',
       variant: 'negative' as const,
       icon: XCircle,
-      color: 'text-red-600'
+      color: 'text-red-600',
     },
   };
 
@@ -114,16 +113,16 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('bg-BG', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      date: date.toLocaleDateString('bg-BG', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       }),
-      time: date.toLocaleTimeString('bg-BG', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      })
+      time: date.toLocaleTimeString('bg-BG', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     };
   };
 
@@ -136,19 +135,27 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
     dispatch({
       type: 'modal/openModal',
       payload: {
-        type: 'add-calendar-event',
-        data: { 
+        type: 'add-edit-calendar-event',
+        data: {
           buildingId: event.buildingId,
-          editEvent: event 
-        }
-      }
+          event: event,
+        },
+      },
     });
   };
 
   const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log('Delete event:', event.id);
+    // Close current modal and open delete confirmation modal
     onClose();
+    dispatch(
+      openModal({
+        type: 'delete-calendar-event',
+        data: {
+          eventId: event.id,
+          eventTitle: event.title,
+        },
+      })
+    );
   };
 
   return (
@@ -162,7 +169,9 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
       </button>
 
       {/* Header */}
-      <div className={`px-6 py-4 border-b border-gray-200 flex-shrink-0 ${selectedEventType.bgColor}`}>
+      <div
+        className={`px-6 py-4 border-b border-gray-200 flex-shrink-0 ${selectedEventType.bgColor}`}
+      >
         <div className="flex items-start gap-3">
           <div className={`p-2 rounded-lg ${selectedEventType.color}`}>
             <selectedEventType.icon className="w-5 h-5 text-white" />
@@ -173,8 +182,12 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
             </h2>
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-1">
-                <selectedEventType.icon className={`w-4 h-4 ${selectedEventType.textColor}`} />
-                <span className={`text-sm font-medium ${selectedEventType.textColor}`}>
+                <selectedEventType.icon
+                  className={`w-4 h-4 ${selectedEventType.textColor}`}
+                />
+                <span
+                  className={`text-sm font-medium ${selectedEventType.textColor}`}
+                >
                   {selectedEventType.label}
                 </span>
               </div>
@@ -200,8 +213,12 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
           <div className="space-y-3">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
-                <div className="text-xs text-gray-500 uppercase font-medium">Начало</div>
-                <div className="text-sm font-medium text-gray-900">{startDateTime.date}</div>
+                <div className="text-xs text-gray-500 uppercase font-medium">
+                  Начало
+                </div>
+                <div className="text-sm font-medium text-gray-900">
+                  {startDateTime.date}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {startDateTime.time}
@@ -213,8 +230,12 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
                 <div className="h-px bg-gray-300 flex-1"></div>
               </div>
               <div className="flex-shrink-0 text-right">
-                <div className="text-xs text-gray-500 uppercase font-medium">Край</div>
-                <div className="text-sm font-medium text-gray-900">{endDateTime.date}</div>
+                <div className="text-xs text-gray-500 uppercase font-medium">
+                  Край
+                </div>
+                <div className="text-sm font-medium text-gray-900">
+                  {endDateTime.date}
+                </div>
                 <div className="text-sm text-gray-600 flex items-center gap-1 justify-end">
                   <Clock className="w-3 h-3" />
                   {endDateTime.time}
@@ -267,7 +288,9 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
             Статус на събитието
           </h3>
           <div className="flex items-center gap-2">
-            <selectedStatus.icon className={`w-4 h-4 ${selectedStatus.color}`} />
+            <selectedStatus.icon
+              className={`w-4 h-4 ${selectedStatus.color}`}
+            />
             <span className="text-sm font-medium text-gray-900">
               {selectedStatus.label}
             </span>
@@ -277,9 +300,7 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
 
       {/* Action Footer */}
       <div className="flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-        <div className="text-xs text-gray-500">
-          ID: {event.id}
-        </div>
+        <div className="text-xs text-gray-500">ID: {event.id}</div>
         <div className="flex gap-3">
           <Button
             variant="outline"
@@ -299,10 +320,7 @@ export function EventDetailsModal({ onClose }: EventDetailsModalProps) {
             <Trash2 className="w-4 h-4" />
             Изтрий
           </Button>
-          <Button
-            variant="outline"
-            onClick={onClose}
-          >
+          <Button variant="outline" onClick={onClose}>
             Затвори
           </Button>
         </div>

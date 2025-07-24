@@ -106,21 +106,25 @@ export function TemporaryExpensesTable() {
   };
 
   const handleEditExpense = (expense: TemporaryExpenseData) => {
-    dispatch(openModal({ 
-      type: 'edit-recurring-expense', 
-      data: { 
-        expenseData: expense 
-      } 
-    }));
+    dispatch(
+      openModal({
+        type: 'edit-recurring-expense',
+        data: {
+          expenseData: expense,
+        },
+      })
+    );
   };
 
   const handleDeleteExpense = (expense: TemporaryExpenseData) => {
-    dispatch(openModal({ 
-      type: 'delete-recurring-expense', 
-      data: { 
-        expenseData: expense 
-      } 
-    }));
+    dispatch(
+      openModal({
+        type: 'delete-recurring-expense',
+        data: {
+          expenseData: expense,
+        },
+      })
+    );
   };
 
   const columns: ExpandableColumn<TemporaryExpenseData>[] = [

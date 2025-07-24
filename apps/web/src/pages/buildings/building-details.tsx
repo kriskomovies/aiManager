@@ -79,7 +79,7 @@ export function BuildingDetailsPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   // Get tab from URL or default to 'apartments'
   const getInitialTab = (): TabType => {
     const tabFromUrl = searchParams.get('tab') as TabType;
@@ -92,7 +92,7 @@ export function BuildingDetailsPage() {
   const handleTabChange = (tabId: string) => {
     const newTab = tabId as TabType;
     setActiveTab(newTab);
-    
+
     // Update URL search params
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set('tab', newTab);

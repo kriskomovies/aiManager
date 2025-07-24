@@ -12,7 +12,11 @@ interface BuildingInventoryProps {
   buildingId: string;
 }
 
-type InventoryTabType = 'inventories' | 'expenses' | 'monthly-fees' | 'temporary-fees';
+type InventoryTabType =
+  | 'inventories'
+  | 'expenses'
+  | 'monthly-fees'
+  | 'temporary-fees';
 
 export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,17 +49,23 @@ export function BuildingInventory({ buildingId }: BuildingInventoryProps) {
 
   // Get inventory tab from URL or default to 'inventories'
   const getInitialInventoryTab = (): InventoryTabType => {
-    const inventoryTabFromUrl = searchParams.get('inventoryTab') as InventoryTabType;
-    return validInventoryTabs.includes(inventoryTabFromUrl) ? inventoryTabFromUrl : 'inventories';
+    const inventoryTabFromUrl = searchParams.get(
+      'inventoryTab'
+    ) as InventoryTabType;
+    return validInventoryTabs.includes(inventoryTabFromUrl)
+      ? inventoryTabFromUrl
+      : 'inventories';
   };
 
-  const [activeTab, setActiveTab] = useState<InventoryTabType>(getInitialInventoryTab);
+  const [activeTab, setActiveTab] = useState<InventoryTabType>(
+    getInitialInventoryTab
+  );
 
   // Update URL when inventory tab changes
   const handleTabChange = (tabId: string) => {
     const newTab = tabId as InventoryTabType;
     setActiveTab(newTab);
-    
+
     // Update URL search params
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set('inventoryTab', newTab);

@@ -1,221 +1,263 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQueryWithOnQueryStarted } from '@/lib/api.utils';
+import {
+  CalendarEventType,
+  CalendarEventStatus,
+  CalendarEventPriority,
+  ICreateCalendarEventRequest,
+  IUpdateCalendarEventRequest,
+  ICalendarEventQueryParams,
+  ICalendarEventStats,
+  IBackendCalendarEventResponse,
+  IBackendCalendarEventQueryParams,
+  IBackendPaginatedResponse,
+  IPaginatedResponse,
+} from '@repo/interfaces';
 
-// Mock data interface
+// Updated CalendarEvent interface for frontend use
 export interface CalendarEvent {
   id: string;
   title: string;
-  start: string;
-  end: string;
-  type: 'maintenance' | 'inspection' | 'payment' | 'meeting' | 'repair';
+  start: string; // ISO string for react-big-calendar
+  end: string; // ISO string for react-big-calendar
+  type: CalendarEventType;
   description?: string;
-  apartmentId?: string;
+  apartmentId?: string; // For backward compatibility with existing UI
   buildingId: string;
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: CalendarEventStatus;
+  priority: CalendarEventPriority;
   assignedTo?: string;
+  appliesToAllApartments: boolean;
+  targetApartmentIds?: string[];
+  location?: string;
+  notes?: string;
 }
 
-// Mock events data for demonstration
-const mockEvents: CalendarEvent[] = [
-  {
-    id: '1',
-    title: 'Събиране Януари',
-    start: '2025-01-07T14:00:00',
-    end: '2025-01-07T16:00:00',
-    type: 'meeting',
-    description: 'Месечно събиране на собствениците',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'medium'
+// Transform backend response to frontend format
+const transformPaginatedResponse = <T>(
+  response: IBackendPaginatedResponse<T>
+): IPaginatedResponse<T> => ({
+  items: response.data.data,
+  meta: {
+    page: response.data.page,
+    pageSize: response.data.limit,
+    pageCount: response.data.totalPages,
+    total: response.data.total,
   },
-  {
-    id: '2',
-    title: 'Ала Бала',
-    start: '2025-01-07T16:00:00',
-    end: '2025-01-07T18:00:00',
-    type: 'maintenance',
-    description: 'Поддръжка на асансьора',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'high',
-    assignedTo: 'Иван Петров'
-  },
-  {
-    id: '3',
-    title: 'Вечеря',
-    start: '2025-01-07T18:00:00',
-    end: '2025-01-07T20:00:00',
-    type: 'meeting',
-    description: 'Обща вечеря на жителите',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'low'
-  },
-  {
-    id: '4',
-    title: 'Дълго....',
-    start: '2025-01-05T14:00:00',
-    end: '2025-01-05T16:00:00',
-    type: 'inspection',
-    description: 'Дълга инспекция на системите',
-    buildingId: 'building-1',
-    status: 'completed',
-    priority: 'medium'
-  },
-  {
-    id: '5',
-    title: 'Ала Ба...',
-    start: '2025-01-05T10:00:00',
-    end: '2025-01-05T11:00:00',
-    type: 'maintenance',
-    description: 'Кратка поддръжка',
-    buildingId: 'building-1',
-    status: 'in-progress',
-    priority: 'medium'
-  },
-  {
-    id: '6',
-    title: 'Вечеря',
-    start: '2025-01-05T12:00:00',
-    end: '2025-01-05T13:00:00',
-    type: 'meeting',
-    description: 'Обедна среща',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'low'
-  },
-  {
-    id: '7',
-    title: 'Събиране Януари',
-    start: '2025-01-16T14:00:00',
-    end: '2025-01-16T16:00:00',
-    type: 'meeting',
-    description: 'Второ събиране за януари',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'high'
-  },
-  {
-    id: '8',
-    title: 'Събиране',
-    start: '2025-01-31T09:00:00',
-    end: '2025-01-31T10:00:00',
-    type: 'payment',
-    description: 'Събиране на такси',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'high'
-  },
-  {
-    id: '9',
-    title: 'Ала Ба...',
-    start: '2025-01-31T10:00:00',
-    end: '2025-01-31T11:00:00',
-    type: 'repair',
-    description: 'Ремонт на общите части',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'urgent'
-  },
-  {
-    id: '10',
-    title: 'Вечеря',
-    start: '2025-01-31T12:00:00',
-    end: '2025-01-31T13:00:00',
-    type: 'meeting',
-    description: 'Заключителна вечеря за месеца',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'low'
-  },
-  {
-    id: '11',
-    title: 'Дълго....',
-    start: '2025-01-31T14:00:00',
-    end: '2025-01-31T16:00:00',
-    type: 'inspection',
-    description: 'Дълга финална инспекция',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'medium'
-  },
-  {
-    id: '12',
-    title: 'Събир...',
-    start: '2025-01-31T16:00:00',
-    end: '2025-01-31T18:00:00',
-    type: 'meeting',
-    description: 'Кратко събиране',
-    buildingId: 'building-1',
-    status: 'scheduled',
-    priority: 'medium'
-  }
-];
+});
+
+// Transform backend event to frontend CalendarEvent
+const transformEventToCalendarEvent = (
+  event: IBackendCalendarEventResponse
+): CalendarEvent => ({
+  id: event.id,
+  title: event.title,
+  start: event.startDate, // Use startDate as start for react-big-calendar
+  end: event.endDate, // Use endDate as end for react-big-calendar
+  type: event.type,
+  description: event.description,
+  apartmentId: event.targetApartmentIds?.[0], // For backward compatibility - use first apartment
+  buildingId: event.buildingId,
+  status: event.status,
+  priority: event.priority,
+  assignedTo: event.assignedTo,
+  appliesToAllApartments: event.appliesToAllApartments,
+  targetApartmentIds: event.targetApartmentIds,
+  location: event.location,
+  notes: event.notes,
+});
 
 export const calendarService = createApi({
   reducerPath: 'calendarService',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api',
-  }),
+  baseQuery: baseQueryWithOnQueryStarted,
   tagTypes: ['CalendarEvent'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
+    // Get events for a specific building
     getBuildingEvents: builder.query<CalendarEvent[], string>({
-      // For now, return mock data directly without making HTTP calls
-      queryFn: async () => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return { data: mockEvents };
+      query: buildingId => ({
+        url: `calendar-events/building/${buildingId}`,
+      }),
+      transformResponse: (response: {
+        data: IBackendCalendarEventResponse[];
+      }) => {
+        return response.data.map(transformEventToCalendarEvent);
       },
-      providesTags: (result, _error, buildingId) => 
+      providesTags: (result, _error, buildingId) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: 'CalendarEvent' as const, id })),
+              ...result.map(({ id }) => ({
+                type: 'CalendarEvent' as const,
+                id,
+              })),
               { type: 'CalendarEvent', id: `BUILDING-${buildingId}` },
             ]
           : [{ type: 'CalendarEvent', id: `BUILDING-${buildingId}` }],
     }),
-    
-    createEvent: builder.mutation<CalendarEvent, Partial<CalendarEvent>>({
-      queryFn: async (newEvent) => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const event = {
+
+    // Get all events with pagination and filtering
+    getCalendarEvents: builder.query<
+      IPaginatedResponse<CalendarEvent>,
+      ICalendarEventQueryParams
+    >({
+      query: params => {
+        // Transform frontend params to backend params
+        const backendParams: IBackendCalendarEventQueryParams = {
+          page: params.page,
+          limit: params.pageSize,
+          search: params.search,
+          buildingId: params.buildingId,
+          type: params.type,
+          status: params.status,
+          priority: params.priority,
+          startDate: params.startDate,
+          endDate: params.endDate,
+          assignedTo: params.assignedTo,
+          appliesToAllApartments: params.appliesToAllApartments,
+        };
+
+        // Transform sort parameter
+        if (params.sort) {
+          const [field, direction] = params.sort.split(':');
+          backendParams.sortBy = field;
+          backendParams.sortOrder =
+            (direction?.toUpperCase() as 'ASC' | 'DESC') || 'ASC';
+        }
+
+        // Remove undefined values
+        Object.keys(backendParams).forEach(
+          key =>
+            backendParams[key as keyof IBackendCalendarEventQueryParams] ===
+              undefined &&
+            delete backendParams[key as keyof IBackendCalendarEventQueryParams]
+        );
+
+        return {
+          url: 'calendar-events',
+          params: backendParams,
+        };
+      },
+      transformResponse: (
+        response: IBackendPaginatedResponse<IBackendCalendarEventResponse>
+      ) => {
+        const transformed = transformPaginatedResponse(response);
+
+        // Transform each event
+        const events: CalendarEvent[] = (
+          transformed.items as IBackendCalendarEventResponse[]
+        ).map(transformEventToCalendarEvent);
+
+        return {
+          ...transformed,
+          items: events,
+        };
+      },
+      providesTags: ['CalendarEvent'],
+    }),
+
+    // Get single event by ID
+    getCalendarEvent: builder.query<CalendarEvent, string>({
+      query: id => `calendar-events/${id}`,
+      transformResponse: (response: {
+        data: IBackendCalendarEventResponse;
+      }) => {
+        return transformEventToCalendarEvent(response.data);
+      },
+      providesTags: (_result, _error, id) => [{ type: 'CalendarEvent', id }],
+    }),
+
+    // Create new event
+    createEvent: builder.mutation<
+      CalendarEvent,
+      Partial<ICreateCalendarEventRequest>
+    >({
+      query: newEvent => ({
+        url: 'calendar-events',
+        method: 'POST',
+        body: {
           ...newEvent,
-          id: Date.now().toString(),
-        } as CalendarEvent;
-        mockEvents.push(event);
-        return { data: event };
+          // Set default values
+          priority: newEvent.priority || CalendarEventPriority.MEDIUM,
+          appliesToAllApartments: newEvent.appliesToAllApartments ?? false,
+        },
+      }),
+      transformResponse: (response: {
+        data: IBackendCalendarEventResponse;
+      }) => {
+        return transformEventToCalendarEvent(response.data);
       },
       invalidatesTags: (_result, _error, { buildingId }) => [
         { type: 'CalendarEvent', id: `BUILDING-${buildingId}` },
+        'CalendarEvent',
       ],
     }),
-    
-    updateEvent: builder.mutation<CalendarEvent, { id: string } & Partial<CalendarEvent>>({
-      queryFn: async ({ id, ...updates }) => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const eventIndex = mockEvents.findIndex(e => e.id === id);
-        if (eventIndex >= 0) {
-          mockEvents[eventIndex] = { ...mockEvents[eventIndex], ...updates };
-          return { data: mockEvents[eventIndex] };
-        }
-        return { error: { status: 404, data: 'Event not found' } };
+
+    // Update existing event
+    updateEvent: builder.mutation<
+      CalendarEvent,
+      { id: string } & Partial<IUpdateCalendarEventRequest>
+    >({
+      query: ({ id, ...updates }) => ({
+        url: `calendar-events/${id}`,
+        method: 'PATCH',
+        body: updates,
+      }),
+      transformResponse: (response: {
+        data: IBackendCalendarEventResponse;
+      }) => {
+        return transformEventToCalendarEvent(response.data);
       },
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'CalendarEvent', id },
-      ],
+      invalidatesTags: (result, _error, { id }) => {
+        const tags = [
+          { type: 'CalendarEvent' as const, id },
+          'CalendarEvent' as const,
+        ];
+        
+        // Also invalidate building-specific cache if we have the buildingId from the result
+        if (result?.buildingId) {
+          tags.push({ type: 'CalendarEvent' as const, id: `BUILDING-${result.buildingId}` });
+        }
+        
+        return tags;
+      },
     }),
-    
+
+    // Delete event
     deleteEvent: builder.mutation<void, string>({
-      queryFn: async (id) => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const eventIndex = mockEvents.findIndex(e => e.id === id);
-        if (eventIndex >= 0) {
-          mockEvents.splice(eventIndex, 1);
-          return { data: undefined };
-        }
-        return { error: { status: 404, data: 'Event not found' } };
-      },
+      query: id => ({
+        url: `calendar-events/${id}`,
+        method: 'DELETE',
+      }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'CalendarEvent', id },
+        'CalendarEvent',
+      ],
+    }),
+
+    // Get event statistics
+    getCalendarEventStats: builder.query<
+      ICalendarEventStats,
+      string | undefined
+    >({
+      query: buildingId => ({
+        url: 'calendar-events/stats',
+        params: buildingId ? { buildingId } : undefined,
+      }),
+      transformResponse: (response: { data: ICalendarEventStats }) => {
+        return response.data;
+      },
+      providesTags: ['CalendarEvent'],
+    }),
+
+    // Get upcoming events for a building
+    getUpcomingEvents: builder.query<CalendarEvent[], string>({
+      query: buildingId => `calendar-events/building/${buildingId}/upcoming`,
+      transformResponse: (response: {
+        data: IBackendCalendarEventResponse[];
+      }) => {
+        return response.data.map(transformEventToCalendarEvent);
+      },
+      providesTags: (_result, _error, buildingId) => [
+        { type: 'CalendarEvent', id: `UPCOMING-${buildingId}` },
       ],
     }),
   }),
@@ -223,7 +265,11 @@ export const calendarService = createApi({
 
 export const {
   useGetBuildingEventsQuery,
+  useGetCalendarEventsQuery,
+  useGetCalendarEventQuery,
   useCreateEventMutation,
   useUpdateEventMutation,
   useDeleteEventMutation,
-} = calendarService; 
+  useGetCalendarEventStatsQuery,
+  useGetUpcomingEventsQuery,
+} = calendarService;

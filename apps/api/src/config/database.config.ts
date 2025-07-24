@@ -11,6 +11,7 @@ import { OneTimeExpenseEntity } from '../database/entities/one-time-expense.enti
 import { MonthlyFeeEntity } from '../database/entities/monthly-fee.entity';
 import { MonthlyFeeApartmentEntity } from '../database/entities/monthly-fee-apartment.entity';
 import { ApartmentMonthlyPaymentEntity } from '../database/entities/apartment-monthly-payment.entity';
+import { CalendarEventEntity } from '../database/entities/calendar-event.entity';
 
 export default registerAs(
   'database',
@@ -29,6 +30,7 @@ export default registerAs(
       MonthlyFeeEntity,
       MonthlyFeeApartmentEntity,
       ApartmentMonthlyPaymentEntity,
+      CalendarEventEntity,
     ],
     migrations: ['dist/database/migrations/*.js'], // Use compiled JS for runtime
     migrationsTableName: 'migrations',

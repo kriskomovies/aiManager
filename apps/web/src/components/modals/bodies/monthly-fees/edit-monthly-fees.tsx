@@ -300,9 +300,9 @@ export function EditMonthlyFeesModal() {
   }
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+    <div className="w-full h-full flex flex-col max-h-[80vh]">
+      {/* Fixed Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
         <h2 className="text-xl font-semibold text-gray-900">
           Редактиране на Месечна Такса
         </h2>
@@ -326,7 +326,8 @@ export function EditMonthlyFeesModal() {
         </button>
       </div>
 
-      <div className="p-6">
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
           <div>
@@ -485,7 +486,7 @@ export function EditMonthlyFeesModal() {
                 </div>
               </div>
 
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-64 overflow-y-auto">
                 {formData.apartments.map(apartment => (
                   <div
                     key={apartment.apartmentId}
@@ -584,27 +585,28 @@ export function EditMonthlyFeesModal() {
               </div>
             </div>
           )}
-
-          {/* Actions */}
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isUpdating}
-              className="px-6"
-            >
-              Отказ
-            </Button>
-            <Button
-              type="submit"
-              disabled={isUpdating}
-              className="bg-red-500 hover:bg-red-600 px-6"
-            >
-              {isUpdating ? 'Запазване...' : 'Запази'}
-            </Button>
-          </div>
         </form>
+      </div>
+
+      {/* Fixed Footer with Action Buttons */}
+      <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 flex-shrink-0 bg-white">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isUpdating}
+          className="px-6"
+        >
+          Отказ
+        </Button>
+        <Button
+          type="submit"
+          disabled={isUpdating}
+          onClick={handleSubmit}
+          className="bg-red-500 hover:bg-red-600 px-6"
+        >
+          {isUpdating ? 'Запазване...' : 'Запази'}
+        </Button>
       </div>
     </div>
   );

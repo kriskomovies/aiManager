@@ -76,7 +76,11 @@ export function EditRecurringExpenseModal({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name.trim() || formData.monthlyAmount <= 0 || !formData.paymentMethod) {
+    if (
+      !formData.name.trim() ||
+      formData.monthlyAmount <= 0 ||
+      !formData.paymentMethod
+    ) {
       dispatch(
         addAlert({
           type: 'error',
@@ -181,7 +185,10 @@ export function EditRecurringExpenseModal({
 
           {/* Monthly Amount Field */}
           <div>
-            <Label htmlFor="monthlyAmount" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="monthlyAmount"
+              className="text-sm font-medium text-gray-700"
+            >
               Месечна Такса Сума
             </Label>
             <div className="relative mt-1">
@@ -192,7 +199,10 @@ export function EditRecurringExpenseModal({
                 min="0"
                 value={formData.monthlyAmount || ''}
                 onChange={e =>
-                  handleInputChange('monthlyAmount', parseFloat(e.target.value) || 0)
+                  handleInputChange(
+                    'monthlyAmount',
+                    parseFloat(e.target.value) || 0
+                  )
                 }
                 placeholder="0.00"
                 disabled={isSubmitting}
@@ -206,12 +216,26 @@ export function EditRecurringExpenseModal({
 
           {/* Payment Method Field */}
           <div>
-            <Label htmlFor="paymentMethod" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="paymentMethod"
+              className="text-sm font-medium text-gray-700"
+            >
               Свържи с Месечна Такса
               <span className="ml-1 text-red-500">
-                <svg className="w-3 h-3 inline" fill="currentColor" viewBox="0 0 20 20">
-                  <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <path d="M10 6v4M10 14h.01"/>
+                <svg
+                  className="w-3 h-3 inline"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <path d="M10 6v4M10 14h.01" />
                 </svg>
               </span>
             </Label>
@@ -237,10 +261,15 @@ export function EditRecurringExpenseModal({
             <Checkbox
               id="addToMonthlyFees"
               checked={formData.addToMonthlyFees}
-              onChange={e => handleInputChange('addToMonthlyFees', e.target.checked)}
+              onChange={e =>
+                handleInputChange('addToMonthlyFees', e.target.checked)
+              }
               disabled={isSubmitting}
             />
-            <Label htmlFor="addToMonthlyFees" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="addToMonthlyFees"
+              className="text-sm font-medium text-gray-700"
+            >
               Добави в Месечни Такси
             </Label>
           </div>

@@ -27,7 +27,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
   {
     month: '11.2024',
@@ -37,7 +37,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
   {
     month: '10.2024',
@@ -47,7 +47,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
   {
     month: '09.2024',
@@ -56,8 +56,8 @@ const mockFeeData: FeeData[] = [
     taksaAsansor: 12.99,
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
-    stariZadolzheniya: 11.00,
-    plateno: 585.00,
+    stariZadolzheniya: 11.0,
+    plateno: 585.0,
   },
   {
     month: '08.2024',
@@ -67,7 +67,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
   {
     month: '07.2024',
@@ -76,8 +76,8 @@ const mockFeeData: FeeData[] = [
     taksaAsansor: 12.99,
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
-    stariZadolzheniya: 11.00,
-    plateno: 585.00,
+    stariZadolzheniya: 11.0,
+    plateno: 585.0,
   },
   {
     month: '06.2024',
@@ -86,8 +86,8 @@ const mockFeeData: FeeData[] = [
     taksaAsansor: 12.99,
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
-    stariZadolzheniya: 11.00,
-    plateno: 585.00,
+    stariZadolzheniya: 11.0,
+    plateno: 585.0,
   },
   {
     month: '05.2024',
@@ -97,7 +97,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
   {
     month: '04.2024',
@@ -107,7 +107,7 @@ const mockFeeData: FeeData[] = [
     pochistvane: 12.99,
     obshoTaksiZaMeseca: 38.97,
     stariZadolzheniya: 0,
-    plateno: 585.00,
+    plateno: 585.0,
   },
 ];
 
@@ -115,8 +115,8 @@ interface ApartmentFeesReferenceTableProps {
   hideOldDebtsColumn?: boolean;
 }
 
-export function ApartmentFeesReferenceTable({ 
-  hideOldDebtsColumn = false 
+export function ApartmentFeesReferenceTable({
+  hideOldDebtsColumn = false,
 }: ApartmentFeesReferenceTableProps = {}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState<{
@@ -156,7 +156,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '14%' : '12%',
       minWidth: '100px',
-      cell: (row) => (
+      cell: row => (
         <span className="font-medium text-gray-900">{row.month}</span>
       ),
     },
@@ -166,7 +166,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '12%' : '10%',
       minWidth: '80px',
-      cell: (row) => (
+      cell: row => (
         <div className="text-center text-gray-700">{row.residentsCount}</div>
       ),
     },
@@ -176,7 +176,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '14%' : '12%',
       minWidth: '100px',
-      cell: (row) => (
+      cell: row => (
         <div className="text-right text-gray-700">
           {formatCurrency(row.tokAsansor)}
         </div>
@@ -188,7 +188,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '14%' : '12%',
       minWidth: '110px',
-      cell: (row) => (
+      cell: row => (
         <div className="text-right text-gray-700">
           {formatCurrency(row.taksaAsansor)}
         </div>
@@ -200,7 +200,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '14%' : '12%',
       minWidth: '100px',
-      cell: (row) => (
+      cell: row => (
         <div className="text-right text-gray-700">
           {formatCurrency(row.pochistvane)}
         </div>
@@ -212,7 +212,7 @@ export function ApartmentFeesReferenceTable({
       sortable: true,
       width: hideOldDebtsColumn ? '16%' : '14%',
       minWidth: '120px',
-      cell: (row) => (
+      cell: row => (
         <div className="text-right">
           <Badge variant="neutral" className="text-xs font-medium">
             {formatCurrency(row.obshoTaksiZaMeseca)}
@@ -229,7 +229,7 @@ export function ApartmentFeesReferenceTable({
     sortable: true,
     width: '14%',
     minWidth: '120px',
-    cell: (row) => (
+    cell: row => (
       <div className="text-right">{getDebtBadge(row.stariZadolzheniya)}</div>
     ),
   };
@@ -240,12 +240,10 @@ export function ApartmentFeesReferenceTable({
     sortable: true,
     width: hideOldDebtsColumn ? '16%' : '14%',
     minWidth: '100px',
-    cell: (row) => (
+    cell: row => (
       <div className="text-right">
         {row.month === '06.2024' ? (
-          <div className="inline-block">
-            {getPaidBadge(row.plateno)}
-          </div>
+          <div className="inline-block">{getPaidBadge(row.plateno)}</div>
         ) : (
           getPaidBadge(row.plateno)
         )}
@@ -264,19 +262,17 @@ export function ApartmentFeesReferenceTable({
     sortedData.sort((a, b) => {
       const aValue = a[sorting.field as keyof FeeData];
       const bValue = b[sorting.field as keyof FeeData];
-      
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sorting.direction === 'asc' 
+        return sorting.direction === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue);
       }
-      
+
       if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sorting.direction === 'asc' 
-          ? aValue - bValue
-          : bValue - aValue;
+        return sorting.direction === 'asc' ? aValue - bValue : bValue - aValue;
       }
-      
+
       return 0;
     });
   }
@@ -291,10 +287,11 @@ export function ApartmentFeesReferenceTable({
     <div className="space-y-4">
       <DataTable
         columns={columns}
-                 data={paginatedData.map(row => ({
-           ...row,
-           className: row.month === '06.2024' ? 'bg-blue-50 border-blue-200' : '',
-         }))}
+        data={paginatedData.map(row => ({
+          ...row,
+          className:
+            row.month === '06.2024' ? 'bg-blue-50 border-blue-200' : '',
+        }))}
         page={currentPage}
         pageCount={totalPages}
         sorting={sorting}

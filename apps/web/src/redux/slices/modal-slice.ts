@@ -35,8 +35,9 @@ export type ModalType =
   | 'create-monthly-fee'
   | 'view-monthly-fee'
   | 'edit-monthly-fee'
-  | 'add-calendar-event'
-  | 'event-details';
+  | 'add-edit-calendar-event'
+  | 'event-details'
+  | 'delete-calendar-event';
 
 export interface ModalData {
   buildingId?: string;
@@ -60,6 +61,8 @@ export interface ModalData {
   selectedStart?: string;
   selectedEnd?: string;
   event?: unknown; // Calendar event data for event details modal
+  eventId?: string; // Calendar event ID for delete modal
+  eventTitle?: string; // Calendar event title for delete modal
   [key: string]: unknown; // Allow additional modal-specific data
 }
 

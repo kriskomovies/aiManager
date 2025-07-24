@@ -40,7 +40,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     return (
       <div ref={ref} className={cn('relative', className)}>
         <div
-          className="flex min-h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+          className="flex min-h-9 w-full items-center justify-between rounded-full border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="flex flex-wrap gap-1">
@@ -50,7 +50,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
               selectedOptions.map(option => (
                 <span
                   key={option.value}
-                  className="inline-flex items-center gap-1 rounded bg-secondary px-2 py-1 text-xs"
+                  className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1 text-xs"
                 >
                   {option.label}
                   <button
@@ -69,12 +69,12 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
         </div>
 
         {isOpen && (
-          <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-1 shadow-md">
+          <div className="absolute z-50 mt-1 w-full rounded-lg border bg-popover p-1 shadow-md">
             {options.map(option => (
               <div
                 key={option.value}
                 className={cn(
-                  'flex items-center space-x-2 rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent',
+                  'flex items-center space-x-2 rounded-full px-2 py-1.5 my-1.5 text-sm cursor-pointer hover:bg-accent',
                   value.includes(option.value) && 'bg-accent'
                 )}
                 onClick={() => handleToggleOption(option.value)}

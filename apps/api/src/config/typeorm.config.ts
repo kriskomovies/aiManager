@@ -11,6 +11,7 @@ import { OneTimeExpenseEntity } from '../database/entities/one-time-expense.enti
 import { MonthlyFeeEntity } from '../database/entities/monthly-fee.entity';
 import { MonthlyFeeApartmentEntity } from '../database/entities/monthly-fee-apartment.entity';
 import { ApartmentMonthlyPaymentEntity } from '../database/entities/apartment-monthly-payment.entity';
+import { CalendarEventEntity } from '../database/entities/calendar-event.entity';
 
 config();
 
@@ -29,6 +30,7 @@ export const AppDataSource = new DataSource({
     MonthlyFeeEntity,
     MonthlyFeeApartmentEntity,
     ApartmentMonthlyPaymentEntity,
+    CalendarEventEntity,
   ],
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'migrations',

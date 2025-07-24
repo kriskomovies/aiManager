@@ -163,7 +163,12 @@ export function CashierTable({ buildingId }: CashierTableProps) {
     );
     const apartmentNumber = apartmentData?.apartment?.number || 'Unknown';
 
-    console.log('Payment inquiries for apartment:', recordId, 'Number:', apartmentNumber);
+    console.log(
+      'Payment inquiries for apartment:',
+      recordId,
+      'Number:',
+      apartmentNumber
+    );
     dispatch(
       openModal({
         type: 'apartment-payments-reference',
@@ -248,9 +253,7 @@ export function CashierTable({ buildingId }: CashierTableProps) {
       sortable: true,
       width: '100px',
       minWidth: '80px',
-      cell: row => (
-        <Badge variant="negative">{formatCurrency(row.new)}</Badge>
-      ),
+      cell: row => <Badge variant="negative">{formatCurrency(row.new)}</Badge>,
     },
     {
       header: 'Стари задължения',

@@ -55,7 +55,11 @@ export function CreateRecurringExpenseModal({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name.trim() || formData.monthlyAmount <= 0 || !formData.paymentMethod) {
+    if (
+      !formData.name.trim() ||
+      formData.monthlyAmount <= 0 ||
+      !formData.paymentMethod
+    ) {
       dispatch(
         addAlert({
           type: 'error',
@@ -156,7 +160,10 @@ export function CreateRecurringExpenseModal({
               min="0"
               value={formData.monthlyAmount || ''}
               onChange={e =>
-                handleInputChange('monthlyAmount', parseFloat(e.target.value) || 0)
+                handleInputChange(
+                  'monthlyAmount',
+                  parseFloat(e.target.value) || 0
+                )
               }
               placeholder="0.00"
               disabled={isSubmitting}
@@ -192,7 +199,9 @@ export function CreateRecurringExpenseModal({
           <Checkbox
             id="addToMonthlyFees"
             checked={formData.addToMonthlyFees}
-            onChange={e => handleInputChange('addToMonthlyFees', e.target.checked)}
+            onChange={e =>
+              handleInputChange('addToMonthlyFees', e.target.checked)
+            }
             disabled={isSubmitting}
           />
           <Label htmlFor="addToMonthlyFees" className="text-sm">

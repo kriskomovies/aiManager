@@ -18,9 +18,9 @@ export function DeleteRecurringExpenseModal({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Get expense name from modal data
-  const expenseName = modalData?.expenseData ? 
-    (modalData.expenseData as { name?: string }).name : 
-    'този разход';
+  const expenseName = modalData?.expenseData
+    ? (modalData.expenseData as { name?: string }).name
+    : 'този разход';
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -77,7 +77,8 @@ export function DeleteRecurringExpenseModal({
 
       {/* Confirmation Message */}
       <p className="text-base text-red-600 mb-8 leading-relaxed">
-        Сигурни ли сте, че искате да изтриете<br />
+        Сигурни ли сте, че искате да изтриете
+        <br />
         Периодичен Разход "{expenseName}"?
       </p>
 
