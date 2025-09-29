@@ -1,4 +1,4 @@
-import { TemporaryExpensesSection } from '@/components/expenses/temporary-expenses/temporary-expenses-section';
+import { RecurringExpensesSection } from '@/components/expenses/recurring-expenses/recurring-expenses-section';
 import { OneTimeExpensesSection } from '@/components/expenses/one-time-expenses/one-time-expenses-section';
 
 interface ExpensesTabProps {
@@ -9,7 +9,7 @@ export function ExpensesTab({ buildingId }: ExpensesTabProps) {
   return (
     <div className="space-y-8">
       {/* Temporary/Recurring Expenses Section */}
-      <TemporaryExpensesSection />
+      <RecurringExpensesSection buildingId={buildingId} />  
 
       {/* One-time Expenses Section */}
       <OneTimeExpensesSection buildingId={buildingId} />

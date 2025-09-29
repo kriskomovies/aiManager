@@ -31,10 +31,12 @@ export type ModalType =
   | 'create-recurring-expense'
   | 'edit-recurring-expense'
   | 'delete-recurring-expense'
+  | 'pay-recurring-expense'
   | 'create-temporary-fee'
   | 'create-monthly-fee'
   | 'view-monthly-fee'
   | 'edit-monthly-fee'
+  | 'delete-monthly-fee'
   | 'add-edit-calendar-event'
   | 'event-details'
   | 'delete-calendar-event';

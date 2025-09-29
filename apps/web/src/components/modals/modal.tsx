@@ -25,10 +25,12 @@ import { CreateOneTimeExpenseModal } from './bodies/create-one-time-expense-moda
 import { CreateRecurringExpenseModal } from './bodies/recurring-expense/create-recurring-expense-modal';
 import { EditRecurringExpenseModal } from './bodies/recurring-expense/edit-recurring-expense-modal';
 import { DeleteRecurringExpenseModal } from './bodies/recurring-expense/delete-recurring-expense-modal';
+import { PayRecurringExpenseModal } from './bodies/recurring-expense/pay-reucrring-expense-modal';
 import { CreateTemporaryFeeModal } from './bodies/temporary-fees/crete-temporary-fee-modal';
 import { CreateMonthlyFeeModal } from './bodies/monthly-fees/create-monthly-fee';
 import { ViewMonthlyFeesModal } from './bodies/monthly-fees/view-monthly-fees';
 import { EditMonthlyFeesModal } from './bodies/monthly-fees/edit-monthly-fees';
+import { DeleteMonthlyFeeModal } from './bodies/monthly-fees/delete-monthly-fee';
 import { AddEditCalendarEventModal } from './bodies/calendar/add-edit-calendar-event';
 import { EventDetailsModal } from './bodies/calendar/event-details-modal';
 import { DeleteCalendarEventModal } from './bodies/calendar/delete-calendar-event-modal';
@@ -144,6 +146,9 @@ export function ModalContainer() {
       case 'delete-recurring-expense':
         return <DeleteRecurringExpenseModal onClose={handleClose} />;
 
+      case 'pay-recurring-expense':
+        return <PayRecurringExpenseModal onClose={handleClose} />;
+
       case 'create-temporary-fee':
         return <CreateTemporaryFeeModal onClose={handleClose} />;
 
@@ -155,6 +160,9 @@ export function ModalContainer() {
 
       case 'edit-monthly-fee':
         return <EditMonthlyFeesModal />;
+
+      case 'delete-monthly-fee':
+        return <DeleteMonthlyFeeModal onClose={handleClose} />;
 
       case 'add-edit-calendar-event':
         return <AddEditCalendarEventModal onClose={handleClose} />;

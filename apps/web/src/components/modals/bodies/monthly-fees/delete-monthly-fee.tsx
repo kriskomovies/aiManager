@@ -4,32 +4,32 @@ import { Trash2, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addAlert } from '@/redux/slices/alert-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
-import { useDeleteRecurringExpenseMutation } from '@/redux/services/recurring-expense.service';
-import type { IRecurringExpenseResponse } from '@repo/interfaces';
+import { useDeleteMonthlyFeeMutation } from '@/redux/services/monthly-fee.service';
+import type { IMonthlyFeeResponse } from '@repo/interfaces';
 
-interface DeleteRecurringExpenseModalProps {
+interface DeleteMonthlyFeeModalProps {
   onClose: () => void;
 }
 
-export function DeleteRecurringExpenseModal({
+export function DeleteMonthlyFeeModal({
   onClose,
-}: DeleteRecurringExpenseModalProps) {
+}: DeleteMonthlyFeeModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Get expense data from modal data
-  const expenseData = modalData?.expenseData as IRecurringExpenseResponse | undefined;
+  // Get fee data from modal data
+  const feeData = modalData?.feeData as IMonthlyFeeResponse | undefined;
 
-  const [deleteRecurringExpense] = useDeleteRecurringExpenseMutation();
+  const [deleteMonthlyFee] = useDeleteMonthlyFeeMutation();
 
   const handleDelete = async () => {
-    if (!expenseData?.id) {
+    if (!feeData?.id) {
       dispatch(
         addAlert({
           type: 'error',
           title: 'Грешка',
-          message: 'Липсва информация за разхода.',
+          message: 'Липсва информация за месечната такса.',
           duration: 5000,
         })
       );
@@ -39,26 +39,26 @@ export function DeleteRecurringExpenseModal({
     setIsDeleting(true);
 
     try {
-      await deleteRecurringExpense(expenseData.id).unwrap();
+      await deleteMonthlyFee(feeData.id).unwrap();
 
       dispatch(
         addAlert({
           type: 'success',
           title: 'Успешно изтриване!',
-          message: 'Периодичният разход беше изтрит успешно.',
+          message: 'Месечната такса беше изтрита успешно.',
           duration: 5000,
         })
       );
 
       onClose();
     } catch (error) {
-      console.error('Error deleting recurring expense:', error);
+      console.error('Error deleting monthly fee:', error);
 
       const errorMessage =
         (error as { data?: { message?: string }; message?: string })?.data
           ?.message ||
         (error as { message?: string })?.message ||
-        'Възникна грешка при изтриването на периодичния разход. Моля опитайте отново.';
+        'Възникна грешка при изтриването на месечната такса. Моля опитайте отново.';
 
       dispatch(
         addAlert({
@@ -77,7 +77,7 @@ export function DeleteRecurringExpenseModal({
     onClose();
   };
 
-  if (!expenseData) {
+  if (!feeData) {
     return (
       <div className="text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
@@ -87,7 +87,7 @@ export function DeleteRecurringExpenseModal({
           Грешка
         </h3>
         <p className="text-sm text-gray-600 mb-6">
-          Липсват данни за разхода.
+          Липсват данни за месечната такса.
         </p>
         <Button variant="outline" onClick={onClose}>
           Затвори
@@ -105,23 +105,23 @@ export function DeleteRecurringExpenseModal({
 
       {/* Title */}
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        Изтриване на Периодичен Разход
+        Изтриване на Месечна Такса
       </h3>
 
       {/* Subtitle */}
       <p className="text-sm text-gray-600 mb-2">
-        Сигурни ли сте, че искате да изтриете този периодичен разход?
+        Сигурни ли сте, че искате да изтриете тази месечна такса?
       </p>
 
-      {/* Expense Info */}
+      {/* Fee Info */}
       <div className="bg-gray-50 rounded-lg p-3 mb-6 text-left">
-        <p className="text-sm font-medium text-gray-900">{expenseData.name}</p>
+        <p className="text-sm font-medium text-gray-900">{feeData.name}</p>
         <p className="text-sm text-gray-600">
-          Сума: {expenseData.monthlyAmount} лв.
+          Базова сума: {feeData.baseAmount} лв.
         </p>
-        {expenseData.contractor && (
+        {feeData.building && (
           <p className="text-sm text-gray-600">
-            Контрагент: {expenseData.contractor}
+            Сграда: {feeData.building.name}
           </p>
         )}
       </div>

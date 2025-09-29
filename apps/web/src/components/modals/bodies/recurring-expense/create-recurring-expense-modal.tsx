@@ -6,14 +6,22 @@ import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Loader2 } from 'lucide-react';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { addAlert } from '@/redux/slices/alert-slice';
+import { selectModalData } from '@/redux/slices/modal-slice';
+import { useCreateRecurringExpenseMutation } from '@/redux/services/recurring-expense.service';
+import { useGetMonthlyFeesByBuildingQuery } from '@/redux/services/monthly-fee.service';
+import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
 
 interface RecurringExpenseFormData {
   name: string;
   monthlyAmount: number;
-  paymentMethod: string;
+  userPaymentMethodId: string;
   addToMonthlyFees: boolean;
+  monthlyFeeId: string;
+  contractor: string;
+  paymentDate: string;
+  reason: string;
 }
 
 interface CreateRecurringExpenseModalProps {
@@ -24,33 +32,72 @@ export function CreateRecurringExpenseModal({
   onClose,
 }: CreateRecurringExpenseModalProps) {
   const dispatch = useAppDispatch();
+  const modalData = useAppSelector(selectModalData);
+
+  // Get building ID from modal data
+  const buildingId = modalData?.buildingId as string;
 
   const [formData, setFormData] = useState<RecurringExpenseFormData>({
     name: '',
     monthlyAmount: 0,
-    paymentMethod: '',
+    userPaymentMethodId: '',
     addToMonthlyFees: false,
+    monthlyFeeId: '',
+    contractor: '',
+    paymentDate: '',
+    reason: '',
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createRecurringExpense, { isLoading: isSubmitting }] = useCreateRecurringExpenseMutation();
 
-  // Mock payment methods data
-  const paymentMethodOptions = [
-    { value: 'cash', label: 'В брой' },
-    { value: 'bank-transfer', label: 'Банков превод' },
-    { value: 'card', label: 'Карта' },
-    { value: 'online', label: 'Онлайн' },
-  ];
+  // Fetch monthly fees for the building
+  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } = 
+    useGetMonthlyFeesByBuildingQuery(buildingId, {
+      skip: !buildingId,
+    });
+
+  // Fetch payment methods
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = 
+    useGetActiveUserPaymentMethodsQuery();
 
   const handleInputChange = (
     field: keyof RecurringExpenseFormData,
     value: string | number | boolean
   ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      };
+
+      // Clear monthlyFeeId when addToMonthlyFees is enabled
+      if (field === 'addToMonthlyFees' && value === true) {
+        updated.monthlyFeeId = '';
+        // Keep the manually entered amount when creating new monthly fee
+      }
+      
+      // Auto-fill monthly amount when a monthly fee is selected
+      if (field === 'monthlyFeeId' && value && typeof value === 'string') {
+        const selectedFee = monthlyFees.find(fee => fee.id === value);
+        if (selectedFee) {
+          updated.monthlyAmount = selectedFee.baseAmount;
+        }
+      }
+      
+      // Clear monthly amount when monthlyFeeId is cleared
+      if (field === 'monthlyFeeId' && !value) {
+        // Only reset if not adding to monthly fees (manual entry allowed)
+        if (!updated.addToMonthlyFees) {
+          updated.monthlyAmount = 0;
+        }
+      }
+
+      return updated;
+    });
   };
+  
+  // Check if monthly amount should be disabled
+  const isMonthlyAmountDisabled = !formData.addToMonthlyFees && Boolean(formData.monthlyFeeId);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -58,7 +105,8 @@ export function CreateRecurringExpenseModal({
     if (
       !formData.name.trim() ||
       formData.monthlyAmount <= 0 ||
-      !formData.paymentMethod
+      !formData.userPaymentMethodId
+      // Monthly fee is now optional
     ) {
       dispatch(
         addAlert({
@@ -71,14 +119,30 @@ export function CreateRecurringExpenseModal({
       return;
     }
 
-    setIsSubmitting(true);
+    if (!buildingId) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Липсва информация за сградата.',
+          duration: 5000,
+        })
+      );
+      return;
+    }
 
     try {
-      // TODO: Implement actual API call for creating recurring expense
-      console.log('Creating recurring expense with data:', formData);
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await createRecurringExpense({
+        buildingId,
+        name: formData.name.trim(),
+        monthlyAmount: formData.monthlyAmount,
+        userPaymentMethodId: formData.userPaymentMethodId,
+        addToMonthlyFees: formData.addToMonthlyFees,
+        monthlyFeeId: formData.addToMonthlyFees ? undefined : (formData.monthlyFeeId || undefined),
+        contractor: formData.contractor || undefined,
+        paymentDate: formData.paymentDate || undefined,
+        reason: formData.reason || undefined,
+      }).unwrap();
 
       dispatch(
         addAlert({
@@ -107,8 +171,6 @@ export function CreateRecurringExpenseModal({
           duration: 5000,
         })
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -151,7 +213,7 @@ export function CreateRecurringExpenseModal({
 
         {/* Monthly Amount Field */}
         <div>
-          <Label htmlFor="monthlyAmount">Месечна Такса Сума</Label>
+          <Label htmlFor="monthlyAmount">Месечна Такса Сума *</Label>
           <div className="relative">
             <Input
               id="monthlyAmount"
@@ -166,35 +228,105 @@ export function CreateRecurringExpenseModal({
                 )
               }
               placeholder="0.00"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isMonthlyAmountDisabled}
               required
+              className={isMonthlyAmountDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
               лв.
             </span>
           </div>
+          {isMonthlyAmountDisabled && (
+            <p className="text-xs text-gray-500 mt-1">
+              Сумата се попълва автоматично от избраната месечна такса
+            </p>
+          )}
         </div>
 
-        {/* Payment Method Field */}
+        {/* Link with Monthly Fee Field */}
         <div>
-          <Label htmlFor="paymentMethod">Свържи с Месечна Такса</Label>
+          <Label htmlFor="monthlyFeeId">
+            Свържи с месечна такса (по избор)
+          </Label>
           <Select
-            id="paymentMethod"
-            value={formData.paymentMethod}
-            onChange={e => handleInputChange('paymentMethod', e.target.value)}
-            disabled={isSubmitting}
-            required
+            id="monthlyFeeId"
+            value={formData.monthlyFeeId}
+            onChange={e => handleInputChange('monthlyFeeId', e.target.value)}
+            disabled={isSubmitting || isLoadingMonthlyFees || formData.addToMonthlyFees}
           >
-            <option value="">Избери</option>
-            {paymentMethodOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            <option value="">
+              {formData.addToMonthlyFees 
+                ? 'Ще се създаде нова месечна такса' 
+                : 'Избери месечна такса (опционално)'
+              }
+            </option>
+            {!formData.addToMonthlyFees && monthlyFees.map(fee => (
+              <option key={fee.id} value={fee.id}>
+                {fee.name} ({fee.baseAmount.toFixed(2)} лв.)
               </option>
             ))}
           </Select>
         </div>
 
-        {/* Add to Monthly Fees Checkbox */}
+        {/* Contractor Field */}
+        <div>
+          <Label htmlFor="contractor">Контрагент</Label>
+          <Select
+            id="contractor"
+            value={formData.contractor}
+            onChange={e => handleInputChange('contractor', e.target.value)}
+            disabled={isSubmitting}
+          >
+            <option value="">Избери контрагент</option>
+            {/* TODO: Add contractor options later */}
+          </Select>
+        </div>
+
+        {/* Payment Date Field */}
+        <div>
+          <Label htmlFor="paymentDate">Дата на плащане</Label>
+          <Input
+            id="paymentDate"
+            type="date"
+            value={formData.paymentDate}
+            onChange={e => handleInputChange('paymentDate', e.target.value)}
+            disabled={isSubmitting}
+          />
+        </div>
+
+        {/* Reason Field */}
+        <div>
+          <Label htmlFor="reason">Основание</Label>
+          <Input
+            id="reason"
+            type="text"
+            value={formData.reason}
+            onChange={e => handleInputChange('reason', e.target.value)}
+            placeholder="Въведете основание за разхода"
+            disabled={isSubmitting}
+          />
+        </div>
+
+        {/* Payment Method Field */}
+        <div>
+          <Label htmlFor="userPaymentMethodId">Метод на плащане *</Label>
+          <Select
+            id="userPaymentMethodId"
+            value={formData.userPaymentMethodId}
+            onChange={e => handleInputChange('userPaymentMethodId', e.target.value)}
+            disabled={isSubmitting || isLoadingPaymentMethods}
+            required
+          >
+            <option value="">Избери метод на плащане</option>
+            {paymentMethods.map(method => (
+              <option key={method.id} value={method.id}>
+                {method.displayName}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        {/* Add to Monthly Fees Checkbox - moved to last */}
         <div className="flex items-center space-x-2">
           <Checkbox
             id="addToMonthlyFees"

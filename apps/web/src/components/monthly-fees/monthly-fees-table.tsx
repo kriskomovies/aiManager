@@ -5,12 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2 } from 'lucide-react';
 import {
   useGetMonthlyFeesByBuildingQuery,
-  useDeleteMonthlyFeeMutation,
 } from '@/redux/services/monthly-fee.service';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
 import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
 import { useAppDispatch } from '@/redux/hooks';
-import { addAlert } from '@/redux/slices/alert-slice';
 import { openModal } from '@/redux/slices/modal-slice';
 import { FeePaymentBasis } from '@repo/interfaces';
 
@@ -28,6 +26,7 @@ interface MonthlyFeeData {
   isActive: boolean;
   targetMonth?: string;
   createdAt: string;
+  originalFee?: unknown; // Store original API response
 }
 
 export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
@@ -45,7 +44,6 @@ export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
     error,
   } = useGetMonthlyFeesByBuildingQuery(buildingId);
   const { data: building } = useGetBuildingQuery(buildingId);
-  const [deleteMonthlyFee] = useDeleteMonthlyFeeMutation();
 
   const handleViewFee = (fee: MonthlyFeeData) => {
     dispatch(
@@ -69,31 +67,16 @@ export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
     );
   };
 
-  const handleDeleteFee = async (fee: MonthlyFeeData) => {
-    if (
-      window.confirm(`Сигурни ли сте, че искате да изтриете "${fee.name}"?`)
-    ) {
-      try {
-        await deleteMonthlyFee(fee.id).unwrap();
-        dispatch(
-          addAlert({
-            type: 'success',
-            title: 'Успешно изтриване!',
-            message: `Месечната такса "${fee.name}" беше изтрита успешно.`,
-            duration: 5000,
-          })
-        );
-      } catch {
-        dispatch(
-          addAlert({
-            type: 'error',
-            title: 'Грешка при изтриване',
-            message: 'Възникна грешка при изтриването на месечната такса.',
-            duration: 5000,
-          })
-        );
-      }
-    }
+  const handleDeleteFee = (fee: MonthlyFeeData) => {
+    dispatch(
+      openModal({
+        type: 'delete-monthly-fee',
+        data: {
+          feeData: fee.originalFee || fee,
+          buildingId: buildingId,
+        },
+      })
+    );
   };
 
   // Get total apartment count - use actual apartment count from the building's apartments
@@ -125,6 +108,7 @@ export function MonthlyFeesTable({ buildingId }: MonthlyFeesTableProps) {
       isActive: fee.isActive ?? true,
       targetMonth: fee.targetMonth,
       createdAt: fee.createdAt,
+      originalFee: fee, // Store original API response
     })
   );
 

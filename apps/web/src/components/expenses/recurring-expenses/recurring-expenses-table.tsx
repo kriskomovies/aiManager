@@ -7,10 +7,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Wallet, Edit, Trash2 } from 'lucide-react';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
+import { selectModalData } from '@/redux/slices/modal-slice';
+import { useGetRecurringExpensesByBuildingQuery } from '@/redux/services/recurring-expense.service';
 
-interface TemporaryExpenseData {
+interface RecurringExpenseData {
   id: string;
   name: string;
   linkedToMonthlyFee: boolean;
@@ -19,9 +21,10 @@ interface TemporaryExpenseData {
   paymentMethod: string;
   reason: string;
   amount: number;
+  originalExpense?: unknown; // Store original API response
 }
 
-interface TemporaryExpenseChild {
+interface RecurringExpenseChild {
   id: string;
   date: string;
   contractor: string;
@@ -29,105 +32,93 @@ interface TemporaryExpenseChild {
   amount: number;
 }
 
-export function TemporaryExpensesTable() {
+interface RecurringExpensesTableProps {
+  buildingId?: string;
+}
+
+export function RecurringExpensesTable({ buildingId }: RecurringExpensesTableProps) {
   const dispatch = useAppDispatch();
+  const modalData = useAppSelector(selectModalData);
+  
+  // Get building ID from props or modal context
+  const effectiveBuildingId = buildingId || (modalData?.buildingId as string) || '';
+  
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
-    field: keyof TemporaryExpenseData;
+    field: keyof RecurringExpenseData;
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Mock data for temporary expenses with expandable children
-  const mockExpenses: ExpandableRowData<
-    TemporaryExpenseData,
-    TemporaryExpenseChild
-  >[] = [
+  // Fetch real recurring expenses data
+  const { data: recurringExpenses = [], isLoading, error } = useGetRecurringExpensesByBuildingQuery(
+    effectiveBuildingId,
     {
-      id: '1',
-      data: {
-        id: '1',
-        name: 'Асансьор',
-        linkedToMonthlyFee: true,
-        contractor: 'Име на фирма',
-        paymentDate: '12.12.2024',
-        paymentMethod: 'Офис',
-        reason: 'Такса от 31.09 до 27.10',
-        amount: 585.0,
-      },
-      children: [
-        {
-          id: '1-1',
-          date: '15.11.2024',
-          contractor: 'Банка',
-          reason: 'Такса от 31.08 до 27.09',
-          amount: 580.5,
-        },
-        {
-          id: '1-2',
-          date: '10.10.2024',
-          contractor: 'Банка',
-          reason: 'Такса от 31.07 до 27.07',
-          amount: 560.0,
-        },
-      ],
-    },
-    {
-      id: '2',
-      data: {
-        id: '2',
-        name: 'Почистване',
-        linkedToMonthlyFee: false,
-        contractor: 'Име на фирма',
-        paymentDate: '12.12.2024',
-        paymentMethod: 'Офис',
-        reason: 'Такса от 31.09 до 27.10',
-        amount: 50.0,
-      },
-      children: [],
-    },
-    {
-      id: '3',
-      data: {
-        id: '3',
-        name: 'Такса Домоуправител',
-        linkedToMonthlyFee: true,
-        contractor: 'Име на фирма',
-        paymentDate: '12.12.2024',
-        paymentMethod: 'Банка',
-        reason: 'Такса от 31.09 до 27.10',
-        amount: 200.0,
-      },
-      children: [],
-    },
-  ];
+      skip: !effectiveBuildingId,
+    }
+  );
 
-  const handlePayExpense = (expense: TemporaryExpenseData) => {
-    console.log('Pay expense:', expense.name);
+  // Transform API data to table format
+  const transformedData: ExpandableRowData<RecurringExpenseData, RecurringExpenseChild>[] = 
+    recurringExpenses.map(expense => ({
+      id: expense.id,
+      data: {
+        id: expense.id,
+        name: expense.name,
+        linkedToMonthlyFee: Boolean(expense.monthlyFeeId),
+        contractor: '-', // Hardcoded for now, will be implemented later
+        paymentDate: expense.paymentDate 
+          ? new Date(expense.paymentDate).toLocaleDateString('bg-BG')
+          : new Date(expense.createdAt).toLocaleDateString('bg-BG'),
+        paymentMethod: expense.userPaymentMethod?.displayName || 'N/A',
+        reason: expense.reason || 
+          (expense.addToMonthlyFees 
+            ? 'Добавен като месечна такса' 
+            : expense.monthlyFee?.name || 'Няма свързана месечна такса'),
+        amount: expense.monthlyAmount,
+        // Store original expense data for edit modal
+        originalExpense: expense,
+      },
+      children: [], // No children for now, add historical data if needed
+    }));
+
+
+  const handlePayExpense = (expense: RecurringExpenseData) => {
+    dispatch(
+      openModal({
+        type: 'pay-recurring-expense',
+        data: {
+          expenseData: expense.originalExpense || expense,
+          buildingId: effectiveBuildingId,
+        },
+      })
+    );
   };
 
-  const handleEditExpense = (expense: TemporaryExpenseData) => {
+  const handleEditExpense = (expense: RecurringExpenseData) => {
     dispatch(
       openModal({
         type: 'edit-recurring-expense',
         data: {
-          expenseData: expense,
+          expenseData: expense.originalExpense || expense,
+          buildingId: effectiveBuildingId,
         },
       })
     );
   };
 
-  const handleDeleteExpense = (expense: TemporaryExpenseData) => {
+  const handleDeleteExpense = (expense: RecurringExpenseData) => {
     dispatch(
       openModal({
         type: 'delete-recurring-expense',
         data: {
-          expenseData: expense,
+          expenseData: expense.originalExpense || expense,
+          buildingId: effectiveBuildingId,
         },
       })
     );
   };
 
-  const columns: ExpandableColumn<TemporaryExpenseData>[] = [
+  const columns: ExpandableColumn<RecurringExpenseData>[] = [
     {
       header: 'Име',
       accessorKey: 'name',
@@ -171,6 +162,11 @@ export function TemporaryExpensesTable() {
       sortable: true,
       width: '130px',
       minWidth: '130px',
+      cell: row => (
+        <Badge variant="neutral">
+          {row.paymentMethod}
+        </Badge>
+      ),
     },
     {
       header: 'Основание',
@@ -202,7 +198,7 @@ export function TemporaryExpensesTable() {
             variant="ghost"
             size="sm"
             onClick={() => handlePayExpense(row)}
-            className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
+            className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white hover:text-white"
             title="Плащане"
           >
             <Wallet className="h-4 w-4" />
@@ -232,7 +228,7 @@ export function TemporaryExpensesTable() {
     },
   ];
 
-  const renderExpandedContent = (children: TemporaryExpenseChild[]) => {
+  const renderExpandedContent = (children: RecurringExpenseChild[]) => {
     return (
       <div className="p-4">
         <div className="space-y-2">
@@ -256,25 +252,22 @@ export function TemporaryExpensesTable() {
     );
   };
 
-  const transformedData = {
-    items: mockExpenses as ExpandableRowData<
-      TemporaryExpenseData,
-      TemporaryExpenseChild
-    >[],
+  const transformedFinalData = {
+    items: transformedData,
     meta: {
-      pageCount: Math.ceil(mockExpenses.length / 10),
+      pageCount: Math.ceil(transformedData.length / 10),
     },
   };
 
   return (
-    <ExpandableDataTable<TemporaryExpenseData, TemporaryExpenseChild>
+    <ExpandableDataTable<RecurringExpenseData, RecurringExpenseChild>
       columns={columns}
-      data={transformedData.items}
-      isLoading={false}
+      data={transformedFinalData.items}
+      isLoading={isLoading}
       isFetching={false}
-      error={null}
+      error={error}
       page={page}
-      pageCount={transformedData.meta.pageCount}
+      pageCount={transformedFinalData.meta.pageCount}
       sorting={sorting}
       onPageChange={setPage}
       onSortingChange={setSorting}

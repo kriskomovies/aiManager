@@ -5,16 +5,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2 } from 'lucide-react';
+import { Edit, Loader2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { selectModalData } from '@/redux/slices/modal-slice';
 import { addAlert } from '@/redux/slices/alert-slice';
+import { selectModalData } from '@/redux/slices/modal-slice';
+import { useUpdateRecurringExpenseMutation } from '@/redux/services/recurring-expense.service';
+import { useGetMonthlyFeesByBuildingQuery } from '@/redux/services/monthly-fee.service';
+import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
+import type { IRecurringExpenseResponse } from '@repo/interfaces';
 
-interface EditRecurringExpenseFormData {
+interface RecurringExpenseFormData {
   name: string;
   monthlyAmount: number;
-  paymentMethod: string;
+  userPaymentMethodId: string;
   addToMonthlyFees: boolean;
+  monthlyFeeId: string;
+  contractor: string;
+  paymentDate: string;
+  reason: string;
 }
 
 interface EditRecurringExpenseModalProps {
@@ -27,51 +35,86 @@ export function EditRecurringExpenseModal({
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
 
-  const [formData, setFormData] = useState<EditRecurringExpenseFormData>({
+  // Get expense data from modal data
+  const expenseData = modalData?.expenseData as IRecurringExpenseResponse | undefined;
+  const buildingId = modalData?.buildingId as string;
+
+  const [formData, setFormData] = useState<RecurringExpenseFormData>({
     name: '',
     monthlyAmount: 0,
-    paymentMethod: '',
+    userPaymentMethodId: '',
     addToMonthlyFees: false,
+    monthlyFeeId: '',
+    contractor: '',
+    paymentDate: '',
+    reason: '',
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateRecurringExpense, { isLoading: isSubmitting }] = useUpdateRecurringExpenseMutation();
 
-  // Mock payment methods data - these should match monthly fee options
-  const paymentMethodOptions = [
-    { value: 'elevator-fee', label: 'Асансьорна такса' },
-    { value: 'cleaning-fee', label: 'Такса почистване' },
-    { value: 'maintenance-fee', label: 'Такса поддръжка' },
-    { value: 'security-fee', label: 'Такса охрана' },
-    { value: 'common-areas-fee', label: 'Такса общи части' },
-  ];
+  // Fetch monthly fees for the building
+  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } = 
+    useGetMonthlyFeesByBuildingQuery(buildingId, {
+      skip: !buildingId,
+    });
 
-  // Pre-populate form with existing expense data from modal
+  // Fetch payment methods
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = 
+    useGetActiveUserPaymentMethodsQuery();
+
+  // Initialize form with existing expense data
   useEffect(() => {
-    if (modalData?.expenseData) {
-      const expense = modalData.expenseData as {
-        name?: string;
-        amount?: number;
-        paymentMethod?: string;
-        linkedToMonthlyFee?: boolean;
-      };
+    if (expenseData) {
       setFormData({
-        name: expense.name || '',
-        monthlyAmount: expense.amount || 0,
-        paymentMethod: expense.paymentMethod || '',
-        addToMonthlyFees: expense.linkedToMonthlyFee || false,
+        name: expenseData.name || '',
+        monthlyAmount: expenseData.monthlyAmount || 0,
+        userPaymentMethodId: expenseData.userPaymentMethodId || '',
+        addToMonthlyFees: expenseData.addToMonthlyFees || false,
+        monthlyFeeId: expenseData.monthlyFeeId || '',
+        contractor: expenseData.contractor || '',
+        paymentDate: expenseData.paymentDate ? expenseData.paymentDate.split('T')[0] : '', // Format date for input
+        reason: expenseData.reason || '',
       });
     }
-  }, [modalData]);
+  }, [expenseData]);
 
   const handleInputChange = (
-    field: keyof EditRecurringExpenseFormData,
+    field: keyof RecurringExpenseFormData,
     value: string | number | boolean
   ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      };
+
+      // Clear monthlyFeeId when addToMonthlyFees is enabled
+      if (field === 'addToMonthlyFees' && value === true) {
+        updated.monthlyFeeId = '';
+      }
+      
+      // Auto-fill monthly amount when a monthly fee is selected
+      if (field === 'monthlyFeeId' && value && typeof value === 'string') {
+        const selectedFee = monthlyFees.find(fee => fee.id === value);
+        if (selectedFee) {
+          updated.monthlyAmount = selectedFee.baseAmount;
+        }
+      }
+      
+      // Clear monthly amount when monthlyFeeId is cleared
+      if (field === 'monthlyFeeId' && !value) {
+        // Only reset if not adding to monthly fees (manual entry allowed)
+        if (!updated.addToMonthlyFees) {
+          updated.monthlyAmount = 0;
+        }
+      }
+
+      return updated;
+    });
   };
+  
+  // Check if monthly amount should be disabled
+  const isMonthlyAmountDisabled = !formData.addToMonthlyFees && Boolean(formData.monthlyFeeId);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -79,7 +122,7 @@ export function EditRecurringExpenseModal({
     if (
       !formData.name.trim() ||
       formData.monthlyAmount <= 0 ||
-      !formData.paymentMethod
+      !formData.userPaymentMethodId
     ) {
       dispatch(
         addAlert({
@@ -92,20 +135,38 @@ export function EditRecurringExpenseModal({
       return;
     }
 
-    setIsSubmitting(true);
+    if (!expenseData?.id) {
+      dispatch(
+        addAlert({
+          type: 'error',
+          title: 'Грешка',
+          message: 'Липсва информация за разхода.',
+          duration: 5000,
+        })
+      );
+      return;
+    }
 
     try {
-      // TODO: Implement actual API call for updating recurring expense
-      console.log('Updating recurring expense with data:', formData);
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await updateRecurringExpense({
+        id: expenseData.id,
+        data: {
+          name: formData.name.trim(),
+          monthlyAmount: formData.monthlyAmount,
+          userPaymentMethodId: formData.userPaymentMethodId,
+          addToMonthlyFees: formData.addToMonthlyFees,
+          monthlyFeeId: formData.addToMonthlyFees ? undefined : (formData.monthlyFeeId || undefined),
+          contractor: formData.contractor || undefined,
+          paymentDate: formData.paymentDate || undefined,
+          reason: formData.reason || undefined,
+        },
+      }).unwrap();
 
       dispatch(
         addAlert({
           type: 'success',
-          title: 'Успешна актуализация!',
-          message: 'Периодичният разход беше актуализиран успешно.',
+          title: 'Успешно обновяване!',
+          message: 'Периодичният разход беше обновен успешно.',
           duration: 5000,
         })
       );
@@ -118,18 +179,16 @@ export function EditRecurringExpenseModal({
         (error as { data?: { message?: string }; message?: string })?.data
           ?.message ||
         (error as { message?: string })?.message ||
-        'Възникна грешка при актуализацията на периодичния разход. Моля опитайте отново.';
+        'Възникна грешка при обновяването на периодичния разход. Моля опитайте отново.';
 
       dispatch(
         addAlert({
           type: 'error',
-          title: 'Грешка при актуализация',
+          title: 'Грешка при обновяване',
           message: errorMessage,
           duration: 5000,
         })
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -137,170 +196,219 @@ export function EditRecurringExpenseModal({
     onClose();
   };
 
+  if (!expenseData) {
+    return (
+      <div className="text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+          <Edit className="h-6 w-6 text-red-600" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Грешка
+        </h3>
+        <p className="text-sm text-gray-600 mb-6">
+          Липсват данни за разхода.
+        </p>
+        <Button variant="outline" onClick={onClose}>
+          Затвори
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900">
+    <div className="flex flex-col h-full">
+      <div className="text-center px-6 py-4">
+        {/* Icon */}
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+          <Edit className="h-6 w-6 text-red-600" />
+        </div>
+
+        {/* Title */}
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Редактиране на Периодичен Разход
-        </h2>
-        <button
-          onClick={handleCancel}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <svg
-            className="w-5 h-5 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+        </h3>
+
+        {/* Subtitle */}
+        <p className="text-sm text-gray-600 mb-6">
+          Редактирайте информацията за периодичния разход
+        </p>
       </div>
 
-      <div className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form Container - scrollable */}
+      <div className="flex-1 overflow-y-auto px-6">
+        <form id="edit-form" onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* Name Field */}
           <div>
-            <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Име
-            </Label>
+            <Label htmlFor="name">Име *</Label>
             <Input
-              id="name"
-              type="text"
-              value={formData.name}
-              onChange={e => handleInputChange('name', e.target.value)}
-              placeholder="Въведете име на разхода"
-              className="mt-1"
-              disabled={isSubmitting}
-              required
-            />
-          </div>
+            id="name"
+            type="text"
+            value={formData.name}
+            onChange={e => handleInputChange('name', e.target.value)}
+            placeholder="Въведете име на разхода"
+            disabled={isSubmitting}
+            required
+          />
+        </div>
 
           {/* Monthly Amount Field */}
           <div>
-            <Label
-              htmlFor="monthlyAmount"
-              className="text-sm font-medium text-gray-700"
-            >
-              Месечна Такса Сума
-            </Label>
-            <div className="relative mt-1">
-              <Input
-                id="monthlyAmount"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.monthlyAmount || ''}
-                onChange={e =>
-                  handleInputChange(
-                    'monthlyAmount',
-                    parseFloat(e.target.value) || 0
-                  )
-                }
-                placeholder="0.00"
-                disabled={isSubmitting}
-                required
-              />
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
-                лв.
-              </span>
-            </div>
+            <Label htmlFor="monthlyAmount">Месечна Такса Сума *</Label>
+            <div className="relative">
+            <Input
+              id="monthlyAmount"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.monthlyAmount || ''}
+              onChange={e =>
+                handleInputChange(
+                  'monthlyAmount',
+                  parseFloat(e.target.value) || 0
+                )
+              }
+              placeholder="0.00"
+              disabled={isSubmitting || isMonthlyAmountDisabled}
+              required
+              className={isMonthlyAmountDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+            />
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+              лв.
+            </span>
           </div>
+          {isMonthlyAmountDisabled && (
+            <p className="text-xs text-gray-500 mt-1">
+              Сумата се попълва автоматично от избраната месечна такса
+            </p>
+          )}
+        </div>
+
+          {/* Link with Monthly Fee Field */}
+          <div>
+            <Label htmlFor="monthlyFeeId">
+              Свържи с месечна такса (по избор)
+            </Label>
+            <Select
+            id="monthlyFeeId"
+            value={formData.monthlyFeeId}
+            onChange={e => handleInputChange('monthlyFeeId', e.target.value)}
+            disabled={isSubmitting || isLoadingMonthlyFees || formData.addToMonthlyFees}
+          >
+            <option value="">
+              {formData.addToMonthlyFees 
+                ? 'Ще се създаде нова месечна такса' 
+                : 'Избери месечна такса (опционално)'
+              }
+            </option>
+            {!formData.addToMonthlyFees && monthlyFees.map(fee => (
+              <option key={fee.id} value={fee.id}>
+                {fee.name} ({fee.baseAmount.toFixed(2)} лв.)
+              </option>
+            ))}
+          </Select>
+        </div>
+
+          {/* Contractor Field */}
+          <div>
+            <Label htmlFor="contractor">Контрагент</Label>
+            <Select
+            id="contractor"
+            value={formData.contractor}
+            onChange={e => handleInputChange('contractor', e.target.value)}
+            disabled={isSubmitting}
+          >
+            <option value="">Избери контрагент</option>
+            {/* TODO: Add contractor options later */}
+          </Select>
+        </div>
+
+          {/* Payment Date Field */}
+          <div>
+            <Label htmlFor="paymentDate">Дата на плащане</Label>
+            <Input
+            id="paymentDate"
+            type="date"
+            value={formData.paymentDate}
+            onChange={e => handleInputChange('paymentDate', e.target.value)}
+            disabled={isSubmitting}
+          />
+        </div>
+
+          {/* Reason Field */}
+          <div>
+            <Label htmlFor="reason">Основание</Label>
+            <Input
+            id="reason"
+            type="text"
+            value={formData.reason}
+            onChange={e => handleInputChange('reason', e.target.value)}
+            placeholder="Въведете основание за разхода"
+            disabled={isSubmitting}
+          />
+        </div>
 
           {/* Payment Method Field */}
           <div>
-            <Label
-              htmlFor="paymentMethod"
-              className="text-sm font-medium text-gray-700"
-            >
-              Свържи с Месечна Такса
-              <span className="ml-1 text-red-500">
-                <svg
-                  className="w-3 h-3 inline"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="8"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                  <path d="M10 6v4M10 14h.01" />
-                </svg>
-              </span>
-            </Label>
+            <Label htmlFor="userPaymentMethodId">Метод на плащане *</Label>
             <Select
-              id="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={e => handleInputChange('paymentMethod', e.target.value)}
-              className="mt-1"
-              disabled={isSubmitting}
-              required
-            >
-              <option value="">Избери</option>
-              {paymentMethodOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </div>
+            id="userPaymentMethodId"
+            value={formData.userPaymentMethodId}
+            onChange={e => handleInputChange('userPaymentMethodId', e.target.value)}
+            disabled={isSubmitting || isLoadingPaymentMethods}
+            required
+          >
+            <option value="">Избери метод на плащане</option>
+            {paymentMethods.map(method => (
+              <option key={method.id} value={method.id}>
+                {method.displayName}
+              </option>
+            ))}
+          </Select>
+        </div>
 
-          {/* Add to Monthly Fees Checkbox */}
+          {/* Add to Monthly Fees Checkbox - moved to last */}
           <div className="flex items-center space-x-2">
             <Checkbox
-              id="addToMonthlyFees"
-              checked={formData.addToMonthlyFees}
-              onChange={e =>
-                handleInputChange('addToMonthlyFees', e.target.checked)
-              }
-              disabled={isSubmitting}
-            />
-            <Label
-              htmlFor="addToMonthlyFees"
-              className="text-sm font-medium text-gray-700"
-            >
-              Добави в Месечни Такси
-            </Label>
-          </div>
+            id="addToMonthlyFees"
+            checked={formData.addToMonthlyFees}
+            onChange={e =>
+              handleInputChange('addToMonthlyFees', e.target.checked)
+            }
+            disabled={isSubmitting}
+          />
+          <Label htmlFor="addToMonthlyFees" className="text-sm">
+            Добави в Месечни Такси
+          </Label>
+        </div>
+
         </form>
       </div>
 
-      {/* Footer with Action Buttons */}
-      <div className="p-6 border-t border-gray-200 flex justify-end items-center bg-gray-50">
+      {/* Action Buttons - Fixed at bottom */}
+      <div className="border-t bg-gray-50 px-6 py-4">
         <div className="flex gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
             disabled={isSubmitting}
-            className="px-8"
+            className="flex-1"
           >
             Отказ
           </Button>
           <Button
             type="submit"
-            onClick={handleSubmit}
+            form="edit-form"
             disabled={isSubmitting}
-            className="px-8 bg-red-600 hover:bg-red-700 text-white"
+            className="flex-1"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Запази...
+                Обновяване...
               </>
             ) : (
-              'Запази'
+              'Обнови'
             )}
           </Button>
         </div>

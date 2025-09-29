@@ -1,14 +1,21 @@
 import { Button } from '@/components/ui/button';
-import { TemporaryExpensesTable } from './temporary-expenses-table';
 import { Plus } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
+import { RecurringExpensesTable } from './recurring-expenses-table';
 
-export function TemporaryExpensesSection() {
+interface RecurringExpensesSectionProps {
+  buildingId: string;
+}
+
+export function RecurringExpensesSection({ buildingId }: RecurringExpensesSectionProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateExpense = () => {
-    dispatch(openModal({ type: 'create-recurring-expense' }));
+    dispatch(openModal({ 
+      type: 'create-recurring-expense',
+      data: { buildingId }
+    }));
   };
 
   return (
@@ -25,7 +32,7 @@ export function TemporaryExpensesSection() {
           Създай Периодичен Разход
         </Button>
       </div>
-      <TemporaryExpensesTable />
+      <RecurringExpensesTable buildingId={buildingId} />
     </div>
   );
 }
