@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Home, Users, Calendar, Brain, LucideIcon } from 'lucide-react';
+import { Home, Users, Calendar, Brain, Handshake, LucideIcon } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,6 +22,11 @@ const navigationItems: NavigationItem[] = [
     label: 'Сгради',
     icon: Home,
     isSpecial: true, // Special red styling
+  },
+  {
+    path: '/partners',
+    label: 'Контрагенти',
+    icon: Handshake,
   },
   {
     path: '/users',
