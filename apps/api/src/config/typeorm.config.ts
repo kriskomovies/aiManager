@@ -9,6 +9,7 @@ import { TenantPaymentMethodEntity } from '../database/entities/tenant-payment-m
 import { UserPaymentMethodEntity } from '../database/entities/user-payment-method.entity';
 import { OneTimeExpenseEntity } from '../database/entities/one-time-expense.entity';
 import { RecurringExpenseEntity } from '../database/entities/recurring-expense.entity';
+import { RecurringExpensePaymentEntity } from '../database/entities/recurring-expense-payment.entity';
 import { MonthlyFeeEntity } from '../database/entities/monthly-fee.entity';
 import { MonthlyFeeApartmentEntity } from '../database/entities/monthly-fee-apartment.entity';
 import { ApartmentMonthlyPaymentEntity } from '../database/entities/apartment-monthly-payment.entity';
@@ -29,6 +30,7 @@ export const AppDataSource = new DataSource({
     UserPaymentMethodEntity,
     OneTimeExpenseEntity,
     RecurringExpenseEntity,
+    RecurringExpensePaymentEntity,
     MonthlyFeeEntity,
     MonthlyFeeApartmentEntity,
     ApartmentMonthlyPaymentEntity,

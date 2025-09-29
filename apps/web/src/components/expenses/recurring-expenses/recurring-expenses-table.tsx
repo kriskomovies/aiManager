@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { useGetRecurringExpensesByBuildingQuery } from '@/redux/services/recurring-expense.service';
+import { useGetPaymentsByRecurringExpensesQuery } from '@/redux/services/recurring-expense-payment.service';
 
 interface RecurringExpenseData {
   id: string;
@@ -27,9 +28,10 @@ interface RecurringExpenseData {
 interface RecurringExpenseChild {
   id: string;
   date: string;
-  contractor: string;
+  paymentMethod: string;
   reason: string;
   amount: number;
+  documentType?: string;
 }
 
 interface RecurringExpensesTableProps {
@@ -57,29 +59,58 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
     }
   );
 
+  // Get expense IDs for payments query
+  const recurringExpenseIds = recurringExpenses.map(expense => expense.id);
+
+  // Fetch payments for all expenses
+  const { data: payments = [], isLoading: isLoadingPayments } = useGetPaymentsByRecurringExpensesQuery(
+    recurringExpenseIds,
+    {
+      skip: recurringExpenseIds.length === 0,
+    }
+  );
+
   // Transform API data to table format
   const transformedData: ExpandableRowData<RecurringExpenseData, RecurringExpenseChild>[] = 
-    recurringExpenses.map(expense => ({
-      id: expense.id,
-      data: {
+    recurringExpenses.map(expense => {
+      // Get payments for this specific expense
+      const expensePayments = payments.filter(payment => payment.recurringExpenseId === expense.id);
+      
+      // Transform payments to children format
+      const children: RecurringExpenseChild[] = expensePayments.map(payment => ({
+        id: payment.id,
+        date: new Date(payment.paymentDate).toLocaleDateString('bg-BG'),
+        paymentMethod: payment.userPaymentMethod?.displayName || 'N/A',
+        reason: payment.reason || (payment.connectPayment && payment.monthlyFee ? 
+          `Свързано с ${payment.monthlyFee.name}` : 'Плащане'),
+        amount: payment.amount,
+        documentType: payment.issueDocument ? 
+          (payment.documentType === 'invoice' ? 'Фактура' : 
+           payment.documentType === 'receipt' ? 'Квитанция' : 'Документ') : undefined,
+      }));
+
+      return {
         id: expense.id,
-        name: expense.name,
-        linkedToMonthlyFee: Boolean(expense.monthlyFeeId),
-        contractor: '-', // Hardcoded for now, will be implemented later
-        paymentDate: expense.paymentDate 
-          ? new Date(expense.paymentDate).toLocaleDateString('bg-BG')
-          : new Date(expense.createdAt).toLocaleDateString('bg-BG'),
-        paymentMethod: expense.userPaymentMethod?.displayName || 'N/A',
-        reason: expense.reason || 
-          (expense.addToMonthlyFees 
-            ? 'Добавен като месечна такса' 
-            : expense.monthlyFee?.name || 'Няма свързана месечна такса'),
-        amount: expense.monthlyAmount,
-        // Store original expense data for edit modal
-        originalExpense: expense,
-      },
-      children: [], // No children for now, add historical data if needed
-    }));
+        data: {
+          id: expense.id,
+          name: expense.name,
+          linkedToMonthlyFee: Boolean(expense.monthlyFeeId),
+          contractor: '-', // Hardcoded for now, will be implemented later
+          paymentDate: expense.paymentDate 
+            ? new Date(expense.paymentDate).toLocaleDateString('bg-BG')
+            : new Date(expense.createdAt).toLocaleDateString('bg-BG'),
+          paymentMethod: expense.userPaymentMethod?.displayName || 'N/A',
+          reason: expense.reason || 
+            (expense.addToMonthlyFees 
+              ? 'Добавен като месечна такса' 
+              : expense.monthlyFee?.name || 'Няма свързана месечна такса'),
+          amount: expense.monthlyAmount,
+          // Store original expense data for edit modal
+          originalExpense: expense,
+        },
+        children,
+      };
+    });
 
 
   const handlePayExpense = (expense: RecurringExpenseData) => {
@@ -229,9 +260,18 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
   ];
 
   const renderExpandedContent = (children: RecurringExpenseChild[]) => {
+    if (children.length === 0) {
+      return (
+        <div className="p-4">
+          <p className="text-sm text-gray-500 text-center">Няма извършени плащания</p>
+        </div>
+      );
+    }
+
     return (
       <div className="p-4">
         <div className="space-y-2">
+          <h4 className="text-sm font-medium text-gray-900 mb-3">История на плащанията</h4>
           {children.map(child => (
             <div
               key={child.id}
@@ -239,8 +279,15 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
             >
               <div className="flex items-center gap-4 text-sm">
                 <span className="text-gray-600">{child.date}</span>
-                <span className="text-gray-900">{child.contractor}</span>
+                <Badge variant="neutral" className="text-xs">
+                  {child.paymentMethod}
+                </Badge>
                 <span className="text-gray-600">{child.reason}</span>
+                {child.documentType && (
+                  <Badge variant="positive" className="text-xs">
+                    {child.documentType}
+                  </Badge>
+                )}
               </div>
               <span className="font-medium text-gray-900">
                 {child.amount.toFixed(2)} лв.
@@ -263,7 +310,7 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
     <ExpandableDataTable<RecurringExpenseData, RecurringExpenseChild>
       columns={columns}
       data={transformedFinalData.items}
-      isLoading={isLoading}
+      isLoading={isLoading || isLoadingPayments}
       isFetching={false}
       error={error}
       page={page}

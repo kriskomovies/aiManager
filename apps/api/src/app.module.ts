@@ -9,6 +9,7 @@ import { InventoriesModule } from './modules/inventories/inventories.module';
 import { UserPaymentMethodsModule } from './modules/user-payment-methods/user-payment-methods.module';
 import { OneTimeExpensesModule } from './modules/one-time-expenses/one-time-expenses.module';
 import { RecurringExpensesModule } from './modules/recurring-expenses/recurring-expenses.module';
+import { RecurringExpensePaymentsModule } from './modules/recurring-expense-payments/recurring-expense-payments.module';
 import { MonthlyFeesModule } from './modules/monthly-fees/monthly-fees.module';
 import { CalendarEventsModule } from './modules/calendar-events/calendar-events.module';
 import databaseConfig from './config/database.config';
@@ -36,6 +37,7 @@ import databaseConfig from './config/database.config';
     UserPaymentMethodsModule,
     OneTimeExpensesModule,
     RecurringExpensesModule,
+    RecurringExpensePaymentsModule,
     MonthlyFeesModule,
     CalendarEventsModule,
   ],

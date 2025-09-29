@@ -12,6 +12,7 @@ import appStateReducer from './slices/app-state';
 import alertReducer from './slices/alert-slice';
 import modalReducer from './slices/modal-slice';
 import { recurringExpenseService } from './services/recurring-expense.service';
+import { recurringExpensePaymentService } from './services/recurring-expense-payment.service';
 
 export const store = configureStore({
   reducer: {
@@ -27,6 +28,7 @@ export const store = configureStore({
     [monthlyFeeService.reducerPath]: monthlyFeeService.reducer,
     [calendarService.reducerPath]: calendarService.reducer,
     [recurringExpenseService.reducerPath]: recurringExpenseService.reducer,
+    [recurringExpensePaymentService.reducerPath]: recurringExpensePaymentService.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(
@@ -38,7 +40,8 @@ export const store = configureStore({
       expenseService.middleware,
       monthlyFeeService.middleware,
       calendarService.middleware,
-      recurringExpenseService.middleware
+      recurringExpenseService.middleware,
+      recurringExpensePaymentService.middleware
     ),
 });
 

@@ -12,6 +12,7 @@ import { addAlert } from '@/redux/slices/alert-slice';
 import { selectModalData } from '@/redux/slices/modal-slice';
 import { useGetMonthlyFeesByBuildingQuery } from '@/redux/services/monthly-fee.service';
 import { useGetActiveUserPaymentMethodsQuery } from '@/redux/services/payment-method.service';
+import { useCreateRecurringExpensePaymentMutation } from '@/redux/services/recurring-expense-payment.service';
 import type { IRecurringExpenseResponse } from '@repo/interfaces';
 
 interface PaymentFormData {
@@ -61,6 +62,9 @@ export function PayRecurringExpenseModal({
   // Fetch payment methods
   const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = 
     useGetActiveUserPaymentMethodsQuery();
+
+  // Payment creation mutation
+  const [createPayment] = useCreateRecurringExpensePaymentMutation();
 
   const handleInputChange = (
     field: keyof PaymentFormData,
@@ -113,14 +117,19 @@ export function PayRecurringExpenseModal({
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement payment API call
-      console.log('Payment data:', {
-        expenseId: expenseData.id,
-        ...formData,
-      });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Create payment via API
+      await createPayment({
+        name: `Плащане за ${expenseData.name}`,
+        amount: formData.amount,
+        recurringExpenseId: expenseData.id,
+        userPaymentMethodId: formData.paymentMethodId,
+        connectPayment: formData.connectPayment,
+        monthlyFeeId: formData.connectPayment ? formData.monthlyFeeId : undefined,
+        reason: formData.reason || undefined,
+        paymentDate: formData.paymentDate,
+        issueDocument: formData.issueDocument,
+        documentType: formData.issueDocument ? formData.documentType || undefined : undefined,
+      }).unwrap();
 
       dispatch(
         addAlert({
@@ -132,14 +141,20 @@ export function PayRecurringExpenseModal({
       );
 
       onClose();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error processing payment:', error);
+
+      const errorMessage = error && typeof error === 'object' && 'data' in error && 
+        error.data && typeof error.data === 'object' && 'message' in error.data && 
+        typeof error.data.message === 'string' 
+          ? error.data.message 
+          : 'Възникна грешка при обработката на плащането. Моля опитайте отново.';
 
       dispatch(
         addAlert({
           type: 'error',
           title: 'Грешка при плащане',
-          message: 'Възникна грешка при обработката на плащането. Моля опитайте отново.',
+          message: errorMessage,
           duration: 5000,
         })
       );
@@ -312,30 +327,33 @@ export function PayRecurringExpenseModal({
           <div className="space-y-3">
             <Label className="text-sm font-medium">Тип документ:</Label>
             
-            {/* Invoice Checkbox */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="invoice"
-                checked={formData.documentType === 'invoice'}
-                onChange={() => handleDocumentTypeChange('invoice')}
-                disabled={isSubmitting}
-              />
-              <Label htmlFor="invoice" className="text-sm">
-                Фактура
-              </Label>
-            </div>
+            {/* Document type options on the same row */}
+            <div className="flex items-center space-x-6">
+              {/* Invoice Checkbox */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="invoice"
+                  checked={formData.documentType === 'invoice'}
+                  onChange={() => handleDocumentTypeChange('invoice')}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="invoice" className="text-sm">
+                  Фактура
+                </Label>
+              </div>
 
-            {/* Receipt Checkbox */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="receipt"
-                checked={formData.documentType === 'receipt'}
-                onChange={() => handleDocumentTypeChange('receipt')}
-                disabled={isSubmitting}
-              />
-              <Label htmlFor="receipt" className="text-sm">
-                Квитанция
-              </Label>
+              {/* Receipt Checkbox */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="receipt"
+                  checked={formData.documentType === 'receipt'}
+                  onChange={() => handleDocumentTypeChange('receipt')}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="receipt" className="text-sm">
+                  Квитанция
+                </Label>
+              </div>
             </div>
           </div>
         )}
