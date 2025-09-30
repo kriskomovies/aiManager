@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
-import { IUserListItem } from '@repo/interfaces';
+import { IUserListItem, IUserQueryParams } from '@repo/interfaces';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Smartphone, User } from 'lucide-react';
@@ -8,7 +8,11 @@ import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 import { useGetUsersQuery } from '@/redux/services/users.service';
 
-export function UsersTable() {
+interface UsersTableProps {
+  filters?: IUserQueryParams;
+}
+
+export function UsersTable({ filters = {} }: UsersTableProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
@@ -17,10 +21,11 @@ export function UsersTable() {
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Real API call
+  // Real API call with filters
   const { data, isLoading, isFetching, error } = useGetUsersQuery({
     page,
     limit: 10,
+    ...filters, // Spread the filters from props
   });
 
   const handleDeleteUser = (user: IUserListItem) => {

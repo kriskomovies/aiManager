@@ -1,16 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { InformationCard } from '@/components/information-card';
 import { UsersTable } from '@/components/users/users-table';
+import { UsersFilters } from '@/components/users/users-filters';
 import { Plus, Users, UserCheck, UserX, Smartphone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
+import { IUserQueryParams } from '@repo/interfaces';
 
 export function UsersListPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [filters, setFilters] = useState<IUserQueryParams>({});
 
   // Note: Statistics will be calculated from the table data
 
@@ -131,6 +134,14 @@ export function UsersListPage() {
         />
       </motion.div>
 
+      {/* Filters Section */}
+      <motion.div variants={itemVariants}>
+        <UsersFilters 
+          onFiltersChange={setFilters}
+          initialFilters={filters}
+        />
+      </motion.div>
+
       {/* Users Table Section */}
       <motion.div
         className="bg-white rounded-xl shadow-sm border"
@@ -155,7 +166,7 @@ export function UsersListPage() {
           </div>
         </div>
         <div className="p-6">
-          <UsersTable />
+          <UsersTable filters={filters} />
         </div>
       </motion.div>
     </motion.div>
