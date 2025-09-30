@@ -66,7 +66,8 @@ export function AddEditPartnerPage() {
         creditLimit: 50000,
         paymentTerms: 30,
         website: 'https://stroy-invest.bg',
-        description: 'Строителна компания специализирана в жилищно строителство и ремонти.',
+        description:
+          'Строителна компания специализирана в жилищно строителство и ремонти.',
         contactPersonName: 'Иван Петров',
         contactPersonEmail: 'ivan.petrov@stroy-invest.bg',
         contactPersonPhone: '+359 88 123 4568',
@@ -184,7 +185,10 @@ export function AddEditPartnerPage() {
     { value: 'building2', label: 'Сграда Лозенец - ул. Фритьоф Нансен 45' },
     { value: 'building3', label: 'Сграда Центр - ул. Граф Игнатиев 78' },
     { value: 'building4', label: 'Сграда Младост - ул. Йерусалим 12' },
-    { value: 'building5', label: 'Сграда Студентски град - бул. Св. Климент Охридски 34' },
+    {
+      value: 'building5',
+      label: 'Сграда Студентски град - бул. Св. Климент Охридски 34',
+    },
   ];
 
   const onSubmit: SubmitHandler<AddPartnerFormData> = async data => {
@@ -272,7 +276,9 @@ export function AddEditPartnerPage() {
                     {...register('name')}
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-600">{errors.name.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.name.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -286,7 +292,9 @@ export function AddEditPartnerPage() {
                     ))}
                   </Select>
                   {errors.type && (
-                    <p className="text-sm text-red-600">{errors.type.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.type.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -300,7 +308,9 @@ export function AddEditPartnerPage() {
                     ))}
                   </Select>
                   {errors.status && (
-                    <p className="text-sm text-red-600">{errors.status.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.status.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -319,7 +329,9 @@ export function AddEditPartnerPage() {
                     {...register('email')}
                   />
                   {errors.email && (
-                    <p className="text-sm text-red-600">{errors.email.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.email.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -330,7 +342,9 @@ export function AddEditPartnerPage() {
                     {...register('phone')}
                   />
                   {errors.phone && (
-                    <p className="text-sm text-red-600">{errors.phone.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.phone.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -348,7 +362,9 @@ export function AddEditPartnerPage() {
                     {...register('address')}
                   />
                   {errors.address && (
-                    <p className="text-sm text-red-600">{errors.address.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.address.message}
+                    </p>
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
@@ -362,7 +378,9 @@ export function AddEditPartnerPage() {
                     ))}
                   </Select>
                   {errors.city && (
-                    <p className="text-sm text-red-600">{errors.city.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.city.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -395,7 +413,9 @@ export function AddEditPartnerPage() {
                     ))}
                   </Select>
                   {errors.country && (
-                    <p className="text-sm text-red-600">{errors.country.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.country.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -419,7 +439,9 @@ export function AddEditPartnerPage() {
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="registrationNumber">Регистрационен номер *</Label>
+                  <Label htmlFor="registrationNumber">
+                    Регистрационен номер *
+                  </Label>
                   <Input
                     id="registrationNumber"
                     placeholder="СОФ123456"
@@ -479,7 +501,9 @@ export function AddEditPartnerPage() {
                     {...register('website')}
                   />
                   {errors.website && (
-                    <p className="text-sm text-red-600">{errors.website.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.website.message}
+                    </p>
                   )}
                 </motion.div>
               </motion.div>
@@ -536,7 +560,9 @@ export function AddEditPartnerPage() {
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="contactPersonEmail">Имейл на контактното лице</Label>
+                  <Label htmlFor="contactPersonEmail">
+                    Имейл на контактното лице
+                  </Label>
                   <Input
                     id="contactPersonEmail"
                     type="email"
@@ -550,7 +576,9 @@ export function AddEditPartnerPage() {
                   )}
                 </motion.div>
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="contactPersonPhone">Телефон на контактното лице</Label>
+                  <Label htmlFor="contactPersonPhone">
+                    Телефон на контактното лице
+                  </Label>
                   <Input
                     id="contactPersonPhone"
                     placeholder="+359 88 123 4568"
@@ -587,7 +615,9 @@ export function AddEditPartnerPage() {
 
               {/* Services Provided */}
               <motion.div className="pt-4 border-t" variants={itemVariants}>
-                <h3 className="text-md font-medium mb-4">Предоставяни услуги *</h3>
+                <h3 className="text-md font-medium mb-4">
+                  Предоставяни услуги *
+                </h3>
                 <div className="space-y-2">
                   <MultiSelect
                     options={servicesOptions}

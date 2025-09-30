@@ -10,7 +10,9 @@ interface DeleteCalendarEventModalProps {
   onClose: () => void;
 }
 
-export function DeleteCalendarEventModal({ onClose }: DeleteCalendarEventModalProps) {
+export function DeleteCalendarEventModal({
+  onClose,
+}: DeleteCalendarEventModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
 

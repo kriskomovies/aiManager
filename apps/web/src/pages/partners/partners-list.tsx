@@ -3,7 +3,13 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { InformationCard } from '@/components/information-card';
 import { PartnersTable } from '@/components/partners/partners-table';
-import { Plus, Users, Handshake, AlertTriangle, CheckCircle } from 'lucide-react';
+import {
+  Plus,
+  Users,
+  Handshake,
+  AlertTriangle,
+  CheckCircle,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';

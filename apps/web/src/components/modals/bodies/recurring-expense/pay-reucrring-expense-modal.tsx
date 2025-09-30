@@ -37,7 +37,9 @@ export function PayRecurringExpenseModal({
   const modalData = useAppSelector(selectModalData);
 
   // Get expense data from modal data
-  const expenseData = modalData?.expenseData as IRecurringExpenseResponse | undefined;
+  const expenseData = modalData?.expenseData as
+    | IRecurringExpenseResponse
+    | undefined;
   const buildingId = modalData?.buildingId as string;
 
   const [formData, setFormData] = useState<PaymentFormData>({
@@ -54,13 +56,13 @@ export function PayRecurringExpenseModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch monthly fees for the building
-  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } = 
+  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } =
     useGetMonthlyFeesByBuildingQuery(buildingId, {
       skip: !buildingId,
     });
 
   // Fetch payment methods
-  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = 
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } =
     useGetActiveUserPaymentMethodsQuery();
 
   // Payment creation mutation
@@ -124,11 +126,15 @@ export function PayRecurringExpenseModal({
         recurringExpenseId: expenseData.id,
         userPaymentMethodId: formData.paymentMethodId,
         connectPayment: formData.connectPayment,
-        monthlyFeeId: formData.connectPayment ? formData.monthlyFeeId : undefined,
+        monthlyFeeId: formData.connectPayment
+          ? formData.monthlyFeeId
+          : undefined,
         reason: formData.reason || undefined,
         paymentDate: formData.paymentDate,
         issueDocument: formData.issueDocument,
-        documentType: formData.issueDocument ? formData.documentType || undefined : undefined,
+        documentType: formData.issueDocument
+          ? formData.documentType || undefined
+          : undefined,
       }).unwrap();
 
       dispatch(
@@ -144,10 +150,15 @@ export function PayRecurringExpenseModal({
     } catch (error: unknown) {
       console.error('Error processing payment:', error);
 
-      const errorMessage = error && typeof error === 'object' && 'data' in error && 
-        error.data && typeof error.data === 'object' && 'message' in error.data && 
-        typeof error.data.message === 'string' 
-          ? error.data.message 
+      const errorMessage =
+        error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'message' in error.data &&
+        typeof error.data.message === 'string'
+          ? error.data.message
           : 'Възникна грешка при обработката на плащането. Моля опитайте отново.';
 
       dispatch(
@@ -173,12 +184,8 @@ export function PayRecurringExpenseModal({
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
           <Wallet className="h-6 w-6 text-red-600" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Грешка
-        </h3>
-        <p className="text-sm text-gray-600 mb-6">
-          Липсват данни за разхода.
-        </p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Грешка</h3>
+        <p className="text-sm text-gray-600 mb-6">Липсват данни за разхода.</p>
         <Button variant="outline" onClick={onClose}>
           Затвори
         </Button>
@@ -252,7 +259,9 @@ export function PayRecurringExpenseModal({
           <Toggle
             id="connectPayment"
             pressed={formData.connectPayment}
-            onPressedChange={value => handleInputChange('connectPayment', value)}
+            onPressedChange={value =>
+              handleInputChange('connectPayment', value)
+            }
             disabled={isSubmitting}
             label="Свържи Плащането"
           />
@@ -326,7 +335,7 @@ export function PayRecurringExpenseModal({
         {formData.issueDocument && (
           <div className="space-y-3">
             <Label className="text-sm font-medium">Тип документ:</Label>
-            
+
             {/* Document type options on the same row */}
             <div className="flex items-center space-x-6">
               {/* Invoice Checkbox */}

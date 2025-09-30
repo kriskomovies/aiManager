@@ -12,6 +12,7 @@ import { RecurringExpensesModule } from './modules/recurring-expenses/recurring-
 import { RecurringExpensePaymentsModule } from './modules/recurring-expense-payments/recurring-expense-payments.module';
 import { MonthlyFeesModule } from './modules/monthly-fees/monthly-fees.module';
 import { CalendarEventsModule } from './modules/calendar-events/calendar-events.module';
+import { UsersModule } from './modules/users/users.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -40,6 +41,7 @@ import databaseConfig from './config/database.config';
     RecurringExpensePaymentsModule,
     MonthlyFeesModule,
     CalendarEventsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

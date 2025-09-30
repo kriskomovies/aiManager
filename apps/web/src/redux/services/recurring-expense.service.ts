@@ -22,20 +22,30 @@ export const recurringExpenseService = createApi({
         method: 'POST',
         body: data,
       }),
-      transformResponse: (response: { data: IBackendRecurringExpenseResponse, statusCode: number, timestamp: string }): IRecurringExpenseResponse => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpenseResponse;
+        statusCode: number;
+        timestamp: string;
+      }): IRecurringExpenseResponse => {
         console.log('Create recurring expense API response:', response);
-        
+
         // The response is now wrapped by TransformInterceptor
         const data = response.data;
         console.log('Processed create data:', data);
-        
+
         return {
           ...data,
-          monthlyAmount: data.monthlyAmount ? parseFloat(data.monthlyAmount.toString()) : 0,
-          monthlyFee: data.monthlyFee ? {
-            ...data.monthlyFee,
-            baseAmount: data.monthlyFee.baseAmount ? parseFloat(data.monthlyFee.baseAmount.toString()) : 0,
-          } : undefined,
+          monthlyAmount: data.monthlyAmount
+            ? parseFloat(data.monthlyAmount.toString())
+            : 0,
+          monthlyFee: data.monthlyFee
+            ? {
+                ...data.monthlyFee,
+                baseAmount: data.monthlyFee.baseAmount
+                  ? parseFloat(data.monthlyFee.baseAmount.toString())
+                  : 0,
+              }
+            : undefined,
         };
       },
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
@@ -43,9 +53,7 @@ export const recurringExpenseService = createApi({
           await queryFulfilled;
           // If creating a new monthly fee, invalidate the monthly fee service cache
           if (arg.addToMonthlyFees) {
-            dispatch(
-              monthlyFeeService.util.invalidateTags(['MonthlyFee'])
-            );
+            dispatch(monthlyFeeService.util.invalidateTags(['MonthlyFee']));
           }
         } catch {
           // Handle error if needed
@@ -56,57 +64,72 @@ export const recurringExpenseService = createApi({
 
     getRecurringExpenses: builder.query<IRecurringExpenseResponse[], void>({
       query: () => 'recurring-expenses',
-      transformResponse: (
-        response: { data: IBackendRecurringExpenseResponse[], statusCode: number, timestamp: string }
-      ): IRecurringExpenseResponse[] => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpenseResponse[];
+        statusCode: number;
+        timestamp: string;
+      }): IRecurringExpenseResponse[] => {
         console.log('All recurring expenses API response:', response);
-        
+
         // The response is now wrapped by TransformInterceptor
         const data = response.data;
         console.log('Processed data:', data);
-        
+
         if (!Array.isArray(data)) {
           console.error('Data is not an array:', data);
           return [];
         }
-        
+
         return data.map(expense => ({
           ...expense,
           monthlyAmount: parseFloat(expense.monthlyAmount.toString()),
-          monthlyFee: expense.monthlyFee ? {
-            ...expense.monthlyFee,
-            baseAmount: parseFloat(expense.monthlyFee.baseAmount.toString()),
-          } : undefined,
+          monthlyFee: expense.monthlyFee
+            ? {
+                ...expense.monthlyFee,
+                baseAmount: parseFloat(
+                  expense.monthlyFee.baseAmount.toString()
+                ),
+              }
+            : undefined,
         }));
       },
       providesTags: ['RecurringExpense'],
     }),
 
-    getRecurringExpensesByBuilding: builder.query<IRecurringExpenseResponse[], string>({
+    getRecurringExpensesByBuilding: builder.query<
+      IRecurringExpenseResponse[],
+      string
+    >({
       query: buildingId => `recurring-expenses/building/${buildingId}`,
-      transformResponse: (
-        response: { data: IBackendRecurringExpenseResponse[], statusCode: number, timestamp: string }
-      ): IRecurringExpenseResponse[] => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpenseResponse[];
+        statusCode: number;
+        timestamp: string;
+      }): IRecurringExpenseResponse[] => {
         console.log('Recurring expenses API response:', response);
-        
+
         // The response is now wrapped by TransformInterceptor
         const data = response.data;
         console.log('Processed data:', data);
         console.log('Data is array:', Array.isArray(data));
         console.log('Data length:', data.length);
-        
+
         if (!Array.isArray(data)) {
           console.error('Data is not an array:', data);
           return [];
         }
-        
+
         return data.map(expense => ({
           ...expense,
           monthlyAmount: parseFloat(expense.monthlyAmount.toString()),
-          monthlyFee: expense.monthlyFee ? {
-            ...expense.monthlyFee,
-            baseAmount: parseFloat(expense.monthlyFee.baseAmount.toString()),
-          } : undefined,
+          monthlyFee: expense.monthlyFee
+            ? {
+                ...expense.monthlyFee,
+                baseAmount: parseFloat(
+                  expense.monthlyFee.baseAmount.toString()
+                ),
+              }
+            : undefined,
         }));
       },
       providesTags: (_, __, buildingId) => [
@@ -123,19 +146,29 @@ export const recurringExpenseService = createApi({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (response: { data: IBackendRecurringExpenseResponse, statusCode: number, timestamp: string }): IRecurringExpenseResponse => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpenseResponse;
+        statusCode: number;
+        timestamp: string;
+      }): IRecurringExpenseResponse => {
         console.log('Update recurring expense API response:', response);
-        
+
         // The response is now wrapped by TransformInterceptor
         const data = response.data;
-        
+
         return {
           ...data,
-          monthlyAmount: data.monthlyAmount ? parseFloat(data.monthlyAmount.toString()) : 0,
-          monthlyFee: data.monthlyFee ? {
-            ...data.monthlyFee,
-            baseAmount: data.monthlyFee.baseAmount ? parseFloat(data.monthlyFee.baseAmount.toString()) : 0,
-          } : undefined,
+          monthlyAmount: data.monthlyAmount
+            ? parseFloat(data.monthlyAmount.toString())
+            : 0,
+          monthlyFee: data.monthlyFee
+            ? {
+                ...data.monthlyFee,
+                baseAmount: data.monthlyFee.baseAmount
+                  ? parseFloat(data.monthlyFee.baseAmount.toString())
+                  : 0,
+              }
+            : undefined,
         };
       },
       invalidatesTags: ['RecurringExpense'],

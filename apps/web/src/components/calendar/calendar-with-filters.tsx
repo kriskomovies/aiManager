@@ -10,12 +10,12 @@ import {
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Download, 
+import {
+  Plus,
+  Download,
   Calendar as CalendarIcon,
   Trash2,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
@@ -146,7 +146,8 @@ export function CalendarWithFilters({
 }: CalendarWithFiltersProps) {
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<View>(Views.MONTH); // Use proper View type
-  const [isFilteredEventsCollapsed, setIsFilteredEventsCollapsed] = useState(false);
+  const [isFilteredEventsCollapsed, setIsFilteredEventsCollapsed] =
+    useState(false);
   const dispatch = useAppDispatch();
 
   // Handler for view changes
@@ -179,12 +180,7 @@ export function CalendarWithFilters({
     }
 
     return filtered;
-  }, [
-    events,
-    selectedBuilding,
-    eventTypeFilter,
-    includePastEvents,
-  ]);
+  }, [events, selectedBuilding, eventTypeFilter, includePastEvents]);
 
   // Transform events for calendar
   const calendarEvents = useMemo((): CalendarEventFormatted[] => {
@@ -333,7 +329,6 @@ export function CalendarWithFilters({
             Днес
           </Button>
 
-
           <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
             <Download className="w-3 h-3 mr-1" />
             Експорт
@@ -366,8 +361,6 @@ export function CalendarWithFilters({
     };
     return counts;
   }, [filteredEvents]);
-
-
 
   // Handle event actions
   const handleViewEvent = (event: CalendarEventData) => {
@@ -424,10 +417,15 @@ export function CalendarWithFilters({
   const hasActiveFilters = useMemo(() => {
     return (
       (showBuildingFilter && selectedBuilding !== 'all') ||
-      (eventTypeFilter !== 'all') ||
-      (includePastEvents !== true) // Changed from searchTerm to includePastEvents
+      eventTypeFilter !== 'all' ||
+      includePastEvents !== true // Changed from searchTerm to includePastEvents
     );
-  }, [showBuildingFilter, selectedBuilding, eventTypeFilter, includePastEvents]);
+  }, [
+    showBuildingFilter,
+    selectedBuilding,
+    eventTypeFilter,
+    includePastEvents,
+  ]);
 
   if (isLoading) {
     return (
@@ -552,10 +550,15 @@ export function CalendarWithFilters({
                       type="checkbox"
                       id="includePastEvents"
                       checked={includePastEvents}
-                      onChange={e => onIncludePastEventsChange?.(e.target.checked)}
+                      onChange={e =>
+                        onIncludePastEventsChange?.(e.target.checked)
+                      }
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-2 cursor-pointer"
                     />
-                    <label htmlFor="includePastEvents" className="text-sm text-gray-700 mt-2">
+                    <label
+                      htmlFor="includePastEvents"
+                      className="text-sm text-gray-700 mt-2"
+                    >
                       Покажи минали събития
                     </label>
                   </div>
@@ -580,12 +583,16 @@ export function CalendarWithFilters({
           </div>
         </div>
       )}
-        {/* Filtered Events List */}
-        {showFilteredEventsList && hasActiveFilters && filteredEvents.length > 0 && (
+      {/* Filtered Events List */}
+      {showFilteredEventsList &&
+        hasActiveFilters &&
+        filteredEvents.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div 
+            <div
               className="p-6 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={() => setIsFilteredEventsCollapsed(!isFilteredEventsCollapsed)}
+              onClick={() =>
+                setIsFilteredEventsCollapsed(!isFilteredEventsCollapsed)
+              }
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -593,7 +600,8 @@ export function CalendarWithFilters({
                     Филтрирани събития
                   </h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    Показани са {filteredEvents.length} от общо {events.length} събития
+                    Показани са {filteredEvents.length} от общо {events.length}{' '}
+                    събития
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -602,22 +610,22 @@ export function CalendarWithFilters({
                   </Badge>
                   <motion.div
                     animate={{ rotate: isFilteredEventsCollapsed ? 0 : 180 }}
-                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
                   >
                     <ChevronDown className="w-5 h-5 text-gray-500" />
                   </motion.div>
                 </div>
               </div>
             </div>
-            
+
             <AnimatePresence>
               {!isFilteredEventsCollapsed && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
+                  animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  style={{ overflow: "hidden" }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  style={{ overflow: 'hidden' }}
                 >
                   <CalendarEventItems
                     events={filteredEvents}
@@ -632,27 +640,29 @@ export function CalendarWithFilters({
         )}
 
       {/* Empty State for Filtered Events */}
-      {showFilteredEventsList && hasActiveFilters && filteredEvents.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="text-center">
-            <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Няма намерени събития
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Не са намерени събития, отговарящи на избраните филтри.
-            </p>
-            <Button
-              variant="outline"
-              onClick={handleClearFilters}
-              className="inline-flex items-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              Изчисти филтрите
-            </Button>
+      {showFilteredEventsList &&
+        hasActiveFilters &&
+        filteredEvents.length === 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <div className="text-center">
+              <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Няма намерени събития
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Не са намерени събития, отговарящи на избраните филтри.
+              </p>
+              <Button
+                variant="outline"
+                onClick={handleClearFilters}
+                className="inline-flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Изчисти филтрите
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Calendar */}
       <div className="bg-white overflow-hidden">

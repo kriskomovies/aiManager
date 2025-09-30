@@ -9,7 +9,7 @@ export function ExpensesTab({ buildingId }: ExpensesTabProps) {
   return (
     <div className="space-y-8">
       {/* Temporary/Recurring Expenses Section */}
-      <RecurringExpensesSection buildingId={buildingId} />  
+      <RecurringExpensesSection buildingId={buildingId} />
 
       {/* One-time Expenses Section */}
       <OneTimeExpensesSection buildingId={buildingId} />

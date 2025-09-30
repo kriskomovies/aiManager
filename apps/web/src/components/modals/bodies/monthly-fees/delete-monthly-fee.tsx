@@ -11,9 +11,7 @@ interface DeleteMonthlyFeeModalProps {
   onClose: () => void;
 }
 
-export function DeleteMonthlyFeeModal({
-  onClose,
-}: DeleteMonthlyFeeModalProps) {
+export function DeleteMonthlyFeeModal({ onClose }: DeleteMonthlyFeeModalProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -83,9 +81,7 @@ export function DeleteMonthlyFeeModal({
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
           <Trash2 className="h-6 w-6 text-red-600" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Грешка
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Грешка</h3>
         <p className="text-sm text-gray-600 mb-6">
           Липсват данни за месечната такса.
         </p>

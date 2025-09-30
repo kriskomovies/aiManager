@@ -14,6 +14,8 @@ import { MonthlyFeeEntity } from '../database/entities/monthly-fee.entity';
 import { MonthlyFeeApartmentEntity } from '../database/entities/monthly-fee-apartment.entity';
 import { ApartmentMonthlyPaymentEntity } from '../database/entities/apartment-monthly-payment.entity';
 import { CalendarEventEntity } from '../database/entities/calendar-event.entity';
+import { UserEntity } from '../database/entities/user.entity';
+import { UserRoleEntity } from '../database/entities/user-role.entity';
 
 config();
 
@@ -21,6 +23,8 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
   entities: [
+    UserEntity,
+    UserRoleEntity,
     BuildingEntity,
     ApartmentEntity,
     ResidentEntity,

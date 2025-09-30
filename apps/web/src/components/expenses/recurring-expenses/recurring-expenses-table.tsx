@@ -38,13 +38,16 @@ interface RecurringExpensesTableProps {
   buildingId?: string;
 }
 
-export function RecurringExpensesTable({ buildingId }: RecurringExpensesTableProps) {
+export function RecurringExpensesTable({
+  buildingId,
+}: RecurringExpensesTableProps) {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   // Get building ID from props or modal context
-  const effectiveBuildingId = buildingId || (modalData?.buildingId as string) || '';
-  
+  const effectiveBuildingId =
+    buildingId || (modalData?.buildingId as string) || '';
+
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof RecurringExpenseData;
@@ -52,66 +55,76 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
   } | null>(null);
 
   // Fetch real recurring expenses data
-  const { data: recurringExpenses = [], isLoading, error } = useGetRecurringExpensesByBuildingQuery(
-    effectiveBuildingId,
-    {
-      skip: !effectiveBuildingId,
-    }
-  );
+  const {
+    data: recurringExpenses = [],
+    isLoading,
+    error,
+  } = useGetRecurringExpensesByBuildingQuery(effectiveBuildingId, {
+    skip: !effectiveBuildingId,
+  });
 
   // Get expense IDs for payments query
   const recurringExpenseIds = recurringExpenses.map(expense => expense.id);
 
   // Fetch payments for all expenses
-  const { data: payments = [], isLoading: isLoadingPayments } = useGetPaymentsByRecurringExpensesQuery(
-    recurringExpenseIds,
-    {
+  const { data: payments = [], isLoading: isLoadingPayments } =
+    useGetPaymentsByRecurringExpensesQuery(recurringExpenseIds, {
       skip: recurringExpenseIds.length === 0,
-    }
-  );
-
-  // Transform API data to table format
-  const transformedData: ExpandableRowData<RecurringExpenseData, RecurringExpenseChild>[] = 
-    recurringExpenses.map(expense => {
-      // Get payments for this specific expense
-      const expensePayments = payments.filter(payment => payment.recurringExpenseId === expense.id);
-      
-      // Transform payments to children format
-      const children: RecurringExpenseChild[] = expensePayments.map(payment => ({
-        id: payment.id,
-        date: new Date(payment.paymentDate).toLocaleDateString('bg-BG'),
-        paymentMethod: payment.userPaymentMethod?.displayName || 'N/A',
-        reason: payment.reason || (payment.connectPayment && payment.monthlyFee ? 
-          `Свързано с ${payment.monthlyFee.name}` : 'Плащане'),
-        amount: payment.amount,
-        documentType: payment.issueDocument ? 
-          (payment.documentType === 'invoice' ? 'Фактура' : 
-           payment.documentType === 'receipt' ? 'Квитанция' : 'Документ') : undefined,
-      }));
-
-      return {
-        id: expense.id,
-        data: {
-          id: expense.id,
-          name: expense.name,
-          linkedToMonthlyFee: Boolean(expense.monthlyFeeId),
-          contractor: '-', // Hardcoded for now, will be implemented later
-          paymentDate: expense.paymentDate 
-            ? new Date(expense.paymentDate).toLocaleDateString('bg-BG')
-            : new Date(expense.createdAt).toLocaleDateString('bg-BG'),
-          paymentMethod: expense.userPaymentMethod?.displayName || 'N/A',
-          reason: expense.reason || 
-            (expense.addToMonthlyFees 
-              ? 'Добавен като месечна такса' 
-              : expense.monthlyFee?.name || 'Няма свързана месечна такса'),
-          amount: expense.monthlyAmount,
-          // Store original expense data for edit modal
-          originalExpense: expense,
-        },
-        children,
-      };
     });
 
+  // Transform API data to table format
+  const transformedData: ExpandableRowData<
+    RecurringExpenseData,
+    RecurringExpenseChild
+  >[] = recurringExpenses.map(expense => {
+    // Get payments for this specific expense
+    const expensePayments = payments.filter(
+      payment => payment.recurringExpenseId === expense.id
+    );
+
+    // Transform payments to children format
+    const children: RecurringExpenseChild[] = expensePayments.map(payment => ({
+      id: payment.id,
+      date: new Date(payment.paymentDate).toLocaleDateString('bg-BG'),
+      paymentMethod: payment.userPaymentMethod?.displayName || 'N/A',
+      reason:
+        payment.reason ||
+        (payment.connectPayment && payment.monthlyFee
+          ? `Свързано с ${payment.monthlyFee.name}`
+          : 'Плащане'),
+      amount: payment.amount,
+      documentType: payment.issueDocument
+        ? payment.documentType === 'invoice'
+          ? 'Фактура'
+          : payment.documentType === 'receipt'
+            ? 'Квитанция'
+            : 'Документ'
+        : undefined,
+    }));
+
+    return {
+      id: expense.id,
+      data: {
+        id: expense.id,
+        name: expense.name,
+        linkedToMonthlyFee: Boolean(expense.monthlyFeeId),
+        contractor: '-', // Hardcoded for now, will be implemented later
+        paymentDate: expense.paymentDate
+          ? new Date(expense.paymentDate).toLocaleDateString('bg-BG')
+          : new Date(expense.createdAt).toLocaleDateString('bg-BG'),
+        paymentMethod: expense.userPaymentMethod?.displayName || 'N/A',
+        reason:
+          expense.reason ||
+          (expense.addToMonthlyFees
+            ? 'Добавен като месечна такса'
+            : expense.monthlyFee?.name || 'Няма свързана месечна такса'),
+        amount: expense.monthlyAmount,
+        // Store original expense data for edit modal
+        originalExpense: expense,
+      },
+      children,
+    };
+  });
 
   const handlePayExpense = (expense: RecurringExpenseData) => {
     dispatch(
@@ -193,11 +206,7 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
       sortable: true,
       width: '130px',
       minWidth: '130px',
-      cell: row => (
-        <Badge variant="neutral">
-          {row.paymentMethod}
-        </Badge>
-      ),
+      cell: row => <Badge variant="neutral">{row.paymentMethod}</Badge>,
     },
     {
       header: 'Основание',
@@ -263,7 +272,9 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
     if (children.length === 0) {
       return (
         <div className="p-4">
-          <p className="text-sm text-gray-500 text-center">Няма извършени плащания</p>
+          <p className="text-sm text-gray-500 text-center">
+            Няма извършени плащания
+          </p>
         </div>
       );
     }
@@ -271,7 +282,9 @@ export function RecurringExpensesTable({ buildingId }: RecurringExpensesTablePro
     return (
       <div className="p-4">
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-900 mb-3">История на плащанията</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-3">
+            История на плащанията
+          </h4>
           {children.map(child => (
             <div
               key={child.id}

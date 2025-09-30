@@ -160,12 +160,6 @@ export interface IBackendStatsResponse {
   lastTransactionDate?: string;
 }
 
-export interface IBackendApiResponse<T> {
-  data: T;
-  statusCode: number;
-  timestamp: string;
-}
-
 export interface IBackendQueryParams {
   page?: number;
   limit?: number;

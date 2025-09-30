@@ -3,7 +3,15 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { PartnerStatusBadge } from '@/components/ui/partner-status-badge';
 import { Tabs, TabConfig } from '@/components/ui/tabs';
-import { ArrowLeft, Pencil, Globe, FileText, Calendar, Building, CreditCard } from 'lucide-react';
+import {
+  ArrowLeft,
+  Pencil,
+  Globe,
+  FileText,
+  Calendar,
+  Building,
+  CreditCard,
+} from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch } from '@/redux/hooks';
 import { setPageInfo } from '@/redux/slices/app-state';
@@ -23,7 +31,12 @@ interface PartnerDetailsExtended extends PartnerDetails {
   status: PartnerStatus;
 }
 
-type TabType = 'overview' | 'contracts' | 'buildings' | 'transactions' | 'documents';
+type TabType =
+  | 'overview'
+  | 'contracts'
+  | 'buildings'
+  | 'transactions'
+  | 'documents';
 
 const tabs: TabConfig[] = [
   {
@@ -86,7 +99,8 @@ export function PartnerDetailsPage() {
     creditLimit: 50000,
     paymentTerms: 30,
     website: 'https://stroy-invest.bg',
-    description: 'Строителна компания специализирана в жилищно строителство и ремонти. Работим с висококачествени материали и опитни специалисти.',
+    description:
+      'Строителна компания специализирана в жилищно строителство и ремонти. Работим с висококачествени материали и опитни специалисти.',
     contactPersonName: 'Иван Петров',
     contactPersonEmail: 'ivan.petrov@stroy-invest.bg',
     contactPersonPhone: '+359 88 123 4568',
@@ -221,14 +235,18 @@ export function PartnerDetailsPage() {
                 {formatPartnerStatus(partner.status)}
               </div>
               <p className="text-sm text-gray-500 truncate">
-                {formatPartnerType(partner.type)} • {partner.city}, {partner.country}
+                {formatPartnerType(partner.type)} • {partner.city},{' '}
+                {partner.country}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
             {partner.website && (
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   variant="outline"
                   size="sm"

@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGetBuildingEventsQuery } from '@/redux/services/calendar-service';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
-import {
-  CalendarWithFilters,
-} from '@/components/calendar/calendar-with-filters';
+import { CalendarWithFilters } from '@/components/calendar/calendar-with-filters';
 
 interface CalendarTabProps {
   buildingId?: string;
@@ -22,10 +20,8 @@ export function CalendarTab({ buildingId = 'building-1' }: CalendarTabProps) {
   } = useGetBuildingEventsQuery(buildingId);
 
   // Fetch building data for the filter
-  const {
-    data: buildingData,
-    isLoading: isBuildingLoading,
-  } = useGetBuildingQuery(buildingId);
+  const { data: buildingData, isLoading: isBuildingLoading } =
+    useGetBuildingQuery(buildingId);
 
   // Transform events to include building name for display
   const calendarEvents = useMemo(() => {
@@ -50,12 +46,14 @@ export function CalendarTab({ buildingId = 'building-1' }: CalendarTabProps) {
   // Prepare buildings array with current building for the filter
   const buildings = useMemo(() => {
     if (!buildingData) return [];
-    return [{
-      id: buildingData.id,
-      name: buildingData.name,
-      address: buildingData.address,
-      apartmentCount: buildingData.apartmentCount,
-    }];
+    return [
+      {
+        id: buildingData.id,
+        name: buildingData.name,
+        address: buildingData.address,
+        apartmentCount: buildingData.apartmentCount,
+      },
+    ];
   }, [buildingData]);
 
   return (

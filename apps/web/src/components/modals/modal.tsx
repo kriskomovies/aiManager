@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '@/redux/hooks';
 import { selectModal, closeModal } from '@/redux/slices/modal-slice';
 import { DeleteBuildingModal } from './bodies/delete-building-modal';
 import { DeleteApartmentModal } from './bodies/delete-apartment-modal';
+import { DeleteUserModal } from './bodies/users/delete-user-modal';
 import { ReferenceFeesModal } from './bodies/reference-fees-modal';
 import { ReferencePaymentsModal } from './bodies/reference-payments-modal';
 import { PaymentModal } from './bodies/payment-modal';
@@ -79,6 +80,9 @@ export function ModalContainer() {
 
       case 'delete-apartment':
         return <DeleteApartmentModal onClose={handleClose} />;
+
+      case 'delete-user':
+        return <DeleteUserModal onClose={handleClose} />;
 
       case 'reference-fees':
         return <ReferenceFeesModal />;

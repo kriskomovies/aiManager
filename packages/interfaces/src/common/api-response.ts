@@ -1,25 +1,46 @@
-// Standard API response wrapper
-export interface IApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  errors?: string[];
-  timestamp: string;
+// Backend API response interfaces
+export interface IBackendPaginatedResponse<T> {
+  data: {
+    data: T[];
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number;
+  };
 }
 
-// Error response
-export interface IApiError {
-  success: false;
-  message: string;
-  errors?: string[];
-  statusCode: number;
-  timestamp: string;
-}
-
-// Success response
-export interface IApiSuccess<T = any> {
-  success: true;
+export interface IBackendApiResponse<T> {
   data: T;
-  message?: string;
-  timestamp: string;
+}
+
+// Backend user data structure
+export interface IBackendUserData {
+  id: string;
+  email: string;
+  name: string;
+  surname: string;
+  phone?: string;
+  status: string;
+  isUsingMobileApp: boolean;
+  lastLoginAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  residentId?: string;
+  role?: {
+    id: string;
+    name: string;
+    permissions: string[];
+  };
+  resident?: {
+    id: string;
+    name: string;
+    surname: string;
+    apartmentId: string;
+    apartment?: {
+      number: string;
+      building?: {
+        name: string;
+      };
+    };
+  };
 }

@@ -134,7 +134,8 @@ export interface IBackendRecurringExpensePaymentResponse {
 }
 
 // Frontend Response (transformed)
-export interface IRecurringExpensePaymentResponse extends IRecurringExpensePayment {
+export interface IRecurringExpensePaymentResponse
+  extends IRecurringExpensePayment {
   userPaymentMethod: IUserPaymentMethodResponse;
   monthlyFee?: {
     id: string;

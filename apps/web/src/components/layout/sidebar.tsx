@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Home, Users, Calendar, Brain, Handshake, LucideIcon } from 'lucide-react';
+import {
+  Home,
+  Users,
+  Calendar,
+  Brain,
+  Handshake,
+  LucideIcon,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -30,7 +37,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     path: '/users',
-    label: 'Юзъри',
+    label: 'Потребители',
     icon: Users,
   },
   {

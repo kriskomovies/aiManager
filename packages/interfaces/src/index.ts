@@ -12,5 +12,7 @@ export * from './payment/payment.enums.js';
 export * from './expense/one-time-expense.dto.js';
 export * from './expense/recurring-expense.dto.js';
 export * from './fee/fee.dto.js';
+export * from './user/user.dto.js';
+export * from './user/user.enums.js';
 export * from './common/api-response.js';
 export * from './common/pagination.js';

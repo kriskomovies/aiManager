@@ -76,10 +76,7 @@ export const addPartnerSchema = z.object({
   phone: z
     .string()
     .min(1, 'Телефонът е задължителен')
-    .regex(
-      /^[+]?[0-9\s\-()]{7,20}$/,
-      'Моля въведете валиден телефонен номер'
-    ),
+    .regex(/^[+]?[0-9\s\-()]{7,20}$/, 'Моля въведете валиден телефонен номер'),
 
   // Address Information - Required fields
   address: z
@@ -179,27 +176,21 @@ export const addPartnerSchema = z.object({
   // Contract Information - Optional fields
   contractStartDate: z
     .string()
-    .refine(
-      date => {
-        if (!date) return true; // Optional field
-        const parsedDate = new Date(date);
-        return !isNaN(parsedDate.getTime());
-      },
-      'Моля въведете валидна начална дата на договора'
-    )
+    .refine(date => {
+      if (!date) return true; // Optional field
+      const parsedDate = new Date(date);
+      return !isNaN(parsedDate.getTime());
+    }, 'Моля въведете валидна начална дата на договора')
     .optional()
     .or(z.literal('')),
 
   contractEndDate: z
     .string()
-    .refine(
-      date => {
-        if (!date) return true; // Optional field
-        const parsedDate = new Date(date);
-        return !isNaN(parsedDate.getTime());
-      },
-      'Моля въведете валидна крайна дата на договора'
-    )
+    .refine(date => {
+      if (!date) return true; // Optional field
+      const parsedDate = new Date(date);
+      return !isNaN(parsedDate.getTime());
+    }, 'Моля въведете валидна крайна дата на договора')
     .optional()
     .or(z.literal('')),
 

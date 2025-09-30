@@ -11,18 +11,20 @@ export const recurringExpensePaymentService = createApi({
   reducerPath: 'recurringExpensePaymentService',
   baseQuery: baseQueryWithOnQueryStarted,
   tagTypes: ['RecurringExpensePayment'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     // Create a new recurring expense payment
     createRecurringExpensePayment: builder.mutation<
       IRecurringExpensePaymentResponse,
       ICreateRecurringExpensePaymentRequest
     >({
-      query: (paymentData) => ({
+      query: paymentData => ({
         url: 'recurring-expense-payments',
         method: 'POST',
         body: paymentData,
       }),
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse }) => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse;
+      }) => {
         const payment = response.data;
         return {
           ...payment,
@@ -38,7 +40,9 @@ export const recurringExpensePaymentService = createApi({
       void
     >({
       query: () => 'recurring-expense-payments',
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse[] }) => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse[];
+      }) => {
         if (!response.data || !Array.isArray(response.data)) {
           console.warn('Payments data is not an array:', response);
           return [];
@@ -57,8 +61,11 @@ export const recurringExpensePaymentService = createApi({
       IRecurringExpensePaymentResponse[],
       string
     >({
-      query: (recurringExpenseId) => `recurring-expense-payments/recurring-expense/${recurringExpenseId}`,
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse[] }) => {
+      query: recurringExpenseId =>
+        `recurring-expense-payments/recurring-expense/${recurringExpenseId}`,
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse[];
+      }) => {
         if (!response.data || !Array.isArray(response.data)) {
           console.warn('Payments data is not an array:', response);
           return [];
@@ -79,8 +86,11 @@ export const recurringExpensePaymentService = createApi({
       IRecurringExpensePaymentResponse[],
       string[]
     >({
-      query: (recurringExpenseIds) => `recurring-expense-payments/by-expenses?ids=${recurringExpenseIds.join(',')}`,
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse[] }) => {
+      query: recurringExpenseIds =>
+        `recurring-expense-payments/by-expenses?ids=${recurringExpenseIds.join(',')}`,
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse[];
+      }) => {
         if (!response.data || !Array.isArray(response.data)) {
           console.warn('Payments data is not an array:', response);
           return [];
@@ -99,8 +109,10 @@ export const recurringExpensePaymentService = createApi({
       IRecurringExpensePaymentResponse,
       string
     >({
-      query: (id) => `recurring-expense-payments/${id}`,
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse }) => {
+      query: id => `recurring-expense-payments/${id}`,
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse;
+      }) => {
         const payment = response.data;
         return {
           ...payment,
@@ -122,7 +134,9 @@ export const recurringExpensePaymentService = createApi({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (response: { data: IBackendRecurringExpensePaymentResponse }) => {
+      transformResponse: (response: {
+        data: IBackendRecurringExpensePaymentResponse;
+      }) => {
         const payment = response.data;
         return {
           ...payment,
@@ -137,7 +151,7 @@ export const recurringExpensePaymentService = createApi({
 
     // Delete a payment
     deleteRecurringExpensePayment: builder.mutation<void, string>({
-      query: (id) => ({
+      query: id => ({
         url: `recurring-expense-payments/${id}`,
         method: 'DELETE',
       }),

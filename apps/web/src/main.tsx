@@ -12,6 +12,9 @@ import { ApartmentDetailsPage } from './pages/apartments/apartment-details';
 import { PartnersListPage } from './pages/partners/partners-list';
 import { AddEditPartnerPage } from './pages/partners/add-edit-partner';
 import { PartnerDetailsPage } from './pages/partners/partners-details';
+import { UsersListPage } from './pages/users/users-list';
+import { AddEditUserPage } from './pages/users/add-edit-user';
+import { UserDetailsPage } from './pages/users/user-details';
 import { HomePage } from './pages/home/home';
 import { CalendarPage } from './pages/calendar/calendar-page';
 import { ErrorBoundary } from './components/error-boundary';
@@ -95,7 +98,22 @@ const router = createBrowserRouter([
       },
       {
         path: '/users',
-        element: <div className="text-gray-500">Users page coming soon...</div>,
+        element: <UsersListPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/users/add',
+        element: <AddEditUserPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/users/:id/edit',
+        element: <AddEditUserPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/users/:id',
+        element: <UserDetailsPage />,
         errorElement: <GeneralErrorPage />,
       },
       {

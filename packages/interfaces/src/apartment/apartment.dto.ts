@@ -24,7 +24,7 @@ export interface IApartment {
   // Status and Settings
   status: ApartmentStatus;
   invoiceEnabled: boolean;
-  blockForPayment: boolean; 
+  blockForPayment: boolean;
   cashierNote?: string;
 
   // Financial Information

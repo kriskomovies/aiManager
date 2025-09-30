@@ -34,7 +34,6 @@ export function IrregularitiesTable({
     direction: 'asc' | 'desc';
   } | null>(null);
 
-  // Mock data for irregularities - TODO: Replace with actual API call using entityId and entityType
   console.log(
     `Loading irregularities for ${entityType}:`,
     entityId,

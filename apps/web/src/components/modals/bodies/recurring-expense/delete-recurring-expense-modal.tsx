@@ -19,7 +19,9 @@ export function DeleteRecurringExpenseModal({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Get expense data from modal data
-  const expenseData = modalData?.expenseData as IRecurringExpenseResponse | undefined;
+  const expenseData = modalData?.expenseData as
+    | IRecurringExpenseResponse
+    | undefined;
 
   const [deleteRecurringExpense] = useDeleteRecurringExpenseMutation();
 
@@ -83,12 +85,8 @@ export function DeleteRecurringExpenseModal({
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
           <Trash2 className="h-6 w-6 text-red-600" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Грешка
-        </h3>
-        <p className="text-sm text-gray-600 mb-6">
-          Липсват данни за разхода.
-        </p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Грешка</h3>
+        <p className="text-sm text-gray-600 mb-6">Липсват данни за разхода.</p>
         <Button variant="outline" onClick={onClose}>
           Затвори
         </Button>

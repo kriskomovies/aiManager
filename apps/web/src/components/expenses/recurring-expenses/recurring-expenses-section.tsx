@@ -8,14 +8,18 @@ interface RecurringExpensesSectionProps {
   buildingId: string;
 }
 
-export function RecurringExpensesSection({ buildingId }: RecurringExpensesSectionProps) {
+export function RecurringExpensesSection({
+  buildingId,
+}: RecurringExpensesSectionProps) {
   const dispatch = useAppDispatch();
 
   const handleCreateExpense = () => {
-    dispatch(openModal({ 
-      type: 'create-recurring-expense',
-      data: { buildingId }
-    }));
+    dispatch(
+      openModal({
+        type: 'create-recurring-expense',
+        data: { buildingId },
+      })
+    );
   };
 
   return (

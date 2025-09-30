@@ -1,5 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { closeModal, selectModalData, openModal } from '@/redux/slices/modal-slice';
+import {
+  closeModal,
+  selectModalData,
+  openModal,
+} from '@/redux/slices/modal-slice';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {

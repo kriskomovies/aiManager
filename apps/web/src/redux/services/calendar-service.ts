@@ -211,12 +211,15 @@ export const calendarService = createApi({
           { type: 'CalendarEvent' as const, id },
           'CalendarEvent' as const,
         ];
-        
+
         // Also invalidate building-specific cache if we have the buildingId from the result
         if (result?.buildingId) {
-          tags.push({ type: 'CalendarEvent' as const, id: `BUILDING-${result.buildingId}` });
+          tags.push({
+            type: 'CalendarEvent' as const,
+            id: `BUILDING-${result.buildingId}`,
+          });
         }
-        
+
         return tags;
       },
     }),

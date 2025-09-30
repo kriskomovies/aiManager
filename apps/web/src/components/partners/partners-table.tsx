@@ -5,7 +5,10 @@ import { PartnerStatusBadge } from '@/components/ui/partner-status-badge';
 import { Edit, Trash2, Mail, Phone, Globe } from 'lucide-react';
 // import { useAppDispatch } from '@/redux/hooks';
 // import { openModal } from '@/redux/slices/modal-slice';
-import { PartnerType, PartnerStatus } from '@/pages/partners/add-edit-partner.schema';
+import {
+  PartnerType,
+  PartnerStatus,
+} from '@/pages/partners/add-edit-partner.schema';
 
 // Mock Partner interface based on our schema
 export interface IPartnerListItem {
@@ -250,7 +253,9 @@ export function PartnersTable() {
             className={`w-2 h-2 rounded-full ${
               row.contractActive ? 'bg-green-500' : 'bg-red-500'
             }`}
-            title={row.contractActive ? 'Активен договор' : 'Няма активен договор'}
+            title={
+              row.contractActive ? 'Активен договор' : 'Няма активен договор'
+            }
           />
         </div>
       ),

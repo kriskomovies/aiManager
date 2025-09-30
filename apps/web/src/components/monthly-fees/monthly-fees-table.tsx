@@ -3,9 +3,7 @@ import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2 } from 'lucide-react';
-import {
-  useGetMonthlyFeesByBuildingQuery,
-} from '@/redux/services/monthly-fee.service';
+import { useGetMonthlyFeesByBuildingQuery } from '@/redux/services/monthly-fee.service';
 import { useGetBuildingQuery } from '@/redux/services/building.service';
 import { useGetApartmentsByBuildingQuery } from '@/redux/services/apartment.service';
 import { useAppDispatch } from '@/redux/hooks';

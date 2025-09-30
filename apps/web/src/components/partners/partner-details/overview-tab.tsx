@@ -47,17 +47,23 @@ export function OverviewTab({ partner }: OverviewTabProps) {
             <div className="pt-3 border-t">
               <p className="text-sm font-medium mb-2">Контактно лице</p>
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">{partner.contactPersonName}</p>
+                <p className="text-sm text-gray-600">
+                  {partner.contactPersonName}
+                </p>
                 {partner.contactPersonEmail && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-3 w-3 text-gray-400" />
-                    <p className="text-xs text-gray-600">{partner.contactPersonEmail}</p>
+                    <p className="text-xs text-gray-600">
+                      {partner.contactPersonEmail}
+                    </p>
                   </div>
                 )}
                 {partner.contactPersonPhone && (
                   <div className="flex items-center gap-2">
                     <Phone className="h-3 w-3 text-gray-400" />
-                    <p className="text-xs text-gray-600">{partner.contactPersonPhone}</p>
+                    <p className="text-xs text-gray-600">
+                      {partner.contactPersonPhone}
+                    </p>
                   </div>
                 )}
               </div>
@@ -81,18 +87,24 @@ export function OverviewTab({ partner }: OverviewTabProps) {
           </div>
           <div>
             <p className="text-sm font-medium">Регистрационен номер</p>
-            <p className="text-sm text-gray-600">{partner.registrationNumber}</p>
+            <p className="text-sm text-gray-600">
+              {partner.registrationNumber}
+            </p>
           </div>
           {partner.creditLimit && (
             <div>
               <p className="text-sm font-medium">Кредитен лимит</p>
-              <p className="text-sm text-gray-600">{partner.creditLimit.toLocaleString()} лв.</p>
+              <p className="text-sm text-gray-600">
+                {partner.creditLimit.toLocaleString()} лв.
+              </p>
             </div>
           )}
           {partner.paymentTerms && (
             <div>
               <p className="text-sm font-medium">Условия за плащане</p>
-              <p className="text-sm text-gray-600">{partner.paymentTerms} дни</p>
+              <p className="text-sm text-gray-600">
+                {partner.paymentTerms} дни
+              </p>
             </div>
           )}
           {partner.contractStartDate && partner.contractEndDate && (
@@ -100,10 +112,16 @@ export function OverviewTab({ partner }: OverviewTabProps) {
               <p className="text-sm font-medium mb-2">Договор</p>
               <div className="space-y-1">
                 <p className="text-xs text-gray-600">
-                  От: {new Date(partner.contractStartDate).toLocaleDateString('bg-BG')}
+                  От:{' '}
+                  {new Date(partner.contractStartDate).toLocaleDateString(
+                    'bg-BG'
+                  )}
                 </p>
                 <p className="text-xs text-gray-600">
-                  До: {new Date(partner.contractEndDate).toLocaleDateString('bg-BG')}
+                  До:{' '}
+                  {new Date(partner.contractEndDate).toLocaleDateString(
+                    'bg-BG'
+                  )}
                 </p>
               </div>
             </div>

@@ -48,16 +48,17 @@ export function CreateRecurringExpenseModal({
     reason: '',
   });
 
-  const [createRecurringExpense, { isLoading: isSubmitting }] = useCreateRecurringExpenseMutation();
+  const [createRecurringExpense, { isLoading: isSubmitting }] =
+    useCreateRecurringExpenseMutation();
 
   // Fetch monthly fees for the building
-  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } = 
+  const { data: monthlyFees = [], isLoading: isLoadingMonthlyFees } =
     useGetMonthlyFeesByBuildingQuery(buildingId, {
       skip: !buildingId,
     });
 
   // Fetch payment methods
-  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } = 
+  const { data: paymentMethods = [], isLoading: isLoadingPaymentMethods } =
     useGetActiveUserPaymentMethodsQuery();
 
   const handleInputChange = (
@@ -75,7 +76,7 @@ export function CreateRecurringExpenseModal({
         updated.monthlyFeeId = '';
         // Keep the manually entered amount when creating new monthly fee
       }
-      
+
       // Auto-fill monthly amount when a monthly fee is selected
       if (field === 'monthlyFeeId' && value && typeof value === 'string') {
         const selectedFee = monthlyFees.find(fee => fee.id === value);
@@ -83,7 +84,7 @@ export function CreateRecurringExpenseModal({
           updated.monthlyAmount = selectedFee.baseAmount;
         }
       }
-      
+
       // Clear monthly amount when monthlyFeeId is cleared
       if (field === 'monthlyFeeId' && !value) {
         // Only reset if not adding to monthly fees (manual entry allowed)
@@ -95,9 +96,10 @@ export function CreateRecurringExpenseModal({
       return updated;
     });
   };
-  
+
   // Check if monthly amount should be disabled
-  const isMonthlyAmountDisabled = !formData.addToMonthlyFees && Boolean(formData.monthlyFeeId);
+  const isMonthlyAmountDisabled =
+    !formData.addToMonthlyFees && Boolean(formData.monthlyFeeId);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -138,7 +140,9 @@ export function CreateRecurringExpenseModal({
         monthlyAmount: formData.monthlyAmount,
         userPaymentMethodId: formData.userPaymentMethodId,
         addToMonthlyFees: formData.addToMonthlyFees,
-        monthlyFeeId: formData.addToMonthlyFees ? undefined : (formData.monthlyFeeId || undefined),
+        monthlyFeeId: formData.addToMonthlyFees
+          ? undefined
+          : formData.monthlyFeeId || undefined,
         contractor: formData.contractor || undefined,
         paymentDate: formData.paymentDate || undefined,
         reason: formData.reason || undefined,
@@ -230,7 +234,9 @@ export function CreateRecurringExpenseModal({
               placeholder="0.00"
               disabled={isSubmitting || isMonthlyAmountDisabled}
               required
-              className={isMonthlyAmountDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+              className={
+                isMonthlyAmountDisabled ? 'bg-gray-100 cursor-not-allowed' : ''
+              }
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
               лв.
@@ -252,19 +258,21 @@ export function CreateRecurringExpenseModal({
             id="monthlyFeeId"
             value={formData.monthlyFeeId}
             onChange={e => handleInputChange('monthlyFeeId', e.target.value)}
-            disabled={isSubmitting || isLoadingMonthlyFees || formData.addToMonthlyFees}
+            disabled={
+              isSubmitting || isLoadingMonthlyFees || formData.addToMonthlyFees
+            }
           >
             <option value="">
-              {formData.addToMonthlyFees 
-                ? 'Ще се създаде нова месечна такса' 
-                : 'Избери месечна такса (опционално)'
-              }
+              {formData.addToMonthlyFees
+                ? 'Ще се създаде нова месечна такса'
+                : 'Избери месечна такса (опционално)'}
             </option>
-            {!formData.addToMonthlyFees && monthlyFees.map(fee => (
-              <option key={fee.id} value={fee.id}>
-                {fee.name} ({fee.baseAmount.toFixed(2)} лв.)
-              </option>
-            ))}
+            {!formData.addToMonthlyFees &&
+              monthlyFees.map(fee => (
+                <option key={fee.id} value={fee.id}>
+                  {fee.name} ({fee.baseAmount.toFixed(2)} лв.)
+                </option>
+              ))}
           </Select>
         </div>
 
@@ -313,7 +321,9 @@ export function CreateRecurringExpenseModal({
           <Select
             id="userPaymentMethodId"
             value={formData.userPaymentMethodId}
-            onChange={e => handleInputChange('userPaymentMethodId', e.target.value)}
+            onChange={e =>
+              handleInputChange('userPaymentMethodId', e.target.value)
+            }
             disabled={isSubmitting || isLoadingPaymentMethods}
             required
           >

@@ -16,18 +16,8 @@ import {
   useUpdateEventMutation,
   CalendarEvent,
 } from '@/redux/services/calendar-service';
-import { 
-  CalendarEventType, 
-  CalendarEventPriority
-} from '@repo/interfaces';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  X,
-  Building,
-} from 'lucide-react';
+import { CalendarEventType, CalendarEventPriority } from '@repo/interfaces';
+import { Calendar, Clock, MapPin, User, X, Building } from 'lucide-react';
 
 interface AddEditCalendarEventModalProps {
   onClose: () => void;
@@ -47,20 +37,26 @@ interface CalendarEventFormData {
   buildingId: string;
 }
 
-export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps> = ({
-  onClose,
-}) => {
+export const AddEditCalendarEventModal: React.FC<
+  AddEditCalendarEventModalProps
+> = ({ onClose }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  
+
   // Determine if we're in edit mode
   const isEditMode = Boolean(modalData?.event || modalData?.editEvent);
-  const eventToEdit = (modalData?.event || modalData?.editEvent) as CalendarEvent | undefined;
-  
+  const eventToEdit = (modalData?.event || modalData?.editEvent) as
+    | CalendarEvent
+    | undefined;
+
   // Extract selectedStart and selectedEnd from modalData if available (for create mode)
-  const selectedStart = modalData?.selectedStart ? new Date(modalData.selectedStart as string) : new Date();
-  const selectedEnd = modalData?.selectedEnd ? new Date(modalData.selectedEnd as string) : new Date();
-  
+  const selectedStart = modalData?.selectedStart
+    ? new Date(modalData.selectedStart as string)
+    : new Date();
+  const selectedEnd = modalData?.selectedEnd
+    ? new Date(modalData.selectedEnd as string)
+    : new Date();
+
   const [formData, setFormData] = useState<CalendarEventFormData>({
     title: '',
     type: CalendarEventType.MEETING,
@@ -190,19 +186,22 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
     if (isEditMode && eventToEdit) {
       const startDate = new Date(eventToEdit.start);
       const endDate = new Date(eventToEdit.end);
-      
+
       // Convert backend apartment data to frontend format
       let apartmentIds: string[] = [];
-      
+
       if (eventToEdit.appliesToAllApartments) {
         apartmentIds = ['all'];
-      } else if (eventToEdit.targetApartmentIds && eventToEdit.targetApartmentIds.length > 0) {
+      } else if (
+        eventToEdit.targetApartmentIds &&
+        eventToEdit.targetApartmentIds.length > 0
+      ) {
         apartmentIds = [...eventToEdit.targetApartmentIds]; // Spread to ensure it's a new array
       } else if (eventToEdit.apartmentId) {
         // Fallback for old format
         apartmentIds = [eventToEdit.apartmentId];
       }
-      
+
       setFormData({
         title: eventToEdit.title,
         type: eventToEdit.type,
@@ -238,7 +237,12 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
         }));
       }
     }
-  }, [modalData?.buildingId, modalData?.isFromBuildingTab, buildings, isEditMode]);
+  }, [
+    modalData?.buildingId,
+    modalData?.isFromBuildingTab,
+    buildings,
+    isEditMode,
+  ]);
 
   const handleInputChange = (
     field: keyof CalendarEventFormData,
@@ -342,10 +346,10 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
         assignedTo: formData.assignedTo.trim() || undefined,
         // Convert frontend apartment selection to backend format
         appliesToAllApartments: formData.apartmentIds.includes('all'),
-        targetApartmentIds: formData.apartmentIds.includes('all') 
-          ? undefined 
-          : formData.apartmentIds.length > 0 
-            ? formData.apartmentIds 
+        targetApartmentIds: formData.apartmentIds.includes('all')
+          ? undefined
+          : formData.apartmentIds.length > 0
+            ? formData.apartmentIds
             : undefined,
       };
 
@@ -364,9 +368,9 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
           appliesToAllApartments: eventData.appliesToAllApartments,
           targetApartmentIds: eventData.targetApartmentIds,
         };
-        
+
         await updateEvent({ id: eventToEdit.id, ...updateData }).unwrap();
-        
+
         dispatch(
           addAlert({
             type: 'success',
@@ -449,7 +453,9 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
           {isEditMode ? 'Редактиране на събитие' : 'Добавяне на ново събитие'}
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          {isEditMode ? 'Редактирайте събитието в календара' : 'Създайте ново събитие в календара на сградата'}
+          {isEditMode
+            ? 'Редактирайте събитието в календара'
+            : 'Създайте ново събитие в календара на сградата'}
         </p>
       </div>
 
@@ -505,7 +511,10 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
                   handleInputChange('buildingId', e.target.value)
                 }
                 className="w-full"
-                disabled={isBuildingsLoading || Boolean(modalData?.isFromBuildingTab as boolean)}
+                disabled={
+                  isBuildingsLoading ||
+                  Boolean(modalData?.isFromBuildingTab as boolean)
+                }
                 required
               >
                 <option value="">Изберете сграда</option>
@@ -751,11 +760,7 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
                     />
                   )}
                   <span className="font-semibold">{formData.title}</span>
-                  {selectedPriority && (
-                    <Badge>
-                      {selectedPriority.label}
-                    </Badge>
-                  )}
+                  {selectedPriority && <Badge>{selectedPriority.label}</Badge>}
                 </div>
                 <div className="text-gray-600">
                   🗓️ {formData.startDate} {formData.startTime} -{' '}
@@ -793,12 +798,15 @@ export const AddEditCalendarEventModal: React.FC<AddEditCalendarEventModalProps>
           }
           form="calendar-event-form"
         >
-          {isSubmitting 
-            ? (isEditMode ? 'Обновяване...' : 'Създаване...') 
-            : (isEditMode ? 'Обнови събитие' : 'Създай събитие')
-          }
+          {isSubmitting
+            ? isEditMode
+              ? 'Обновяване...'
+              : 'Създаване...'
+            : isEditMode
+              ? 'Обнови събитие'
+              : 'Създай събитие'}
         </Button>
       </div>
     </div>
   );
-}
+};
