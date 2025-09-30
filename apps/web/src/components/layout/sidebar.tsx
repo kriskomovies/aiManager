@@ -6,6 +6,7 @@ import {
   Calendar,
   Brain,
   Handshake,
+  AlertTriangle,
   LucideIcon,
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
@@ -39,6 +40,11 @@ const navigationItems: NavigationItem[] = [
     path: '/users',
     label: 'Потребители',
     icon: Users,
+  },
+  {
+    path: '/irregularities',
+    label: 'Нередности',
+    icon: AlertTriangle,
   },
   {
     path: '/calendar',

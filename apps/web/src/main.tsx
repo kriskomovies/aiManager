@@ -15,6 +15,9 @@ import { PartnerDetailsPage } from './pages/partners/partners-details';
 import { UsersListPage } from './pages/users/users-list';
 import { AddEditUserPage } from './pages/users/add-edit-user';
 import { UserDetailsPage } from './pages/users/user-details';
+import { IrregularitiesListPage } from './pages/irregularities/irregularities-list';
+import { AddEditIrregularityPage } from './pages/irregularities/add-edit-irregularity';
+import { IrregularityDetailsPage } from './pages/irregularities/irregularity-details';
 import { HomePage } from './pages/home/home';
 import { CalendarPage } from './pages/calendar/calendar-page';
 import { ErrorBoundary } from './components/error-boundary';
@@ -114,6 +117,26 @@ const router = createBrowserRouter([
       {
         path: '/users/:id',
         element: <UserDetailsPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/irregularities',
+        element: <IrregularitiesListPage />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/irregularities/add',
+        element: <AddEditIrregularityPage mode="create" />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/irregularities/:id/edit',
+        element: <AddEditIrregularityPage mode="edit" />,
+        errorElement: <GeneralErrorPage />,
+      },
+      {
+        path: '/irregularities/:id',
+        element: <IrregularityDetailsPage />,
         errorElement: <GeneralErrorPage />,
       },
       {

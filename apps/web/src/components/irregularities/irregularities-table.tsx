@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, FileText } from 'lucide-react';
+import { Eye, Trash2, FileText } from 'lucide-react';
 import { useAppDispatch } from '@/redux/hooks';
 import { openModal } from '@/redux/slices/modal-slice';
 
@@ -28,6 +29,7 @@ export function IrregularitiesTable({
   isArchive,
 }: IrregularitiesTableProps) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<{
     field: keyof IrregularityRecord;
@@ -172,19 +174,8 @@ export function IrregularitiesTable({
     }
   };
 
-  const handleEdit = (irregularityId: string) => {
-    dispatch(
-      openModal({
-        type:
-          entityType === 'building'
-            ? 'edit-building-irregularity'
-            : 'edit-apartment-irregularity',
-        data: {
-          irregularityId,
-          [entityType === 'building' ? 'buildingId' : 'apartmentId']: entityId,
-        },
-      })
-    );
+  const handleViewDetails = (irregularityId: string) => {
+    navigate(`/irregularities/${irregularityId}`);
   };
 
   const handleDelete = (irregularityId: string) => {
@@ -225,6 +216,14 @@ export function IrregularitiesTable({
       searchable: true,
       width: '200px',
       minWidth: '200px',
+      cell: (row) => (
+        <button
+          onClick={() => handleViewDetails(row.id)}
+          className="text-left hover:text-red-500 transition-colors font-medium"
+        >
+          {row.title}
+        </button>
+      ),
     },
     {
       header: 'Отговорник',
@@ -282,14 +281,14 @@ export function IrregularitiesTable({
         return (
           <div
             onClick={e => e.stopPropagation()}
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 justify-end"
           >
             <button
-              onClick={() => handleEdit(row.id)}
-              className="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-md hover:bg-gray-100 active:bg-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
-              title="Редактирай"
+              onClick={() => handleViewDetails(row.id)}
+              className="p-2 text-gray-500 hover:text-blue-600 transition-colors rounded-md hover:bg-blue-50 active:bg-blue-100 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+              title="Виж детайли"
             >
-              <Edit className="w-4 h-4" />
+              <Eye className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleDelete(row.id)}

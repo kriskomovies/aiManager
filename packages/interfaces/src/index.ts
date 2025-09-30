@@ -7,6 +7,8 @@ export * from './calendar/calendar.dto.js';
 export * from './calendar/calendar.enums.js';
 export * from './inventory/inventory.dto.js';
 export * from './inventory/inventory.enums.js';
+export * from './irregularity/irregularity.dto.js';
+export * from './irregularity/irregularity.enums.js';
 export * from './payment/payment.dto.js';
 export * from './payment/payment.enums.js';
 export * from './expense/one-time-expense.dto.js';
